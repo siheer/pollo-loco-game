@@ -22,9 +22,9 @@ export default class GameItem extends CanvasObject {
         });
     }
 
-    updateAnimation(animation, deltaTime, updateInterval = 100) {
+    updateAnimation(animation, deltaTime, updateIntervalInMilliseconds = 100) {
         animation.deltaTime += deltaTime;
-        if (animation.deltaTime >= updateInterval) {
+        if (animation.deltaTime >= updateIntervalInMilliseconds) {
             this.animate(animation);
             animation.deltaTime = 0;
         }

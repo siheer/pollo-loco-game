@@ -1,10 +1,15 @@
 import GameItem from "./game-item.class.js";
 
 export default class PlayerCharacter extends GameItem {
-    constructor(x, y, width, height) {
+    constructor(x, y, width, height, world) {
         super(x, y, width, height);
+        this.world = world;
+        this.fixCameraOnCharacter = false;
+        this.fixCameraOnCharacterXPosition = 500;
         this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
+        this.idleImg = this.img;
         this.speed = 20;
+        this.facingLeft = false;
         this.walkingAnimation = this.createAnimation([
             './img/2_character_pepe/2_walk/W-21.png',
             './img/2_character_pepe/2_walk/W-22.png',
@@ -16,12 +21,33 @@ export default class PlayerCharacter extends GameItem {
     }
 
     update(deltaTime) {
+        if (!this.fixCameraOnCharacter && this.x > this.fixCameraOnCharacterXPosition) {
+            this.fixCameraOnCharacter = true;
+        }
         if (keyboardEvents.keys['ArrowRight']) {
+            onRight.call(this);
+        } else if (keyboardEvents.keys['ArrowLeft']) {
+            onLeft.call(this);
+        } else if (keyboardEvents.nokeyPressed()) {
+            this.img = this.idleImg;
+        }
+
+        function onRight() {
+            this.facingLeft = false;
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
             this.moveRight();
-        } else if (keyboardEvents.keys['ArrowLeft']) {
+            if (this.fixCameraOnCharacter) {
+                this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
+            }
+        }
+
+        function onLeft() {
+            this.facingLeft = true;
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
             this.moveLeft();
+            if (this.fixCameraOnCharacter) {
+                this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
+            }
         }
     }
 
@@ -34,6 +60,6 @@ export default class PlayerCharacter extends GameItem {
     }
 
     jump(y) {
-        // Jump implementation (if needed) goes here.
+        // Jump-Implementierung (falls benötigt) hier einfügen.
     }
 }

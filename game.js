@@ -15,17 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const game = new Game(world);
     window.game = game;
     game.start();
-    // setTimeout(() => {
-    //     game.stop();
-    // }, 250);
+    registerResizeListener();
     document.body.style.visibility = 'visible';
 });
 
 function registerKeyboardListener() {
     window.addEventListener('keydown', (event) => {
         keyboardEvents.handleKeyDown(event);
-    })
+    });
     window.addEventListener('keyup', (event) => {
         keyboardEvents.handleKeyUp(event);
-    })
+    });
+}
+
+// Debounced resize event: Only update canvas when the window is not resized for 100ms.
+function registerResizeListener() {
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            gameCanvas.resizeToDevicePixelRatio();
+        }, 100);
+    });
 }

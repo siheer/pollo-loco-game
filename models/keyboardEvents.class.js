@@ -23,4 +23,8 @@ export default class KeyboardEvents {
             console.log(`${event.key} key is released`);
         }
     }
+
+    nokeyPressed() {
+        return Object.values(this.keys).every(key => key === false);
+    }
 }
