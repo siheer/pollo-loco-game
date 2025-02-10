@@ -3,6 +3,7 @@ import CanvasObject from "./canvas-object.class.js";
 export default class GameItem extends CanvasObject {
     constructor(x, y, width, height) {
         super(x, y, width, height);
+        this.speed = 0;
     }
 
     createAnimation(paths) {
@@ -35,11 +36,11 @@ export default class GameItem extends CanvasObject {
         animation.currentImageIndex++;
     }
 
-    moveRight(x) {
-        this.x += x;
+    moveRight() {
+        this.x += this.speed;
     }
 
-    moveLeft(x) {
-        this.x -= x;
+    moveLeft() {
+        this.x -= this.speed;
     }
 }

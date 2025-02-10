@@ -16,7 +16,7 @@ export default class World {
 
     fillWorldWithObjects() {
         this.player = new PlayerCharacter(100, this.getYPositionForObject(400) + 13, 200, 400); // +13 because of shadow.
-        this.enemies = createInstances(Chicken, 4, this.getYPositionForObject(80), 80, 80);
+        this.enemies = createInstances(Chicken, 8, this.getYPositionForObject(80), 80, 80);
         this.clouds = [
             new Cloud('./img/5_background/layers/4_clouds/1.png', this.canvas.width / 3, 0, this.canvas.width * 0.7, this.canvas.height * 0.7),
         ]
