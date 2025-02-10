@@ -1,0 +1,1 @@
+const canvasAspectRatio = 16 / 9;

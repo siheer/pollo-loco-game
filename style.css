@@ -1,0 +1,10 @@
+body {
+    visibility: hidden;
+}
+
+canvas {
+    background-color: black;
+    width: 100%;
+    max-width: 1400px;
+    aspect-ratio: 16 / 9;
+}
