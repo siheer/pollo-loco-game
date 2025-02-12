@@ -13,11 +13,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const gameCanvas = new Canvas(canvasElement);
 
     const world = await intializeWorld(gameCanvas);
-    const game = new Game(world, 1000);
+    const game = new Game(world);
 
-    game.start();
-
-    window.game = game;
+    initializeUI(game);
+    game.start(1000);
 
     registerResizeListener(gameCanvas);
     document.body.style.visibility = 'visible';
@@ -47,5 +46,25 @@ function registerResizeListener(canvas) {
         resizeTimeout = setTimeout(() => {
             canvas.resizeToDevicePixelRatio();
         }, 100);
+    });
+}
+
+function initializeUI(game) {
+    registerPlayPauseButton(game);
+}
+
+function registerPlayPauseButton(game) {
+    const playPauseButton = document.getElementById('playPauseButton');
+    let isPlaying = true;
+
+    playPauseButton.addEventListener('click', () => {
+        if (isPlaying) {
+            game.stop();
+            playPauseButton.innerHTML = playSVG;
+        } else {
+            game.start();
+            playPauseButton.innerHTML = pauseSVG;
+        }
+        isPlaying = !isPlaying;
     });
 }

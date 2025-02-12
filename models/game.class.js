@@ -1,16 +1,16 @@
 export default class Game {
     animationFrameId;
 
-    constructor(world, gameStartDelayInMilliseconds = 0) {
+    constructor(world) {
         this.world = world;
         this.lastTimestamp = null;
-        this.gameStartDelayInMilliseconds = gameStartDelayInMilliseconds;
     }
 
-    start() {
+    start(delayInMilliseconds = 0) {
         setTimeout(() => {
+            this.lastTimestamp = null;
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
-        }, this.gameStartDelayInMilliseconds);
+        }, delayInMilliseconds);
     }
 
     stop() {

@@ -5,6 +5,30 @@ body {
 canvas {
     background-color: black;
     width: 100%;
-    max-width: 1400px;
+    max-width: 87.5rem;
     aspect-ratio: 16 / 9;
+}
+
+.gameContainer {
+    position: relative;
+}
+
+.playPauseButton {
+    top: 2rem;
+    left: 2rem;
+}
+
+.game-ui-btn {
+    position: absolute;
+    z-index: 10;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+}
+
+.game-ui-btn:hover {
+    color: var(--fall-bold-dark-orange);
 }
