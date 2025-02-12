@@ -25,12 +25,12 @@ export default class GameItem extends CanvasObject {
     updateAnimation(animation, deltaTime, updateIntervalInMilliseconds = 100) {
         animation.deltaTime += deltaTime;
         if (animation.deltaTime >= updateIntervalInMilliseconds) {
-            this.animate(animation);
+            this.replaceImage(animation);
             animation.deltaTime = 0;
         }
     }
 
-    animate(animation) {
+    replaceImage(animation) {
         animation.currentImageIndex = animation.currentImageIndex % animation.imageCache.length;
         this.img = animation.imageCache[animation.currentImageIndex];
         animation.currentImageIndex++;

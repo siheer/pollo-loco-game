@@ -1,13 +1,16 @@
 export default class Game {
     animationFrameId;
 
-    constructor(world) {
+    constructor(world, gameStartDelayInMilliseconds = 0) {
         this.world = world;
         this.lastTimestamp = null;
+        this.gameStartDelayInMilliseconds = gameStartDelayInMilliseconds;
     }
 
     start() {
-        this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
+        setTimeout(() => {
+            this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
+        }, this.gameStartDelayInMilliseconds);
     }
 
     stop() {
@@ -21,7 +24,7 @@ export default class Game {
 
         if (deltaTime > 25) { // 1000 / 40, every 25 milliseconds
             // console.log(`Another loop! Time elapsed: ${deltaTime}`);
-            this.world.updateWorld(deltaTime);
+            this.world.updateWorld(this.world.worldRefs, deltaTime);
             this.world.drawWorld();
             this.lastTimestamp = timestamp;
         }

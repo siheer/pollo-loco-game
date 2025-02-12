@@ -15,7 +15,7 @@ export default class Chicken extends GameItem {
     }
 
     getRandomChickenPosition() {
-        return 200 + Math.random() * (canvas.width - 200);
+        return canvasBaseWidth + Math.random() * canvasBaseWidth;
     }
 
     update(deltaTime) {

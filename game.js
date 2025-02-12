@@ -7,17 +7,28 @@ let canvasElement = null;
 const keyboardEvents = new KeyboardEvents();
 window.keyboardEvents = keyboardEvents;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     registerKeyboardListener();
     canvasElement = document.getElementById('canvas');
     const gameCanvas = new Canvas(canvasElement);
-    const world = new World(gameCanvas);
-    const game = new Game(world);
-    window.game = game;
+
+    const world = await intializeWorld(gameCanvas);
+    const game = new Game(world, 1000);
+
     game.start();
-    registerResizeListener();
+
+    window.game = game;
+
+    registerResizeListener(gameCanvas);
     document.body.style.visibility = 'visible';
 });
+
+async function intializeWorld(canvas) {
+    const world = new World(canvas);
+    world.addLevel('../levels/level-1.js', 2);
+    await world.fillWorldWithObjects();
+    return world;
+}
 
 function registerKeyboardListener() {
     window.addEventListener('keydown', (event) => {
@@ -29,12 +40,12 @@ function registerKeyboardListener() {
 }
 
 // Debounced resize event: Only update canvas when the window is not resized for 100ms.
-function registerResizeListener() {
+function registerResizeListener(canvas) {
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-            gameCanvas.resizeToDevicePixelRatio();
+            canvas.resizeToDevicePixelRatio();
         }, 100);
     });
 }

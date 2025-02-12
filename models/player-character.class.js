@@ -8,7 +8,7 @@ export default class PlayerCharacter extends GameItem {
         this.fixCameraOnCharacterXPosition = 500;
         this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
         this.idleImg = this.img;
-        this.speed = 20;
+        this.speed = 40;
         this.facingLeft = false;
         this.walkingAnimation = this.createAnimation([
             './img/2_character_pepe/2_walk/W-21.png',
@@ -24,27 +24,30 @@ export default class PlayerCharacter extends GameItem {
         if (!this.fixCameraOnCharacter && this.x > this.fixCameraOnCharacterXPosition) {
             this.fixCameraOnCharacter = true;
         }
-        if (keyboardEvents.keys['ArrowRight']) {
+        if (keyboardEvents.keys['ArrowRight'] && this.x < this.world.level.levelEndX) {
             onRight.call(this);
-        } else if (keyboardEvents.keys['ArrowLeft']) {
+        } else if (keyboardEvents.keys['ArrowLeft'] && this.x > 0) {
             onLeft.call(this);
         } else if (keyboardEvents.nokeyPressed()) {
             this.img = this.idleImg;
         }
 
+
         function onRight() {
             this.facingLeft = false;
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
             this.moveRight();
-            if (this.fixCameraOnCharacter) {
-                this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
-            }
+            setCameraXPosition.call(this);
         }
 
         function onLeft() {
             this.facingLeft = true;
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
             this.moveLeft();
+            setCameraXPosition.call(this);
+        }
+
+        function setCameraXPosition() {
             if (this.fixCameraOnCharacter) {
                 this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
             }
