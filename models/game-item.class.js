@@ -1,9 +1,13 @@
 import CanvasObject from "./canvas-object.class.js";
+import Character from "./main-character.class.js";
 
 export default class GameItem extends CanvasObject {
     constructor(x, y, width, height) {
         super(x, y, width, height);
         this.speed = 0;
+        this.isJumping = false;
+        this.speedY = 0;
+        this.accelerationY = 3;
     }
 
     createAnimation(paths) {
@@ -42,5 +46,10 @@ export default class GameItem extends CanvasObject {
 
     moveLeft() {
         this.x -= this.speed;
+    }
+
+    applyGravity() {
+        this.y += this.speedY;
+        this.speedY += this.accelerationY;
     }
 }

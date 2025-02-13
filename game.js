@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     initializeUI(game);
     game.start(1000);
 
+    setTimeout(() => {
+        document.getElementById('playPauseButton').click();
+        document.getElementById('playPauseButton').focus();
+    }, 1200);
+
     registerResizeListener(gameCanvas);
     document.body.style.visibility = 'visible';
 });
@@ -66,5 +71,6 @@ function registerPlayPauseButton(game) {
             playPauseButton.innerHTML = pauseSVG;
         }
         isPlaying = !isPlaying;
+        playPauseButton.blur();
     });
 }

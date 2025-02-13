@@ -13,14 +13,14 @@ export default class KeyboardEvents {
     handleKeyDown(event) {
         if (event.key in this.keys) {
             this.keys[event.key] = true;
-            console.log(`${event.key} key is pressed`);
+            // console.log(`${event.key} key is pressed`);
         }
     }
 
     handleKeyUp(event) {
         if (event.key in this.keys) {
             this.keys[event.key] = false;
-            console.log(`${event.key} key is released`);
+            // console.log(`${event.key} key is released`);
         }
     }
 

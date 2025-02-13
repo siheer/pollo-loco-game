@@ -1,12 +1,17 @@
 import CanvasObject from './canvas-object.class.js';
-import PlayerCharacter from "./player-character.class.js";
+import Character from "./main-character.class.js";
 import Level from "./level.class.js";
+
+import Cloud from "./cloud.class.js";
+import GameItem from "./game-item.class.js";
 
 export default class World {
     constructor(gameCanvas) {
         this.canvas = gameCanvas;
         this.ctx = gameCanvas.ctx;
         this.level = new Level(this, '../levels/level-1.js', 4);
+        this.groundLevel = 140;
+        this.groundLevelY = gameCanvas.height - this.groundLevel;
         this.cameraX = 0;
         this.makeAvailableToWindowObjectForDebugging();
         window.drawWorldItem = this.drawWorldItem.bind(this);
@@ -17,7 +22,7 @@ export default class World {
     }
 
     async fillWorldWithObjects() {
-        this.player = new PlayerCharacter(100, this.getYPositionForObject(500) + 13, 250, 500, this); // +13 because of shadow.
+        this.player = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if player should not start in air
         await this.level.fillLevelWithObjects();
         this.worldRefs = [this.level.levelItems, this.player];
     }
@@ -56,15 +61,35 @@ export default class World {
                 this.ctx.save();
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
+
+                // for debugging
+                this.drawFrame(item, -item.x - item.width, item.y, item.width, item.height);
+
                 this.ctx.restore();
             } else {
                 this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
+
+                // for debugging
+                this.drawFrame(item, item.x, item.y, item.width, item.height);
             }
         }
     }
 
-    getYPositionForObject(heightOfCanvasObject) {
-        return this.canvas.height - heightOfCanvasObject - 140; // - 140 because of the baseline for the objects in the canvas
+    // for debugging
+    drawFrame(item, x, y, width, height) {
+        if (item instanceof GameItem && item.constructor !== Cloud) {
+            this.ctx.beginPath();
+            this.ctx.rect(x, y, width, height);
+            this.ctx.stroke();
+        }
+    }
+
+    getYPositionForObject(shiftUpBy) { // argument value is normally height of canvas object
+        return this.canvas.height - shiftUpBy - this.groundLevel;
+    }
+
+    isAboveGround(item) {
+        return (item.y + item.height) < this.groundLevelY;
     }
 
     makeAvailableToWindowObjectForDebugging() {
