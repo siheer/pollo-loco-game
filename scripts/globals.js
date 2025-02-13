@@ -1,6 +1,3 @@
-const canvasAspectRatio = 16 / 9;
-const canvasBaseWidth = 1920;
-const canvasBaseHeight = canvasBaseWidth / canvasAspectRatio;
 const pauseSVG = `
     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.72 122.88">
         <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"

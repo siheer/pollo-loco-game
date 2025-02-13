@@ -1,10 +1,10 @@
 export default class Canvas {
-    constructor(canvasElement) {
+    constructor(canvasElement, baseWidth = 1920, canvasAspectRatio = 16 / 9) {
         if (!(canvasElement instanceof HTMLCanvasElement))
             throw new Error('Provided element is not a valid HTMLCanvasElement.');
         this.canvasElement = canvasElement;
         this.ctx = canvasElement.getContext('2d');
-        this.baseWidth = 1920;
+        this.baseWidth = baseWidth;
         this.baseHeight = this.baseWidth / canvasAspectRatio;
         this.width = this.baseWidth;
         this.height = this.baseHeight;

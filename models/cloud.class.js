@@ -1,6 +1,6 @@
-import GameItem from './game-item.class.js';
+import CanvasObject from './canvas-object.class.js';
 
-export default class Cloud extends GameItem {
+export default class Cloud extends CanvasObject {
     constructor(srcPath, x = 0, y = 0, width = canvas.width, height = canvas.height) {
         super(x, y, width, height);
         this.loadImage(srcPath);
@@ -9,5 +9,9 @@ export default class Cloud extends GameItem {
 
     update() {
         this.moveLeft();
+    }
+
+    moveLeft() {
+        this.x -= this.speed;
     }
 }

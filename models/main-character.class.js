@@ -11,6 +11,7 @@ export default class Character extends GameItem {
         this.speed = 40;
         this.initialSpeedY = -50;
         this.facingLeft = false;
+        this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
     }
 

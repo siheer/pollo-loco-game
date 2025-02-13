@@ -23,7 +23,6 @@ export default class Game {
         const deltaTime = timestamp - this.lastTimestamp;
 
         if (deltaTime > 25) { // 1000 / 40, every 25 milliseconds
-            // console.log(`Another loop! Time elapsed: ${deltaTime}`);
             this.world.updateWorld(this.world.worldRefs, deltaTime);
             this.world.drawWorld();
             this.lastTimestamp = timestamp;

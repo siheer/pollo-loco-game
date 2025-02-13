@@ -11,4 +11,10 @@ export default class CanvasObject {
         this.img = new Image();
         this.img.src = src;
     }
+
+    createImage(src) {
+        const img = new Image();
+        img.src = src;
+        return img;
+    }
 }

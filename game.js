@@ -3,18 +3,9 @@ import World from './models/world.class.js';
 import Game from './models/game.class.js';
 import KeyboardEvents from './models/keyboardEvents.class.js';
 
-let canvasElement = null;
-const keyboardEvents = new KeyboardEvents();
-window.keyboardEvents = keyboardEvents;
-
 document.addEventListener('DOMContentLoaded', async () => {
-    registerKeyboardListener();
-    canvasElement = document.getElementById('canvas');
-    const gameCanvas = new Canvas(canvasElement);
-
-    const world = await intializeWorld(gameCanvas);
-    const game = new Game(world);
-
+    registerKeyboardListener(new KeyboardEvents());
+    const game = await createGame();
     initializeUI(game);
     game.start(1000);
 
@@ -23,18 +14,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('playPauseButton').focus();
     }, 1200);
 
-    registerResizeListener(gameCanvas);
     document.body.style.visibility = 'visible';
 });
 
-async function intializeWorld(canvas) {
-    const world = new World(canvas);
+async function createGame() {
+    const canvasElement = document.getElementById('canvas');
+    const gameCanvas = new Canvas(canvasElement);
+    registerResizeListener(gameCanvas);
+
+    const world = new World(gameCanvas);
+    window.world = world;
     world.addLevel('../levels/level-1.js', 2);
     await world.fillWorldWithObjects();
-    return world;
+
+    const game = new Game(world);
+    return game;
 }
 
-function registerKeyboardListener() {
+function registerKeyboardListener(keyboardEvents) {
+    window.keyboardEvents = keyboardEvents;
     window.addEventListener('keydown', (event) => {
         keyboardEvents.handleKeyDown(event);
     });

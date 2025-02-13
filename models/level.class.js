@@ -1,13 +1,13 @@
 import BackgroundObject from '../models/background-object.class.js';
 
 export default class Level {
-    constructor(world, pathToLevelItems, levelXLengthFactor = 2) {
+    constructor(world, pathToLevelItems, levelXLengthFactor = 1) {
         this.world = world;
         this.pathToLevelItems = pathToLevelItems;
         this.levelItems = [];
-        this.levelXLengthFactor = levelXLengthFactor;
-        const backgroundParts = 2;
-        this.levelEndX = this.world.canvas.width * backgroundParts * levelXLengthFactor - this.world.canvas.width;
+        this.backgroundParts = 2;
+        this.levelXLengthFactor = levelXLengthFactor * this.backgroundParts;
+        this.levelEndX = this.world.canvas.width * this.levelXLengthFactor - this.world.canvas.width;
     }
 
     async fillLevelWithObjects() {
@@ -38,12 +38,23 @@ export default class Level {
     }
 
     static getFullBackground(world, count) {
-        const countOfBackgroundComponents = 2;
         let items = [];
-        for (let i = 0; i < count * countOfBackgroundComponents; i++) {
+        for (let i = 0; i < count; i++) {
             items.push(...Level.getBackgroundFirstPart(world, world.canvas.width * i));
             items.push(...Level.getBackgroundSecondPart(world, world.canvas.width * ++i));
         }
         return items;
+    }
+
+    getRandomXInSegment(segmentIndex) {
+        return segmentIndex * this.world.canvas.width + Math.random() * this.world.canvas.width;
+    }
+
+    repeatAcrossLevel(callback, repeatCount = this.levelXLengthFactor - 1) {
+        let result = [];
+        for (let canvasOffset = 1; canvasOffset < repeatCount; canvasOffset++) {
+            result.push(callback(canvasOffset));
+        }
+        return result;
     }
 }

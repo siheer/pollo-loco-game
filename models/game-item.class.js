@@ -8,6 +8,7 @@ export default class GameItem extends CanvasObject {
         this.isJumping = false;
         this.speedY = 0;
         this.accelerationY = 3;
+        this.offset = { left: 0, top: 0, right: 0, bottom: 0 };
     }
 
     createAnimation(paths) {
@@ -51,5 +52,12 @@ export default class GameItem extends CanvasObject {
     applyGravity() {
         this.y += this.speedY;
         this.speedY += this.accelerationY;
+    }
+
+    isCollidingWith(item) {
+        return this.x + this.width - this.offset.right > item.x + item.offset.left &&
+            this.y + this.height - this.offset.bottom > item.y + item.offset.top &&
+            this.x + this.offset.left < item.x + item.width - item.offset.right &&
+            this.y + this.offset.top < item.y + item.height - item.offset.bottom;
     }
 }

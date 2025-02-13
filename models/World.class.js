@@ -9,12 +9,9 @@ export default class World {
     constructor(gameCanvas) {
         this.canvas = gameCanvas;
         this.ctx = gameCanvas.ctx;
-        this.level = new Level(this, '../levels/level-1.js', 4);
         this.groundLevel = 140;
         this.groundLevelY = gameCanvas.height - this.groundLevel;
         this.cameraX = 0;
-        this.makeAvailableToWindowObjectForDebugging();
-        window.drawWorldItem = this.drawWorldItem.bind(this);
     }
 
     addLevel(pathToLevelItems, levelXLengthFactor) {
@@ -62,25 +59,45 @@ export default class World {
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
 
-                // for debugging
-                this.drawFrame(item, -item.x - item.width, item.y, item.width, item.height);
+                // Debug: Äußerer Rahmen (Standardfarbe)
+                this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
+                // Debug: Innerer (offsetierter) Rahmen in Rot
+                this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
 
                 this.ctx.restore();
             } else {
                 this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
 
-                // for debugging
-                this.drawFrame(item, item.x, item.y, item.width, item.height);
+                // Debug: Äußerer Rahmen (Standardfarbe)
+                this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
+                // Debug: Innerer (offsetierter) Rahmen in Rot
+                this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
             }
         }
     }
 
-    // for debugging
-    drawFrame(item, x, y, width, height) {
-        if (item instanceof GameItem && item.constructor !== Cloud) {
+    // Zeichnet den äußerer Rahmen des Objekts (Standardfarbe)
+    drawOuterFrame(item, x, y, width, height) {
+        if (item instanceof GameItem) {
             this.ctx.beginPath();
             this.ctx.rect(x, y, width, height);
             this.ctx.stroke();
+        }
+    }
+
+    // Zeichnet den inneren (offsetierten) Rahmen in Rot
+    drawInnerFrame(item, x, y, width, height) {
+        if (item instanceof GameItem) {
+            const innerX = x + item.offset.left;
+            const innerY = y + item.offset.top;
+            const innerWidth = width - item.offset.left - item.offset.right;
+            const innerHeight = height - item.offset.top - item.offset.bottom;
+            this.ctx.save();
+            this.ctx.strokeStyle = 'red';
+            this.ctx.beginPath();
+            this.ctx.rect(innerX, innerY, innerWidth, innerHeight);
+            this.ctx.stroke();
+            this.ctx.restore();
         }
     }
 
@@ -90,11 +107,5 @@ export default class World {
 
     isAboveGround(item) {
         return (item.y + item.height) < this.groundLevelY;
-    }
-
-    makeAvailableToWindowObjectForDebugging() {
-        window.gameCanvas = this.canvas;
-        window.ctx = this.ctx;
-        window.world = this;
     }
 }
