@@ -1,8 +1,6 @@
 import CanvasObject from './canvas-object.class.js';
-import Character from "./main-character.class.js";
+import Character from "./character.class.js";
 import Level from "./level.class.js";
-
-import Cloud from "./cloud.class.js";
 import GameItem from "./game-item.class.js";
 
 export default class World {
@@ -12,6 +10,7 @@ export default class World {
         this.groundLevel = 140;
         this.groundLevelY = gameCanvas.height - this.groundLevel;
         this.cameraX = 0;
+        this.deltaTime = 0;
     }
 
     addLevel(pathToLevelItems, levelXLengthFactor) {
@@ -19,9 +18,9 @@ export default class World {
     }
 
     async fillWorldWithObjects() {
-        this.player = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if player should not start in air
+        this.character = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if character should not start in air
         await this.level.fillLevelWithObjects();
-        this.worldRefs = [this.level.levelItems, this.player];
+        this.worldRefs = [this.level.levelItems, this.character];
     }
 
     updateWorld(reference, deltaTime) {
@@ -29,6 +28,28 @@ export default class World {
             reference.forEach(item => this.updateWorld(item, deltaTime));
         } else {
             reference.update?.(deltaTime);
+        }
+    }
+
+    checkCollisions(deltaTime) {
+        this.deltaTime += deltaTime;
+        if (this.deltaTime >= MIN_INTERVAL_IN_MILLISECONDS) {
+            const enemies = flattenToArray(this.level.levelItems[1]);
+            enemies.forEach(enemy => {
+                if (!enemy.isDead && this.character.isCollidingWith(enemy)) {
+                    this.handleCollisionWithEnemy(deltaTime, enemy);
+                }
+            });
+            this.deltaTime = 0;
+        }
+    }
+
+    handleCollisionWithEnemy(deltaTime, enemy) {
+        if (this.character.isStomping(enemy)) {
+            enemy.kill();
+            this.character.giveRecoilOnStomp(20);
+        } else {
+            this.character.takeDamage(deltaTime, 100, 1);
         }
     }
 
@@ -58,25 +79,17 @@ export default class World {
                 this.ctx.save();
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
-
-                // Debug: Äußerer Rahmen (Standardfarbe)
-                this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
-                // Debug: Innerer (offsetierter) Rahmen in Rot
+                // this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
                 this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
-
                 this.ctx.restore();
             } else {
                 this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
-
-                // Debug: Äußerer Rahmen (Standardfarbe)
-                this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
-                // Debug: Innerer (offsetierter) Rahmen in Rot
+                // this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
                 this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
             }
         }
     }
 
-    // Zeichnet den äußerer Rahmen des Objekts (Standardfarbe)
     drawOuterFrame(item, x, y, width, height) {
         if (item instanceof GameItem) {
             this.ctx.beginPath();
@@ -85,7 +98,6 @@ export default class World {
         }
     }
 
-    // Zeichnet den inneren (offsetierten) Rahmen in Rot
     drawInnerFrame(item, x, y, width, height) {
         if (item instanceof GameItem) {
             const innerX = x + item.offset.left;
@@ -107,5 +119,21 @@ export default class World {
 
     isAboveGround(item) {
         return (item.y + item.height) < this.groundLevelY;
+    }
+
+    /**
+     * Entfernt den angegebenen Gegner rekursiv aus dem levelItems-Array.
+     */
+    removeEnemy(enemy) {
+        function removeFromArray(arr) {
+            for (let i = arr.length - 1; i >= 0; i--) {
+                if (arr[i] === enemy) {
+                    arr.splice(i, 1);
+                } else if (Array.isArray(arr[i])) {
+                    removeFromArray(arr[i]);
+                }
+            }
+        }
+        removeFromArray(this.level.levelItems);
     }
 }

@@ -4,10 +4,12 @@ export default class Game {
     constructor(world) {
         this.world = world;
         this.lastTimestamp = null;
+        this.gameOver = false;
     }
 
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
+            this.world.deltaTime = 0;
             this.lastTimestamp = null;
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }, delayInMilliseconds);
@@ -22,12 +24,15 @@ export default class Game {
 
         const deltaTime = timestamp - this.lastTimestamp;
 
-        if (deltaTime > 25) { // 1000 / 40, every 25 milliseconds
+        if (deltaTime > MIN_INTERVAL_IN_MILLISECONDS) {
             this.world.updateWorld(this.world.worldRefs, deltaTime);
+            this.world.checkCollisions(deltaTime);
             this.world.drawWorld();
             this.lastTimestamp = timestamp;
         }
 
-        this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
+        if (!this.gameOver) {
+            this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
+        }
     }
 }

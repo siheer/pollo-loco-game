@@ -28,6 +28,7 @@ async function createGame() {
     await world.fillWorldWithObjects();
 
     const game = new Game(world);
+    window.game = game;
     return game;
 }
 

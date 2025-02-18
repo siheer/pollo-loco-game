@@ -17,7 +17,7 @@ export function getLevelItems(world, repeatCount) {
 
     const enemies = [
         new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600),
-        ...world.level.repeatAcrossLevel((offset) => {
+        world.level.repeatAcrossLevel((offset) => {
             return [
                 ...createInstances(Chicken, 8, offset, world.getYPositionForObject(100), 100, 100),
                 ...createInstances(Chick, 8, offset, world.getYPositionForObject(70), 70, 70),

@@ -8,18 +8,21 @@ export default class Chicken extends GameItem {
         this.offset = { left: 10, top: 10, right: 10, bottom: 20 };
         this.loadImage('img/3_enemies_chicken/chicken_normal/1_walk/1_w.png');
         this.provideAnimations();
+        this.deadImg = this.createImage('img/3_enemies_chicken/chicken_normal/2_dead/dead.png');
     }
 
     provideAnimations() {
         this.walkingAnimation = this.createAnimation([
-            './img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
-            './img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
-            './img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png',
         ]);
     }
 
     update(deltaTime) {
-        this.updateAnimation(this.walkingAnimation, deltaTime);
-        this.moveLeft();
+        if (!this.isDead) {
+            this.updateAnimation(this.walkingAnimation, deltaTime);
+            this.moveLeft();
+        }
     }
 }

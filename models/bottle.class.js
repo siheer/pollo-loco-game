@@ -7,7 +7,6 @@ export default class Bottle extends GameItem {
         this.loadImage('img/6_salsa_bottle/salsa_bottle.png');
         this.collisionBoxOffsets = { left: 5, top: 5, right: 5, bottom: 5 };
         this.damage = 20;
-        this.collidable = true;
     }
 
     update(deltaTime) {

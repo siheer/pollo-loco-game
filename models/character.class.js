@@ -13,6 +13,9 @@ export default class Character extends GameItem {
         this.facingLeft = false;
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
+        this.energy = 200;
+        this.hurtingDuration = 300;
+        this.lastHurtTime = 0;
     }
 
     provideAnimations() {
@@ -36,6 +39,22 @@ export default class Character extends GameItem {
             './img/2_character_pepe/3_jump/J-38.png',
             './img/2_character_pepe/3_jump/J-39.png',
         ]);
+
+        this.hurtingAnimation = this.createAnimation([
+            './img/2_character_pepe/4_hurt/H-41.png',
+            './img/2_character_pepe/4_hurt/H-42.png',
+            './img/2_character_pepe/4_hurt/H-43.png',
+        ])
+
+        this.dyingAnimation = this.createAnimation([
+            './img/2_character_pepe/5_dead/D-51.png',
+            './img/2_character_pepe/5_dead/D-52.png',
+            './img/2_character_pepe/5_dead/D-53.png',
+            './img/2_character_pepe/5_dead/D-54.png',
+            './img/2_character_pepe/5_dead/D-55.png',
+            './img/2_character_pepe/5_dead/D-56.png',
+            './img/2_character_pepe/5_dead/D-57.png',
+        ])
     }
 
     /**
@@ -44,11 +63,18 @@ export default class Character extends GameItem {
      * and reverts to the idle state if no movement is triggered.
      */
     update(deltaTime) {
-        this.isCameraToBeFixed();
-        this.handleJump(deltaTime);
-        this.handleHorizontalMovement(deltaTime);
-        if (!this.isJumping && keyboardEvents.nokeyPressed()) {
-            this.img = this.idleImg;
+        if (this.isDead) {
+            this.handleDead(deltaTime);
+        } else {
+            this.isCameraToBeFixed();
+            this.handleJump(deltaTime);
+            this.handleHorizontalMovement(deltaTime);
+            if (!this.isJumping && keyboardEvents.nokeyPressed()) {
+                this.img = this.idleImg;
+            }
+            if (this.isHurt()) {
+                this.updateAnimation(this.hurtingAnimation, deltaTime, 20);
+            }
         }
     }
 
@@ -62,29 +88,6 @@ export default class Character extends GameItem {
     }
 
     /**
-     * Handle jump logic:
-     * - If the jump key is pressed while on the ground, initiate a jump.
-     * - If in the air, always update the jump animation and apply gravity.
-     */
-    handleJump(deltaTime) {
-        const onGround = !this.world.isAboveGround(this);
-        if (keyboardEvents.keys[' '] && onGround) {
-            // Initiate jump when on the ground and jump key is pressed.
-            this.speedY = this.initialSpeedY;
-            this.isJumping = true;
-            this.onJump(deltaTime);
-        } else if (!onGround) {
-            // In the air, continue applying gravity and updating the jump animation.
-            this.isJumping = true;
-            this.onJump(deltaTime);
-        } else {
-            // On the ground without a jump input.
-            this.isJumping = false;
-            this.jumpingAnimation.currentImageIndex = 0;
-        }
-    }
-
-    /**
      * Handle horizontal movement based on left/right arrow key input.
      */
     handleHorizontalMovement(deltaTime) {
@@ -92,17 +95,6 @@ export default class Character extends GameItem {
             this.onRight(deltaTime);
         } else if (keyboardEvents.keys['ArrowLeft'] && this.x > 0) {
             this.onLeft(deltaTime);
-        }
-    }
-
-    /**
-     * Update jump animation and apply gravity.
-     */
-    onJump(deltaTime) {
-        this.updateAnimation(this.jumpingAnimation, deltaTime);
-        this.applyGravity();
-        if (!this.world.isAboveGround(this)) {
-            this.y = this.world.groundLevelY - this.height + 18; // + 18 because of character shadow
         }
     }
 
@@ -137,5 +129,59 @@ export default class Character extends GameItem {
         if (this.fixCameraOnCharacter) {
             this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
         }
+    }
+
+    /**
+     * Handle jump logic:
+     * - If the jump key is pressed while on the ground, initiate a jump.
+     * - If in the air, always update the jump animation and apply gravity.
+     */
+    handleJump(deltaTime) {
+        const onGround = !this.world.isAboveGround(this);
+        if (keyboardEvents.keys[' '] && onGround) {
+            // Initiate jump when on the ground and jump key is pressed.
+            this.speedY = this.initialSpeedY;
+            this.isJumping = true;
+            this.applyGravity(deltaTime, 0);
+        } else if (!onGround) {
+            // In the air, continue applying gravity and updating the jump animation.
+            this.isJumping = true;
+            this.onJump(deltaTime);
+        } else {
+            // On the ground without a jump input.
+            this.isJumping = false;
+            this.speedY = 0;
+            this.jumpingAnimation.currentImageIndex = 0;
+        }
+    }
+
+    /**
+     * Update jump animation and apply gravity.
+     */
+    onJump(deltaTime) {
+        this.updateAnimation(this.jumpingAnimation, deltaTime);
+        this.applyGravity(deltaTime, 100);
+        if (!this.world.isAboveGround(this)) {
+            this.y = this.world.groundLevelY - this.height + 18; // + 18 because of character shadow
+        }
+    }
+
+    handleDead(deltaTime) {
+        this.updateAnimation(this.dyingAnimation, deltaTime, 150);
+        if (this.dyingAnimation.currentImageIndex === this.dyingAnimation.imageCache.length) {
+            window.game.gameOver = true;
+        }
+    }
+
+    isStomping(enemy) {
+        if (enemy.constructor.name === 'Chicken' || enemy.constructor.name === 'Chick') {
+            return this.speedY > 0;
+        }
+        return false;
+    }
+
+    giveRecoilOnStomp(recoil) {
+        this.speedY = -recoil;
+        this.applyGravity(1, 0); // always make character jump on kill, even if notAboveGround
     }
 }

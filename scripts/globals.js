@@ -9,3 +9,4 @@ const playSVG = `
         <polygon fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" points="92.2,60.97 0,122.88 0,0 92.2,60.97" />
     </svg>
 `
+const MIN_INTERVAL_IN_MILLISECONDS = 25;
