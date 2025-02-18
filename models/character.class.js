@@ -13,7 +13,7 @@ export default class Character extends GameItem {
         this.facingLeft = false;
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
-        this.energy = 200;
+        this.energy = this.maxEnergy = 200;
         this.hurtingDuration = 300;
         this.lastHurtTime = 0;
     }
@@ -183,5 +183,12 @@ export default class Character extends GameItem {
     giveRecoilOnStomp(recoil) {
         this.speedY = -recoil;
         this.applyGravity(1, 0); // always make character jump on kill, even if notAboveGround
+    }
+
+    takeDamage(deltaTime, updateInterval, damage = 1) {
+        super.takeDamage(deltaTime, updateInterval, damage);
+        document.dispatchEvent(new CustomEvent('characterEnergyEvent', {
+            detail: { maxEnergy: this.maxEnergy, energy: this.energy }
+        }));
     }
 }

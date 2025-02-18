@@ -49,7 +49,7 @@ export default class World {
             enemy.kill();
             this.character.giveRecoilOnStomp(20);
         } else {
-            this.character.takeDamage(deltaTime, 100, 1);
+            this.character.takeDamage(deltaTime, 100);
         }
     }
 

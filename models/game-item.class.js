@@ -10,6 +10,7 @@ export default class GameItem extends CanvasObject {
         this.accelerationY = 3;
         this.offset = { left: 0, top: 0, right: 0, bottom: 0 };
         this.isDead = false;
+        this.energy = this.maxEnergy = 10;
         this.deltaTimeApplyGravity = 0;
         this.deltaTimeTakeDamage = 0;
     }
