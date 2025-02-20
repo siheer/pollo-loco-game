@@ -7,6 +7,7 @@ export default class KeyboardEvents {
             'ArrowLeft': false,
             'ArrowUp': false,
             'ArrowDown': false,
+            'a': false,
         };
     }
 

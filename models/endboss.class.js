@@ -19,7 +19,7 @@ export default class Endboss extends GameItem {
     }
 
     update(deltaTime) {
-        this.updateAnimation(this.walkingAnimation, deltaTime);
+        this.updateAnimation(this.walkingAnimation, deltaTime, 150);
         this.moveLeft();
     }
 }
