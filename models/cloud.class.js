@@ -1,10 +1,11 @@
 import CanvasObject from './canvas-object.class.js';
 
 export default class Cloud extends CanvasObject {
-    constructor(srcPath, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+    constructor(srcPath, segmentIndex = 0, y = 0, width = canvas.width, height = canvas.height) {
+        const x = window.world.level.getRandomXInSegment(segmentIndex);
         super(x, y, width, height);
         this.loadImage(srcPath);
-        this.speed = 0.5;
+        this.speedX = 0.5;
     }
 
     update() {
@@ -12,6 +13,6 @@ export default class Cloud extends CanvasObject {
     }
 
     moveLeft() {
-        this.x -= this.speed;
+        this.x -= this.speedX;
     }
 }

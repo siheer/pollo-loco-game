@@ -50,7 +50,7 @@ export default class Level {
         return segmentIndex * this.world.canvas.width + Math.random() * this.world.canvas.width;
     }
 
-    repeatAcrossLevel(callback, repeatCount = this.levelXLengthFactor - 1) {
+    repeatAcrossLevelSegments(callback, repeatCount = this.levelXLengthFactor - 1) {
         let result = [];
         for (let canvasOffset = 1; canvasOffset < repeatCount; canvasOffset++) {
             result.push(callback(canvasOffset));

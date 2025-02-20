@@ -2,6 +2,10 @@ import CanvasObject from './canvas-object.class.js';
 import Character from "./character.class.js";
 import Level from "./level.class.js";
 import GameItem from "./game-item.class.js";
+import Bottle from "./bottle.class.js";
+import Chicken from "./chicken.class.js";
+import Chick from "./chick.class.js";
+import Endboss from "./endboss.class.js";
 
 export default class World {
     constructor(gameCanvas) {
@@ -10,7 +14,9 @@ export default class World {
         this.groundLevel = 140;
         this.groundLevelY = gameCanvas.height - this.groundLevel;
         this.cameraX = 0;
-        this.deltaTime = 0;
+        this.collisionsDeltaTime = 0;
+        this.initKeyBoardEventsDeltaTime = 0;
+        this.timeSinceLastBottleThrown = -BOTTLE_THROW_DELAY;
     }
 
     addLevel(pathToLevelItems, levelXLengthFactor) {
@@ -31,26 +37,64 @@ export default class World {
         }
     }
 
-    checkCollisions(deltaTime) {
-        this.deltaTime += deltaTime;
-        if (this.deltaTime >= MIN_INTERVAL_IN_MILLISECONDS) {
-            const enemies = flattenToArray(this.level.levelItems[1]);
-            enemies.forEach(enemy => {
-                if (!enemy.isDead && this.character.isCollidingWith(enemy)) {
-                    this.handleCollisionWithEnemy(deltaTime, enemy);
-                }
-            });
-            this.deltaTime = 0;
+    checkForInitializingKeyboardEvents(deltaTime) {
+        this.initKeyBoardEventsDeltaTime += deltaTime;
+        if (this.initKeyBoardEventsDeltaTime > STANDARD_INTERVAL_IN_MILLISECONDS) {
+            if (keyboardEvents.keys['a']) {
+                this.handleKeyA();
+            }
+            this.initKeyBoardEventsDeltaTime = 0;
         }
     }
 
-    handleCollisionWithEnemy(deltaTime, enemy) {
+    handleKeyA() {
+        if (performance.now() - this.timeSinceLastBottleThrown > BOTTLE_THROW_DELAY) {
+            this.character.throwBottle();
+            this.timeSinceLastBottleThrown = performance.now();
+        }
+    }
+
+    checkCollisions(deltaTime) {
+        this.collisionsDeltaTime += deltaTime;
+        if (this.collisionsDeltaTime >= MIN_INTERVAL_IN_MILLISECONDS) {
+            this.handleEnemyInteractions(deltaTime);
+            this.collisionsDeltaTime = 0;
+        }
+    }
+
+    handleEnemyInteractions(deltaTime) {
+        const enemies = flattenToArray(this.level.levelItems[1]);
+        enemies.forEach(enemy => {
+            if (!enemy.isDead && this.character.isCollidingWith(enemy)) {
+                this.handleCharacterCollisionWithEnemy(deltaTime, enemy);
+            }
+            if (!enemy.isDead) {
+                this.handleBottlesCollisionWithEnemy(deltaTime, enemy);
+            }
+        });
+    }
+
+    handleCharacterCollisionWithEnemy(deltaTime, enemy) {
         if (this.character.isStomping(enemy)) {
             enemy.kill();
             this.character.giveRecoilOnStomp(20);
         } else {
-            this.character.takeDamage(deltaTime, 100);
+            this.character.takeDamage(deltaTime);
         }
+    }
+
+    handleBottlesCollisionWithEnemy(deltaTime, enemy) {
+        const bottles = flattenToArray(this.level.levelItems, Bottle);
+        bottles.forEach(bottle => {
+            if (bottle.canDealDamage && !bottle.isBroken && bottle.isCollidingWith(enemy)) {
+                bottle.breakBottle();
+                if (enemy instanceof Chicken || enemy instanceof Chick) {
+                    enemy.kill();
+                } else if (enemy instanceof Endboss) {
+                    enemy.takeDamage(deltaTime);
+                }
+            }
+        });
     }
 
     drawWorld() {
@@ -75,17 +119,17 @@ export default class World {
 
     drawWorldItem(item) {
         if (item instanceof CanvasObject) {
-            if (item.facingLeft) {
+            if (item.isFacingLeft) {
                 this.ctx.save();
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
                 // this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
-                this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
+                // this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
                 this.ctx.restore();
             } else {
                 this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
                 // this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
-                this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
+                // this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
             }
         }
     }
@@ -121,19 +165,11 @@ export default class World {
         return (item.y + item.height) < this.groundLevelY;
     }
 
-    /**
-     * Entfernt den angegebenen Gegner rekursiv aus dem levelItems-Array.
-     */
     removeEnemy(enemy) {
-        function removeFromArray(arr) {
-            for (let i = arr.length - 1; i >= 0; i--) {
-                if (arr[i] === enemy) {
-                    arr.splice(i, 1);
-                } else if (Array.isArray(arr[i])) {
-                    removeFromArray(arr[i]);
-                }
-            }
-        }
-        removeFromArray(this.level.levelItems);
+        removeItemFromNestedArray(this.level.levelItems, enemy);
+    }
+
+    removeBottle(bottle) {
+        removeItemFromNestedArray(this.level.levelItems, bottle);
     }
 }

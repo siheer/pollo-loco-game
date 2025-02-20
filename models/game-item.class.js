@@ -1,16 +1,16 @@
 import CanvasObject from "./canvas-object.class.js";
-import Character from "./character.class.js";
-
 export default class GameItem extends CanvasObject {
     constructor(x, y, width, height) {
         super(x, y, width, height);
-        this.speed = 0;
-        this.isJumping = false;
+        this.offset = { left: 0, top: 0, right: 0, bottom: 0 };
+        this.speedX = 0;
         this.speedY = 0;
         this.accelerationY = 3;
-        this.offset = { left: 0, top: 0, right: 0, bottom: 0 };
+        this.isJumping = false;
         this.isDead = false;
-        this.energy = this.maxEnergy = 10;
+        this.energy = this.maxEnergy = 0;
+        this.hurtingDuration = 0;
+        this.lastHurtTime = 0;
         this.deltaTimeApplyGravity = 0;
         this.deltaTimeTakeDamage = 0;
     }
@@ -31,12 +31,16 @@ export default class GameItem extends CanvasObject {
         });
     }
 
-    updateAnimation(animation, deltaTime, updateIntervalInMilliseconds = 100) {
+    updateAnimation(animation, deltaTime, updateIntervalInMilliseconds = STANDARD_INTERVAL_IN_MILLISECONDS) {
         animation.deltaTime += deltaTime;
         if (animation.deltaTime >= updateIntervalInMilliseconds) {
             this.replaceImage(animation);
             animation.deltaTime = 0;
         }
+    }
+
+    isAnimationAfterLastFrame(animation) {
+        return animation.currentImageIndex === animation.imageCache.length;
     }
 
     replaceImage(animation) {
@@ -46,14 +50,14 @@ export default class GameItem extends CanvasObject {
     }
 
     moveRight() {
-        this.x += this.speed;
+        this.x += this.speedX;
     }
 
     moveLeft() {
-        this.x -= this.speed;
+        this.x -= this.speedX;
     }
 
-    applyGravity(deltaTime, updateInterval) {
+    applyGravity(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS) {
         this.deltaTimeApplyGravity += deltaTime;
         if (this.deltaTimeApplyGravity > updateInterval) {
             this.y += this.speedY;
@@ -68,10 +72,9 @@ export default class GameItem extends CanvasObject {
             this.y + this.offset.top < item.y + item.height - item.offset.bottom;
     }
 
-    takeDamage(deltaTime, updateInterval, damage = 5) {
+    takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = 5) {
         this.deltaTimeTakeDamage += deltaTime;
         if (this.deltaTimeTakeDamage > updateInterval) {
-            // console.log(`Collision detected! ${this.constructor.name} energy: ', ${this.energy}`);
             this.energy -= damage;
             this.isDead = this.energy < 0;
             this.lastHurtTime = performance.now();
@@ -89,9 +92,7 @@ export default class GameItem extends CanvasObject {
             this.img = this.deadImg;
         }
         setTimeout(() => {
-            if (window.world && window.world.removeEnemy) {
-                window.world.removeEnemy(this);
-            }
+            window.world.removeEnemy(this);
         }, 500);
     }
 }

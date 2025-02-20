@@ -15,7 +15,8 @@ canvas {
 
 .playPauseButton {
     top: 2rem;
-    right: 2rem;
+    left: 50%;
+    right: translateX(-50%);
 }
 
 .game-ui-btn {
@@ -46,8 +47,21 @@ canvas {
         top: 2rem;
     }
 
-    &.energy {
+    &.character-energy {
         top: 6rem;
+    }
+
+    &.endboss-energy {
+        top: 2rem;
+        left: unset;
+        right: 2rem;
+        transform: scaleX(-1);
+
+        & .icon {
+            transform: scaleX(-1);
+            top: -1rem;
+            left: -1.75rem;
+        }
     }
 
     &.coins {

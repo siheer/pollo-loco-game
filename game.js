@@ -2,7 +2,7 @@ import Canvas from './models/canvas.class.js';
 import World from './models/world.class.js';
 import Game from './models/game.class.js';
 import KeyboardEvents from './models/keyboardEvents.class.js';
-import EnergyStatusBar from './models/energy-status-bar.class.js';
+import Statusbar from './models/statusbar.class.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     registerKeyboardListener(new KeyboardEvents());
@@ -56,7 +56,7 @@ function registerResizeListener(canvas) {
 
 function initializeUI(game) {
     registerPlayPauseButton(game);
-    setUpStatusBars();
+    setUpStatusbars();
 }
 
 function registerPlayPauseButton(game) {
@@ -76,6 +76,8 @@ function registerPlayPauseButton(game) {
     });
 }
 
-function setUpStatusBars() {
-    new EnergyStatusBar('energy');
+function setUpStatusbars() {
+    new Statusbar('character-energy', 'characterEnergyEvent');
+    new Statusbar('endboss-energy', 'endbossEnergyEvent');
+    new Statusbar('bottles', 'bottleEvent');
 }

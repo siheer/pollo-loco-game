@@ -1,4 +1,5 @@
 import GameItem from "./game-item.class.js";
+import Bottle from "./bottle.class.js";
 
 export default class Character extends GameItem {
     constructor(x, y, width, height, world) {
@@ -8,14 +9,16 @@ export default class Character extends GameItem {
         this.fixCameraOnCharacterXPosition = 500;
         this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
         this.idleImg = this.img;
-        this.speed = 40;
+        this.speedX = 40;
         this.initialSpeedY = -50;
-        this.facingLeft = false;
+        this.isFacingLeft = false;
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
         this.hurtingDuration = 300;
         this.lastHurtTime = 0;
+        this.bottleSupply = 5;
+        this.maxBottleSupply = 20;
     }
 
     provideAnimations() {
@@ -102,7 +105,7 @@ export default class Character extends GameItem {
      * Handle movement to the right.
      */
     onRight(deltaTime) {
-        this.facingLeft = false;
+        this.isFacingLeft = false;
         if (!this.isJumping) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
@@ -114,7 +117,7 @@ export default class Character extends GameItem {
      * Handle movement to the left.
      */
     onLeft(deltaTime) {
-        this.facingLeft = true;
+        this.isFacingLeft = true;
         if (!this.isJumping) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
@@ -160,7 +163,7 @@ export default class Character extends GameItem {
      */
     onJump(deltaTime) {
         this.updateAnimation(this.jumpingAnimation, deltaTime);
-        this.applyGravity(deltaTime, 100);
+        this.applyGravity(deltaTime);
         if (!this.world.isAboveGround(this)) {
             this.y = this.world.groundLevelY - this.height + 18; // + 18 because of character shadow
         }
@@ -185,10 +188,19 @@ export default class Character extends GameItem {
         this.applyGravity(1, 0); // always make character jump on kill, even if notAboveGround
     }
 
-    takeDamage(deltaTime, updateInterval, damage = 1) {
+    takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = 1) {
         super.takeDamage(deltaTime, updateInterval, damage);
         document.dispatchEvent(new CustomEvent('characterEnergyEvent', {
-            detail: { maxEnergy: this.maxEnergy, energy: this.energy }
+            detail: { max: this.maxEnergy, current: this.energy }
+        }));
+    }
+
+    throwBottle() {
+        const x = this.isFacingLeft ? this.x : this.x + this.width - this.offset.right;
+        this.world.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this, this.isFacingLeft, true));
+        this.bottleSupply--;
+        document.dispatchEvent(new CustomEvent('bottleEvent', {
+            detail: { max: this.maxBottleSupply, current: this.bottleSupply }
         }));
     }
 }
