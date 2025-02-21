@@ -1,7 +1,7 @@
 import GameItem from "./game-item.class.js";
 
 export default class Bottle extends GameItem {
-    constructor(x, y, width, height, character, flyingToLeft, isThrowable, canDealDamage = true) {
+    constructor(x, y, width, height, flyingToLeft, isThrowable, canDealDamage = true) {
         super(x, y, width, height);
         this.offset = { left: 20, top: 20, right: 20, bottom: 20 };
         this.speedX = 15;
@@ -10,7 +10,6 @@ export default class Bottle extends GameItem {
         this.loadImage('./img/6_salsa_bottle/salsa_bottle.png');
         this.provideAnimations();
         this.flyingToLeft = flyingToLeft;
-        this.character = character;
         this.isBroken = false;
         this.isThrowable = isThrowable;
         this.canDealDamage = canDealDamage;
@@ -70,7 +69,7 @@ export default class Bottle extends GameItem {
     setBottleOnGround() {
         window.world.removeBottle(this);
         callAfterCurrentGameLoop(() => {
-            window.world.level.levelItems.push(new Bottle(this.x, window.world.groundLevelY - this.height + 10, 120, 120, this.character, false, false, false));
+            window.world.level.levelItems.push(new Bottle(this.x, window.world.groundLevelY - this.height + 10, 120, 120, false, false, false));
         });
     }
 

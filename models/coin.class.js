@@ -1,17 +1,15 @@
 import GameItem from "./game-item.class.js";
 
 export default class Coin extends GameItem {
-    constructor(x, y, width, height) {
-        super(x, y, width, height);
-        this.loadImage('./img/8_coin/coin_1.png');
-        this.collisionBoxOffsets = { left: 5, top: 5, right: 5, bottom: 5 };
-        this.coinAnimation = this.createAnimation([
-            './img/8_coin/coin_1.png',
-            './img/8_coin/coin_2.png'
-        ]);
+    constructor(segmentIndex, y, width, height) {
+        const randomX = window.world.level.getRandomXInSegment(segmentIndex);
+        const randomY = y -= Coin.getRandomY();
+        super(randomX, randomY, width, height);
+        this.offset = { left: 65, top: 65, right: 65, bottom: 65 };
+        this.loadImage('./img/8_coin/coin_2.png');
     }
 
-    update(deltaTime) {
-        this.updateAnimation(this.coinAnimation, deltaTime, 200);
+    static getRandomY() {
+        return Math.random() * (window.world.canvas.height / 2);
     }
 }

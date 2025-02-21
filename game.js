@@ -80,4 +80,5 @@ function setUpStatusbars() {
     new Statusbar('character-energy', 'characterEnergyEvent');
     new Statusbar('endboss-energy', 'endbossEnergyEvent');
     new Statusbar('bottles', 'bottleEvent');
+    new Statusbar('coins', 'coinEvent');
 }

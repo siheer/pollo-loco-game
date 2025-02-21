@@ -18,7 +18,10 @@ export default class Character extends GameItem {
         this.hurtingDuration = 300;
         this.lastHurtTime = 0;
         this.bottleSupply = 5;
-        this.maxBottleSupply = 20;
+        this.maxBottleSupply = 10;
+        this.coinSupply = 50;
+        this.maxCoinSupply = 100;
+        this.bottlePurchaseCost = 10;
     }
 
     provideAnimations() {
@@ -190,17 +193,56 @@ export default class Character extends GameItem {
 
     takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = 1) {
         super.takeDamage(deltaTime, updateInterval, damage);
-        document.dispatchEvent(new CustomEvent('characterEnergyEvent', {
-            detail: { max: this.maxEnergy, current: this.energy }
-        }));
+        this.dispatchCharacterEnergyEvent();
     }
 
     throwBottle() {
         const x = this.isFacingLeft ? this.x : this.x + this.width - this.offset.right;
-        this.world.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this, this.isFacingLeft, true));
+        this.world.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingLeft, true));
         this.bottleSupply--;
+        this.dispatchBottleEvent();
+    }
+
+    collectBottle(bottle) {
+        this.bottleSupply++;
+        this.dispatchBottleEvent();
+        this.world.removeBottle(bottle);
+    }
+
+    collectCoin(coin) {
+        this.coinSupply++;
+        this.dispatchCoinEvent();
+        this.world.removeCoin(coin);
+    }
+
+    canBuyBottle() {
+        return this.coinSupply >= this.bottlePurchaseCost;
+    }
+
+    buyBottle() {
+        if (this.canBuyBottle()) {
+            this.coinSupply -= this.bottlePurchaseCost;
+            this.bottleSupply++;
+            this.dispatchBottleEvent();
+            this.dispatchCoinEvent();
+        }
+    }
+
+    dispatchBottleEvent() {
         document.dispatchEvent(new CustomEvent('bottleEvent', {
             detail: { max: this.maxBottleSupply, current: this.bottleSupply }
+        }));
+    }
+
+    dispatchCoinEvent() {
+        document.dispatchEvent(new CustomEvent('coinEvent', {
+            detail: { max: this.maxCoinSupply, current: this.coinSupply }
+        }));
+    }
+
+    dispatchCharacterEnergyEvent() {
+        document.dispatchEvent(new CustomEvent('characterEnergyEvent', {
+            detail: { max: this.maxEnergy, current: this.energy }
         }));
     }
 }

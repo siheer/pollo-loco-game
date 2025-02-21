@@ -6,6 +6,7 @@ import Bottle from "./bottle.class.js";
 import Chicken from "./chicken.class.js";
 import Chick from "./chick.class.js";
 import Endboss from "./endboss.class.js";
+import Coin from "./coin.class.js";
 
 export default class World {
     constructor(gameCanvas) {
@@ -43,14 +44,25 @@ export default class World {
             if (keyboardEvents.keys['a']) {
                 this.handleKeyA();
             }
+            if (keyboardEvents.keys['Enter']) {
+                this.handleKeyEnter();
+            }
             this.initKeyBoardEventsDeltaTime = 0;
         }
     }
 
     handleKeyA() {
         if (performance.now() - this.timeSinceLastBottleThrown > BOTTLE_THROW_DELAY) {
-            this.character.throwBottle();
-            this.timeSinceLastBottleThrown = performance.now();
+            if (this.character.bottleSupply > 0) {
+                this.character.throwBottle();
+                this.timeSinceLastBottleThrown = performance.now();
+            }
+        }
+    }
+
+    handleKeyEnter() {
+        if (this.character.canBuyBottle()) {
+            this.character.buyBottle();
         }
     }
 
@@ -58,6 +70,7 @@ export default class World {
         this.collisionsDeltaTime += deltaTime;
         if (this.collisionsDeltaTime >= MIN_INTERVAL_IN_MILLISECONDS) {
             this.handleEnemyInteractions(deltaTime);
+            this.handleBottleAndCoinCollections();
             this.collisionsDeltaTime = 0;
         }
     }
@@ -93,6 +106,22 @@ export default class World {
                 } else if (enemy instanceof Endboss) {
                     enemy.takeDamage(deltaTime);
                 }
+            }
+        });
+    }
+
+    handleBottleAndCoinCollections() {
+        const bottles = flattenToArray(this.level.levelItems, Bottle);
+        bottles.forEach(bottle => {
+            if (!bottle.canDealDamage && bottle.isCollidingWith(this.character)) {
+                this.character.collectBottle(bottle);
+            }
+        });
+
+        const coins = flattenToArray(this.level.levelItems, Coin);
+        coins.forEach(coin => {
+            if (coin.isCollidingWith(this.character)) {
+                this.character.collectCoin(coin);
             }
         });
     }
@@ -171,5 +200,9 @@ export default class World {
 
     removeBottle(bottle) {
         removeItemFromNestedArray(this.level.levelItems, bottle);
+    }
+
+    removeCoin(coin) {
+        removeItemFromNestedArray(this.level.levelItems, coin);
     }
 }

@@ -46,7 +46,7 @@ export default class Endboss extends GameItem {
         }
     }
 
-    takeDamage(deltaTime, updateInterval = 0, damage = 20) {
+    takeDamage(deltaTime, updateInterval = 0, damage = 15) {
         super.takeDamage(deltaTime, updateInterval, damage);
         document.dispatchEvent(new CustomEvent('endbossEnergyEvent', {
             detail: { max: this.maxEnergy, current: this.energy }

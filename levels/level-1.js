@@ -3,19 +3,27 @@ import Cloud from '../models/cloud.class.js';
 import Chick from '../models/chick.class.js';
 import Chicken from '../models/chicken.class.js';
 import Endboss from '../models/endboss.class.js';
+import Coin from '../models/coin.class.js';
+import StandingBottle from "../models/standing-bottle.class.js";
 
-export function getLevelItems(world, repeatCount) {
-    const backgrounds = getBackgrounds(world, repeatCount);
-    const enemies = getEnemies(world);
+export function createLevelItems(world, repeatCount) {
+    const backgrounds = createBackgrounds(world, repeatCount);
+    const enemies = createEnemies(world);
     enemies.push(new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600));
+    const coins = createInstances(Coin, 8, 0, world.getYPositionForObject(200), 200, 200);
+    coins.push(...createCoins(world));
+    const bottles = createInstances(StandingBottle, 2, 0, world.getYPositionForObject(120), 120, 120);
+    bottles.push(...createBottles(world));
 
     return [
         backgrounds,
         enemies,
+        ...coins,
+        ...bottles
     ]
 }
 
-function getBackgrounds(world, repeatCount) {
+function createBackgrounds(world, repeatCount) {
     return [
         [
             ...Level.getBackgroundSecondPart(world, -world.canvas.width),
@@ -28,11 +36,23 @@ function getBackgrounds(world, repeatCount) {
     ];
 }
 
-function getEnemies(world) {
+function createEnemies(world) {
     return world.level.repeatAcrossLevelSegments((offset) => {
         return [
             ...createInstances(Chicken, 8, offset, world.getYPositionForObject(100), 100, 100),
             ...createInstances(Chick, 8, offset, world.getYPositionForObject(70), 70, 70),
         ];
+    });
+}
+
+function createCoins(world) {
+    return world.level.repeatAcrossLevelSegments((offset) => {
+        return createInstances(Coin, 8, offset, world.getYPositionForObject(200), 200, 200);
+    });
+}
+
+function createBottles(world) {
+    return world.level.repeatAcrossLevelSegments((offset) => {
+        return createInstances(StandingBottle, 2, offset, world.getYPositionForObject(120), 120, 120);
     });
 }

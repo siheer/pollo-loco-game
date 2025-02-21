@@ -13,7 +13,7 @@ export default class Level {
     async fillLevelWithObjects() {
         try {
             const level = await import(this.pathToLevelItems);
-            this.levelItems = level.getLevelItems(this.world, this.levelXLengthFactor);
+            this.levelItems = level.createLevelItems(this.world, this.levelXLengthFactor);
         } catch (error) {
             console.error('Error loading level items:', error);
         }
