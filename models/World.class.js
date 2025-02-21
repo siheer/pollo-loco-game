@@ -7,6 +7,7 @@ import Chicken from "./chicken.class.js";
 import Chick from "./chick.class.js";
 import Endboss from "./endboss.class.js";
 import Coin from "./coin.class.js";
+import { createEnemies, createCoins, createBottles } from "../levels/level-1.js";
 
 export default class World {
     constructor(gameCanvas) {
@@ -27,7 +28,31 @@ export default class World {
     async fillWorldWithObjects() {
         this.character = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if character should not start in air
         await this.level.fillLevelWithObjects();
-        this.worldRefs = [this.level.levelItems, this.character];
+        this.level.levelItems.push(this.character);
+        this.spawnRegularly();
+    }
+
+    spawnRegularly() {
+        setInterval(() => {
+            this.level.spawnOutsideLevel = true;
+            this.level.levelItems[1].push([
+                createEnemies(this)
+            ]);
+            this.level.spawnOutsideLevel = false;
+        }, 10000);
+        setInterval(() => {
+            this.level.levelItems.push([
+                createCoins(this),
+                createBottles(this),
+            ])
+        }, 15000);
+        this.moveCharacterReferenceToPaintLast();
+    }
+
+    moveCharacterReferenceToPaintLast() {
+        const characterIndex = this.level.levelItems.findIndex(item => item instanceof Character);
+        const character = this.level.levelItems.splice(characterIndex, 1);
+        this.level.levelItems.push(character);
     }
 
     updateWorld(reference, deltaTime) {
@@ -91,6 +116,8 @@ export default class World {
         if (this.character.isStomping(enemy)) {
             enemy.kill();
             this.character.giveRecoilOnStomp(20);
+            this.character.energy += 3;
+            this.character.dispatchCharacterEnergyEvent();
         } else {
             this.character.takeDamage(deltaTime);
         }
@@ -130,7 +157,7 @@ export default class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
         this.ctx.translate(this.cameraX, 0);
-        this.drawWorldItems(this.worldRefs);
+        this.drawWorldItems(this.level.levelItems);
         this.ctx.restore();
     }
 

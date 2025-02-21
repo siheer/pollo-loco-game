@@ -6,7 +6,9 @@ import Endboss from '../models/endboss.class.js';
 import Coin from '../models/coin.class.js';
 import StandingBottle from "../models/standing-bottle.class.js";
 
-export function createLevelItems(world, repeatCount) {
+export { createLevelItems, createEnemies, createCoins, createBottles };
+
+function createLevelItems(world, repeatCount) {
     const backgrounds = createBackgrounds(world, repeatCount);
     const enemies = createEnemies(world);
     enemies.push(new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600));

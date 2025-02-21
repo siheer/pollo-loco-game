@@ -205,19 +205,23 @@ export default class Character extends GameItem {
     }
 
     collectBottle(bottle) {
-        this.bottleSupply++;
-        this.dispatchBottleEvent();
-        this.world.removeBottle(bottle);
+        if (this.bottleSupply < this.maxBottleSupply) {
+            this.bottleSupply++;
+            this.dispatchBottleEvent();
+            this.world.removeBottle(bottle);
+        }
     }
 
     collectCoin(coin) {
-        this.coinSupply++;
-        this.dispatchCoinEvent();
-        this.world.removeCoin(coin);
+        if (this.coinSupply < this.maxCoinSupply) {
+            this.coinSupply++;
+            this.dispatchCoinEvent();
+            this.world.removeCoin(coin);
+        }
     }
 
     canBuyBottle() {
-        return this.coinSupply >= this.bottlePurchaseCost;
+        return this.coinSupply >= this.bottlePurchaseCost && this.bottleSupply < this.maxBottleSupply;
     }
 
     buyBottle() {

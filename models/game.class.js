@@ -6,7 +6,6 @@ export default class Game {
         this.lastTimestamp = null;
         this.gameOver = false;
         this.reducingLoadInterval = false;
-        // this.addEnemiesAfterSomeTime();
     }
 
     start(delayInMilliseconds = 0) {
@@ -28,7 +27,7 @@ export default class Game {
 
         if (deltaTime > MIN_INTERVAL_IN_MILLISECONDS) {
             this.world.checkForInitializingKeyboardEvents(deltaTime);
-            this.world.updateWorld(this.world.worldRefs, deltaTime);
+            this.world.updateWorld(this.world.level.levelItems, deltaTime);
             this.world.checkCollisions(deltaTime);
             this.world.drawWorld();
             this.lastTimestamp = timestamp;
@@ -38,10 +37,4 @@ export default class Game {
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }
     }
-
-    // addEnemiesAfterSomeTime() {
-    //     setInterval(() => {
-    //         this.world.level.levelItems.push(this.world.level.))
-    //     }, 2*60*1000);
-    // }
 }

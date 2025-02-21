@@ -8,6 +8,7 @@ export default class Level {
         this.backgroundParts = 2;
         this.levelXLengthFactor = levelXLengthFactor * this.backgroundParts;
         this.levelEndX = this.world.canvas.width * this.levelXLengthFactor - this.world.canvas.width;
+        this.spawnOutsideLevel = false;
     }
 
     async fillLevelWithObjects() {
@@ -51,6 +52,10 @@ export default class Level {
     }
 
     repeatAcrossLevelSegments(callback, repeatCount = this.levelXLengthFactor - 1) {
+        if (this.spawnOutsideLevel) {
+            return callback(this.levelXLengthFactor - 1);
+        }
+
         let result = [];
         for (let canvasOffset = 1; canvasOffset < repeatCount; canvasOffset++) {
             result.push(callback(canvasOffset));
