@@ -10,7 +10,7 @@ export function createLevelItems(world, repeatCount) {
     const backgrounds = createBackgrounds(world, repeatCount);
     const enemies = createEnemies(world);
     enemies.push(new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600));
-    const coins = createInstances(Coin, 8, 0, world.getYPositionForObject(200), 200, 200);
+    const coins = createInstances(Coin, 4, 0, world.getYPositionForObject(200), 200, 200);
     coins.push(...createCoins(world));
     const bottles = createInstances(StandingBottle, 2, 0, world.getYPositionForObject(120), 120, 120);
     bottles.push(...createBottles(world));
@@ -39,15 +39,15 @@ function createBackgrounds(world, repeatCount) {
 function createEnemies(world) {
     return world.level.repeatAcrossLevelSegments((offset) => {
         return [
-            ...createInstances(Chicken, 8, offset, world.getYPositionForObject(100), 100, 100),
-            ...createInstances(Chick, 8, offset, world.getYPositionForObject(70), 70, 70),
+            ...createInstances(Chicken, 6, offset, world.getYPositionForObject(100), 100, 100),
+            ...createInstances(Chick, 6, offset, world.getYPositionForObject(70), 70, 70),
         ];
     });
 }
 
 function createCoins(world) {
     return world.level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(Coin, 8, offset, world.getYPositionForObject(200), 200, 200);
+        return createInstances(Coin, 5, offset, world.getYPositionForObject(200), 200, 200);
     });
 }
 

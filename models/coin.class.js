@@ -10,6 +10,6 @@ export default class Coin extends GameItem {
     }
 
     static getRandomY() {
-        return Math.random() * (window.world.canvas.height / 2);
+        return Math.random() * (window.world.canvas.height / 2.5);
     }
 }

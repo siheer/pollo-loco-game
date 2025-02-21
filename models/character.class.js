@@ -15,6 +15,7 @@ export default class Character extends GameItem {
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
+        this.takesDamageAmount = 3;
         this.hurtingDuration = 300;
         this.lastHurtTime = 0;
         this.bottleSupply = 5;
@@ -191,7 +192,7 @@ export default class Character extends GameItem {
         this.applyGravity(1, 0); // always make character jump on kill, even if notAboveGround
     }
 
-    takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = 1) {
+    takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = this.takesDamageAmount) {
         super.takeDamage(deltaTime, updateInterval, damage);
         this.dispatchCharacterEnergyEvent();
     }

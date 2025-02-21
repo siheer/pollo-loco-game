@@ -6,6 +6,7 @@ export default class Endboss extends GameItem {
         this.offset = { left: 80, top: 120, right: 60, bottom: 50 };
         this.speedX = 3;
         this.energy = this.maxEnergy = 100;
+        this.takesDamageAmount = 10;
         this.hurtingDuration = 500;
         this.loadImage('./img/4_enemie_boss_chicken/1_walk/G4.png');
         this.provideAnimations()
@@ -46,7 +47,7 @@ export default class Endboss extends GameItem {
         }
     }
 
-    takeDamage(deltaTime, updateInterval = 0, damage = 15) {
+    takeDamage(deltaTime, updateInterval = 0, damage = this.takesDamageAmount) {
         super.takeDamage(deltaTime, updateInterval, damage);
         document.dispatchEvent(new CustomEvent('endbossEnergyEvent', {
             detail: { max: this.maxEnergy, current: this.energy }
