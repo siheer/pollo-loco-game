@@ -6,7 +6,7 @@ export default class GameItem extends CanvasObject {
         this.speedX = 0;
         this.speedY = 0;
         this.accelerationY = 3;
-        this.isJumping = false;
+        this.justJumped = false;
         this.isDead = false;
         this.energy = this.maxEnergy = 0;
         this.hurtingDuration = 0;
@@ -62,6 +62,12 @@ export default class GameItem extends CanvasObject {
         if (this.deltaTimeApplyGravity > updateInterval) {
             this.y += this.speedY;
             this.speedY += this.accelerationY;
+        }
+    }
+
+    setItemOnGroundIfUnderGround(correctionOffset = 0) {
+        if (!window.world.isAboveGround(this)) {
+            this.y = window.world.groundLevelY - this.height + correctionOffset;
         }
     }
 

@@ -76,7 +76,7 @@ export default class Character extends GameItem {
             this.isCameraToBeFixed();
             this.handleJump(deltaTime);
             this.handleHorizontalMovement(deltaTime);
-            if (!this.isJumping && keyboardEvents.nokeyPressed()) {
+            if (!this.justJumped && keyboardEvents.nokeyPressed()) {
                 this.img = this.idleImg;
             }
             if (this.isHurt()) {
@@ -110,7 +110,7 @@ export default class Character extends GameItem {
      */
     onRight(deltaTime) {
         this.isFacingLeft = false;
-        if (!this.isJumping) {
+        if (!this.justJumped) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
         this.moveRight();
@@ -122,7 +122,7 @@ export default class Character extends GameItem {
      */
     onLeft(deltaTime) {
         this.isFacingLeft = true;
-        if (!this.isJumping) {
+        if (!this.justJumped) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
         this.moveLeft();
@@ -146,17 +146,14 @@ export default class Character extends GameItem {
     handleJump(deltaTime) {
         const onGround = !this.world.isAboveGround(this);
         if (keyboardEvents.keys[' '] && onGround) {
-            // Initiate jump when on the ground and jump key is pressed.
             this.speedY = this.initialSpeedY;
-            this.isJumping = true;
+            this.justJumped = true;
             this.applyGravity(deltaTime, 0);
         } else if (!onGround) {
-            // In the air, continue applying gravity and updating the jump animation.
-            this.isJumping = true;
+            this.justJumped = true;
             this.onJump(deltaTime);
         } else {
-            // On the ground without a jump input.
-            this.isJumping = false;
+            this.justJumped = false;
             this.speedY = 0;
             this.jumpingAnimation.currentImageIndex = 0;
         }
@@ -168,9 +165,7 @@ export default class Character extends GameItem {
     onJump(deltaTime) {
         this.updateAnimation(this.jumpingAnimation, deltaTime);
         this.applyGravity(deltaTime);
-        if (!this.world.isAboveGround(this)) {
-            this.y = this.world.groundLevelY - this.height + 18; // + 18 because of character shadow
-        }
+        this.setItemOnGroundIfUnderGround(18);
     }
 
     handleDead(deltaTime) {
