@@ -61,6 +61,66 @@ export default class World {
         this.level.levelItems.push(character);
     }
 
+    drawWorld() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.save();
+        this.ctx.translate(this.cameraX, 0);
+        this.drawWorldItems(this.level.levelItems);
+        this.ctx.restore();
+    }
+
+    drawWorldItems(items) {
+        if (items) {
+            if (Array.isArray(items)) {
+                items.forEach(object => this.drawWorldItems(object));
+            } else if (items.constructor === Object) {
+                Object.values(items).forEach(object => this.drawWorldItems(object));
+            } else {
+                this.drawWorldItem(items);
+            }
+        }
+    }
+
+    drawWorldItem(item) {
+        if (item instanceof CanvasObject) {
+            if (item.isFacingLeft) {
+                this.ctx.save();
+                this.ctx.scale(-1, 1);
+                this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
+                // this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
+                // this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
+                this.ctx.restore();
+            } else {
+                this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
+                // this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
+                // this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
+            }
+        }
+    }
+
+    drawOuterFrame(item, x, y, width, height) {
+        if (item instanceof GameItem) {
+            this.ctx.beginPath();
+            this.ctx.rect(x, y, width, height);
+            this.ctx.stroke();
+        }
+    }
+
+    drawInnerFrame(item, x, y, width, height) {
+        if (item instanceof GameItem) {
+            const innerX = x + item.offset.left;
+            const innerY = y + item.offset.top;
+            const innerWidth = width - item.offset.left - item.offset.right;
+            const innerHeight = height - item.offset.top - item.offset.bottom;
+            this.ctx.save();
+            this.ctx.strokeStyle = 'red';
+            this.ctx.beginPath();
+            this.ctx.rect(innerX, innerY, innerWidth, innerHeight);
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
+    }
+
     updateWorld(reference, deltaTime) {
         if (Array.isArray(reference)) {
             reference.forEach(item => this.updateWorld(item, deltaTime));
@@ -122,7 +182,7 @@ export default class World {
             this.character.energy += 3;
             this.character.dispatchCharacterEnergyEvent();
         } else {
-            this.character.takeDamage(deltaTime);
+            this.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, 9);
         }
     }
 
@@ -154,66 +214,6 @@ export default class World {
                 this.character.collectCoin(coin);
             }
         });
-    }
-
-    drawWorld() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.save();
-        this.ctx.translate(this.cameraX, 0);
-        this.drawWorldItems(this.level.levelItems);
-        this.ctx.restore();
-    }
-
-    drawWorldItems(items) {
-        if (items) {
-            if (Array.isArray(items)) {
-                items.forEach(object => this.drawWorldItems(object));
-            } else if (items.constructor === Object) {
-                Object.values(items).forEach(object => this.drawWorldItems(object));
-            } else {
-                this.drawWorldItem(items);
-            }
-        }
-    }
-
-    drawWorldItem(item) {
-        if (item instanceof CanvasObject) {
-            if (item.isFacingLeft) {
-                this.ctx.save();
-                this.ctx.scale(-1, 1);
-                this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
-                // this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
-                // this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
-                this.ctx.restore();
-            } else {
-                this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
-                // this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
-                // this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
-            }
-        }
-    }
-
-    drawOuterFrame(item, x, y, width, height) {
-        if (item instanceof GameItem) {
-            this.ctx.beginPath();
-            this.ctx.rect(x, y, width, height);
-            this.ctx.stroke();
-        }
-    }
-
-    drawInnerFrame(item, x, y, width, height) {
-        if (item instanceof GameItem) {
-            const innerX = x + item.offset.left;
-            const innerY = y + item.offset.top;
-            const innerWidth = width - item.offset.left - item.offset.right;
-            const innerHeight = height - item.offset.top - item.offset.bottom;
-            this.ctx.save();
-            this.ctx.strokeStyle = 'red';
-            this.ctx.beginPath();
-            this.ctx.rect(innerX, innerY, innerWidth, innerHeight);
-            this.ctx.stroke();
-            this.ctx.restore();
-        }
     }
 
     getYPositionForObject(shiftUpBy) { // argument value is normally height of canvas object

@@ -8,14 +8,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     registerKeyboardListener(new KeyboardEvents());
     const game = await createGame();
     initializeUI(game);
-    game.start(1000);
+    // game.start(0);
 
-    setTimeout(() => {
-        document.getElementById('playPauseButton').click();
-        document.getElementById('playPauseButton').focus();
-    }, 1200);
+    // setTimeout(() => {
+    //     document.getElementById('play-pause-button').click();
+    //     document.getElementById('play-pause-button').focus();
+    // }, 1200);
 
-    document.body.style.visibility = 'visible';
+    // document.body.style.visibility = 'visible';
 });
 
 async function createGame() {
@@ -60,8 +60,8 @@ function initializeUI(game) {
 }
 
 function registerPlayPauseButton(game) {
-    const playPauseButton = document.getElementById('playPauseButton');
-    let isPlaying = true;
+    const playPauseButton = document.getElementById('play-pause-button');
+    let isPlaying = false;
 
     playPauseButton.addEventListener('click', () => {
         if (isPlaying) {

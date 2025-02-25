@@ -19,7 +19,7 @@ export default class Character extends GameItem {
         this.takesDamageAmount = 3;
         this.hurtingActionTimer = new ActionTimer(
             () => this.isHurt,
-            (deltaTime) => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
+            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
             300,
             0,
             () => this.isHurt = false
@@ -177,7 +177,7 @@ export default class Character extends GameItem {
     handleDead(deltaTime) {
         this.updateAnimation(this.dyingAnimation, deltaTime, 150);
         if (this.dyingAnimation.currentImageIndex === this.dyingAnimation.imageCache.length) {
-            window.game.gameOver = true;
+            window.game.gameOver.isOver = true;
         }
     }
 

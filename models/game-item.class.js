@@ -52,8 +52,8 @@ export default class GameItem extends CanvasObject {
         this.x += this.speedX;
     }
 
-    moveLeft() {
-        this.x -= this.speedX;
+    moveLeft(speedX = this.speedX) {
+        this.x -= speedX;
     }
 
     applyGravity(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS) {

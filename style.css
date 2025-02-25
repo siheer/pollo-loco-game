@@ -1,19 +1,21 @@
-body {
+/* body {
     visibility: hidden;
-}
+} */
 
 canvas {
-    background-color: black;
+    /* background-color: black; */
     width: 100%;
-    max-width: 87.5rem;
     aspect-ratio: 16 / 9;
+    max-width: 87.5rem;
+    max-height: 100dvh;
+    display: block;
 }
 
-.gameContainer {
+.game-container {
     position: relative;
 }
 
-.playPauseButton {
+.play-pause-button {
     top: 2rem;
     left: 50%;
     right: translateX(-50%);

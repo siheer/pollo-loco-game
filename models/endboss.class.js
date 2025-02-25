@@ -13,20 +13,26 @@ export default class Endboss extends GameItem {
         this.provideAnimations()
         this.hurtingActionTimer = new ActionTimer(
             () => this.isHurt,
-            (deltaTime) => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
+            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
             500,
             0,
             () => this.isHurt = false
         )
         this.alertedActionTimer = new ActionTimer(
-            () => this.isEnemyClose(),
-            (deltaTime) => this.updateAnimation(this.alertedAnimation, deltaTime),
+            () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
+            deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
             2000,
-            3000
+            3000,
+            () => this.alertedAnimation.currentImageIndex = 0
         );
         this.attackActionTimer = new ActionTimer(
             () => this.isEnemyVeryClose(),
-            (deltaTime) => this.updateAnimation(this.attackingAnimation, deltaTime),
+            deltaTime => {
+                this.updateAnimation(this.attackingAnimation, deltaTime);
+                if (this.attackingAnimation.currentImageIndex === 5) {
+                    this.moveLeft(40);
+                }
+            },
             2000,
             1000
         )
@@ -77,9 +83,10 @@ export default class Endboss extends GameItem {
 
     update(deltaTime) {
         if (this.isDead) {
-            this.updateAnimation(this.dyingAnimation, deltaTime, 200);
+            this.updateAnimation(this.dyingAnimation, deltaTime);
             if (this.isAnimationAfterLastFrame(this.dyingAnimation)) {
-                window.game.gameOver = true;
+                window.game.gameOver.isOver = true;
+                window.game.gameOver.playerHasWon = true;
             }
         } else if (this.hurtingActionTimer.isPlayable()) {
             this.hurtingActionTimer.play(deltaTime);
