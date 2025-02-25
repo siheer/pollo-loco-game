@@ -9,8 +9,7 @@ export default class GameItem extends CanvasObject {
         this.justJumped = false;
         this.isDead = false;
         this.energy = this.maxEnergy = 0;
-        this.hurtingDuration = 0;
-        this.lastHurtTime = 0;
+        this.isHurt = false;
         this.deltaTimeApplyGravity = 0;
         this.deltaTimeTakeDamage = 0;
     }
@@ -83,13 +82,9 @@ export default class GameItem extends CanvasObject {
         if (this.deltaTimeTakeDamage > updateInterval) {
             this.energy -= damage;
             this.isDead = this.energy < 0;
-            this.lastHurtTime = performance.now();
+            this.isHurt = true;
             this.deltaTimeTakeDamage = 0;
         }
-    }
-
-    isHurt() {
-        return performance.now() - this.lastHurtTime < this.hurtingDuration;
     }
 
     kill() {

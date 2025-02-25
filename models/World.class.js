@@ -7,6 +7,7 @@ import Chicken from "./chicken.class.js";
 import Chick from "./chick.class.js";
 import Endboss from "./endboss.class.js";
 import Coin from "./coin.class.js";
+import ActionTimer from './action-timer.class.js';
 import { createEnemies, createCoins, createBottles } from "../levels/level-1.js";
 
 export default class World {
@@ -18,7 +19,12 @@ export default class World {
         this.cameraX = 0;
         this.collisionsDeltaTime = 0;
         this.initKeyBoardEventsDeltaTime = 0;
-        this.timeSinceLastBottleThrown = -BOTTLE_THROW_DELAY;
+        this.bottleActionTimer = new ActionTimer(
+            () => this.character.bottleSupply > 0,
+            () => this.character.throwBottle(),
+            0,
+            200
+        )
     }
 
     addLevel(pathToLevelItems, levelXLengthFactor) {
@@ -77,11 +83,8 @@ export default class World {
     }
 
     handleKeyA() {
-        if (performance.now() - this.timeSinceLastBottleThrown > BOTTLE_THROW_DELAY) {
-            if (this.character.bottleSupply > 0) {
-                this.character.throwBottle();
-                this.timeSinceLastBottleThrown = performance.now();
-            }
+        if (this.bottleActionTimer.isPlayable()) {
+            this.bottleActionTimer.play();
         }
     }
 

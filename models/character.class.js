@@ -1,5 +1,6 @@
 import GameItem from "./game-item.class.js";
 import Bottle from "./bottle.class.js";
+import ActionTimer from "./action-timer.class.js";
 
 export default class Character extends GameItem {
     constructor(x, y, width, height, world) {
@@ -16,8 +17,13 @@ export default class Character extends GameItem {
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
         this.takesDamageAmount = 3;
-        this.hurtingDuration = 300;
-        this.lastHurtTime = 0;
+        this.hurtingActionTimer = new ActionTimer(
+            () => this.isHurt,
+            (deltaTime) => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
+            300,
+            0,
+            () => this.isHurt = false
+        )
         this.bottleSupply = 5;
         this.maxBottleSupply = 10;
         this.coinSupply = 50;
@@ -79,8 +85,8 @@ export default class Character extends GameItem {
             if (!this.justJumped && keyboardEvents.nokeyPressed()) {
                 this.img = this.idleImg;
             }
-            if (this.isHurt()) {
-                this.updateAnimation(this.hurtingAnimation, deltaTime, 20);
+            if (this.hurtingActionTimer.isPlayable()) {
+                this.hurtingActionTimer.play(deltaTime);
             }
         }
     }
