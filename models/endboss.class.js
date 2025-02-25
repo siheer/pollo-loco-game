@@ -10,32 +10,12 @@ export default class Endboss extends GameItem {
         this.takesDamageAmount = 10;
         this.hurtingDuration = 500;
         this.loadImage('./img/4_enemie_boss_chicken/1_walk/G4.png');
-        this.provideAnimations()
-        this.hurtingActionTimer = new ActionTimer(
-            () => this.isHurt,
-            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
-            500,
-            0,
-            () => this.isHurt = false
-        )
-        this.alertedActionTimer = new ActionTimer(
-            () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
-            deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
-            2000,
-            3000,
-            () => this.alertedAnimation.currentImageIndex = 0
-        );
-        this.attackActionTimer = new ActionTimer(
-            () => this.isEnemyVeryClose(),
-            deltaTime => {
-                this.updateAnimation(this.attackingAnimation, deltaTime);
-                if (this.attackingAnimation.currentImageIndex === 5) {
-                    this.moveLeft(40);
-                }
-            },
-            2000,
-            1000
-        )
+        this.allLoaded = false;
+        setTimeout(() => {
+            this.provideAnimations();
+            this.initializeActionTimer();
+            this.allLoaded = true;
+        }, 2000);
     }
 
     provideAnimations() {
@@ -66,22 +46,51 @@ export default class Endboss extends GameItem {
             './img/4_enemie_boss_chicken/3_attack/G18.png',
             './img/4_enemie_boss_chicken/3_attack/G19.png',
             './img/4_enemie_boss_chicken/3_attack/G20.png',
-        ])
+        ]);
 
         this.hurtingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/4_hurt/G21.png',
             './img/4_enemie_boss_chicken/4_hurt/G22.png',
             './img/4_enemie_boss_chicken/4_hurt/G23.png',
-        ])
+        ]);
 
         this.dyingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/5_dead/G24.png',
             './img/4_enemie_boss_chicken/5_dead/G25.png',
             './img/4_enemie_boss_chicken/5_dead/G26.png',
-        ])
+        ]);
+    }
+
+    initializeActionTimer() {
+        this.hurtingActionTimer = new ActionTimer(
+            () => this.isHurt,
+            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
+            500,
+            0,
+            () => this.isHurt = false
+        )
+        this.alertedActionTimer = new ActionTimer(
+            () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
+            deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
+            2000,
+            3000,
+            () => this.alertedAnimation.currentImageIndex = 0
+        );
+        this.attackActionTimer = new ActionTimer(
+            () => this.isEnemyVeryClose(),
+            deltaTime => {
+                this.updateAnimation(this.attackingAnimation, deltaTime);
+                if (this.attackingAnimation.currentImageIndex === 5) {
+                    this.moveLeft(40);
+                }
+            },
+            2000,
+            1000
+        );
     }
 
     update(deltaTime) {
+        if (!this.allLoaded) return;
         if (this.isDead) {
             this.updateAnimation(this.dyingAnimation, deltaTime);
             if (this.isAnimationAfterLastFrame(this.dyingAnimation)) {

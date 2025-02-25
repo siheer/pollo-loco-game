@@ -2,37 +2,62 @@
     visibility: hidden;
 } */
 
+:root {
+    --game-golden: #fcbd11;
+}
+
 canvas {
-    /* background-color: black; */
     width: 100%;
     aspect-ratio: 16 / 9;
     max-width: 87.5rem;
     max-height: 100dvh;
     display: block;
+
+    &.opacity {
+        opacity: 50%;
+    }
 }
 
 .game-container {
     position: relative;
 }
 
-.play-pause-button {
-    top: 2rem;
-    left: 50%;
-    right: translateX(-50%);
-}
-
 .game-ui-btn {
     position: absolute;
+    z-index: 1;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    bottom: 1rem;
+
+    & svg {
+        width: 100%;
+        height: 100%
+    }
+
+    &.play-pause-button {
+        left: 46%;
+    }
+
+    &.goto-start {
+        left: 2rem;
+    }
+
+    &.legal-notice {
+        right: 2rem;
+    }
+
+    &.controls {
+        left: 52%;
+    }
 }
 
 .game-ui-btn:hover {
-    color: var(--fall-bold-dark-orange);
+    color: var(--game-golden);
+    transform: scale(1.25);
 }
 
 .statusbar {
@@ -42,6 +67,7 @@ canvas {
     --border-thickness: .125rem;
     --border: var(--border-thickness) solid white;
     position: absolute;
+    z-index: 0;
     left: 2rem;
     pointer-events: none;
 
@@ -106,6 +132,20 @@ canvas {
             border: var(--border);
             border-radius: inherit;
         }
+    }
+}
+
+.canvas-overlay-img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    pointer-events: none;
+
+    &.won {
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.5);
     }
 }
 

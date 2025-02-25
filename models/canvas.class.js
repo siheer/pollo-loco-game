@@ -60,13 +60,4 @@ export default class Canvas {
             throw new TypeError('Style height must be a number or a valid string value for this css property.');
         this.canvasElement.style.height = typeof value === 'number' ? `${value}px` : value;
     }
-
-    resizeToDevicePixelRatio() {
-        const dpr = window.devicePixelRatio || 1;
-        if (dpr === this.currentDPR) return;
-        this.currentDPR = dpr;
-        this.width = this.baseWidth * dpr;
-        this.height = this.baseHeight * dpr;
-        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
 }

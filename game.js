@@ -4,24 +4,18 @@ import Game from './models/game.class.js';
 import KeyboardEvents from './models/keyboardEvents.class.js';
 import Statusbar from './models/statusbar.class.js';
 
+let playPauseButton;
+
 document.addEventListener('DOMContentLoaded', async () => {
+    window.playPauseButton = document.getElementById('play-pause-button');
     registerKeyboardListener(new KeyboardEvents());
     const game = await createGame();
     initializeUI(game);
-    // game.start(0);
-
-    // setTimeout(() => {
-    //     document.getElementById('play-pause-button').click();
-    //     document.getElementById('play-pause-button').focus();
-    // }, 1200);
-
-    // document.body.style.visibility = 'visible';
 });
 
 async function createGame() {
     const canvasElement = document.getElementById('canvas');
     const gameCanvas = new Canvas(canvasElement);
-    registerResizeListener(gameCanvas);
 
     const world = new World(gameCanvas);
     window.world = world;
@@ -41,38 +35,43 @@ function registerKeyboardListener(keyboardEvents) {
     window.addEventListener('keyup', (event) => {
         keyboardEvents.handleKeyUp(event);
     });
-}
-
-// Debounced resize event: Only update canvas when the window is not resized for 100ms.
-function registerResizeListener(canvas) {
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            canvas.resizeToDevicePixelRatio();
-        }, 100);
+    window.addEventListener('keyup', (event) => {
+        if (event.key === 'Escape') {
+            window.playPauseButton.click();
+        }
     });
 }
 
 function initializeUI(game) {
     registerPlayPauseButton(game);
+    registerGoTos();
     setUpStatusbars();
+    window.playPauseButton.focus();
 }
 
 function registerPlayPauseButton(game) {
-    const playPauseButton = document.getElementById('play-pause-button');
     let isPlaying = false;
-
-    playPauseButton.addEventListener('click', () => {
+    window.playPauseButton.addEventListener('click', () => {
         if (isPlaying) {
             game.stop();
-            playPauseButton.innerHTML = playSVG;
+            window.playPauseButton.innerHTML = playSVG;
         } else {
             game.start();
-            playPauseButton.innerHTML = pauseSVG;
+            window.playPauseButton.innerHTML = pauseSVG;
         }
         isPlaying = !isPlaying;
-        playPauseButton.blur();
+        window.playPauseButton.blur();
+    });
+}
+
+function registerGoTos() {
+    const gameUIBtns = [document.getElementById('go-to-legal-notice'), document.getElementById('go-to-start'), document.getElementById('go-to-controls')];
+    gameUIBtns.forEach(button => {
+        button.addEventListener('click', () => {
+            game.stop();
+            window.playPauseButton.innerHTML = playSVG;
+            openGameOverlay(button.dataset.goTo);
+        });
     });
 }
 
@@ -81,4 +80,19 @@ function setUpStatusbars() {
     new Statusbar('endboss-energy', 'endbossEnergyEvent');
     new Statusbar('bottles', 'bottleEvent');
     new Statusbar('coins', 'coinEvent');
+}
+
+function openGameOverlay(goTo) {
+    switch (goTo) {
+        case 'legal-notice':
+            break;
+        case 'start':
+            break;
+        case 'controls':
+            break;
+        case null:
+            break;
+        default:
+            throw new Error('Invalid goTo: ' + goTo);
+    }
 }

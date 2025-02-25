@@ -40,19 +40,29 @@ export default class World {
 
     spawnRegularly() {
         setInterval(() => {
-            this.level.spawnOutsideLevel = true;
-            this.level.levelItems[1].push([
-                createEnemies(this)
-            ]);
-            this.level.spawnOutsideLevel = false;
+            this.spawnEnemies();
         }, 10000);
         setInterval(() => {
-            this.level.levelItems.push([
-                createCoins(this),
-                createBottles(this),
-            ])
+            this.spawnItems();
         }, 15000);
         this.moveCharacterReferenceToPaintLast();
+    }
+
+    spawnEnemies() {
+        if (!window.game.isGameRunning) return;
+        this.level.spawnOutsideLevel = true;
+        this.level.levelItems[1].push([
+            createEnemies(this)
+        ]);
+        this.level.spawnOutsideLevel = false;
+    }
+
+    spawnItems() {
+        if (!window.game.isGameRunning) return;
+        this.level.levelItems.push([
+            createCoins(this),
+            createBottles(this),
+        ]);
     }
 
     moveCharacterReferenceToPaintLast() {
