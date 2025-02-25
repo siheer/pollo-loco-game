@@ -14,7 +14,7 @@ function createLevelItems(world, repeatCount) {
     enemies.push(new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600));
     const coins = createInstances(Coin, 4, 0, world.getYPositionForObject(200), 200, 200);
     coins.push(...createCoins(world));
-    const bottles = createInstances(StandingBottle, 2, 0, world.getYPositionForObject(120), 120, 120);
+    const bottles = createInstances(StandingBottle, 2, 0, world.getYPositionForObject(110), 120, 120);
     bottles.push(...createBottles(world));
 
     return [
@@ -55,6 +55,6 @@ function createCoins(world) {
 
 function createBottles(world) {
     return world.level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(StandingBottle, 2, offset, world.getYPositionForObject(120), 120, 120);
+        return createInstances(StandingBottle, 2, offset, world.getYPositionForObject(110), 120, 120);
     });
 }
