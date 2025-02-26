@@ -23,7 +23,7 @@ export default class Chick extends GameItem {
         if (!this.isDead) {
             if (this.isJumpingDue()) {
                 this.handleJump(deltaTime);
-            } else if (window.world.isAboveGround(this)) {
+            } else if (window.world.level.isAboveGround(this)) {
                 this.applyGravity(deltaTime);
             } else {
                 this.handleOnGround(deltaTime);

@@ -41,7 +41,7 @@ export default class Bottle extends GameItem {
         if (this.isThrowable) {
             if (this.isBroken) {
                 this.handleSplash(deltaTime);
-            } else if (window.world.isAboveGround(this)) {
+            } else if (window.world.level.isAboveGround(this)) {
                 this.updateAnimation(this.thrownAnimation, deltaTime, 40);
                 this.moveX();
                 this.applyGravity(deltaTime, MIN_INTERVAL_IN_MILLISECONDS);
@@ -54,7 +54,7 @@ export default class Bottle extends GameItem {
     handleSplash(deltaTime) {
         this.updateAnimation(this.splashingAnimation, deltaTime, 50);
         if (this.isAnimationAfterLastFrame(this.splashingAnimation)) {
-            callAfterCurrentGameLoop(() => window.world.removeBottle(this));
+            callAfterCurrentGameLoop(() => window.world.level.removeBottle(this));
         }
     }
 
@@ -67,9 +67,9 @@ export default class Bottle extends GameItem {
     }
 
     setBottleOnGround() {
-        window.world.removeBottle(this);
+        window.world.level.removeBottle(this);
         callAfterCurrentGameLoop(() => {
-            window.world.level.levelItems.push(new Bottle(this.x, window.world.groundLevelY - this.height + 10, 120, 120, false, false, false));
+            window.world.level.levelItems.push(new Bottle(this.x, window.world.level.groundLevelY - this.height + 10, 120, 120, false, false, false));
         });
     }
 

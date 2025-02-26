@@ -65,8 +65,8 @@ export default class GameItem extends CanvasObject {
     }
 
     setItemOnGroundIfUnderGround(correctionOffset = 0) {
-        if (!window.world.isAboveGround(this)) {
-            this.y = window.world.groundLevelY - this.height + correctionOffset;
+        if (!window.world.level.isAboveGround(this)) {
+            this.y = window.world.level.groundLevelY - this.height + correctionOffset;
         }
     }
 
@@ -93,7 +93,7 @@ export default class GameItem extends CanvasObject {
             this.img = this.deadImg;
         }
         setTimeout(() => {
-            window.world.removeEnemy(this);
+            window.world.level.removeEnemy(this);
         }, 500);
     }
 }

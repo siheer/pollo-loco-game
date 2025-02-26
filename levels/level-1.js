@@ -8,14 +8,14 @@ import StandingBottle from "../models/standing-bottle.class.js";
 
 export { createLevelItems, createEnemies, createCoins, createBottles };
 
-function createLevelItems(world, repeatCount) {
-    const backgrounds = createBackgrounds(world, repeatCount);
-    const enemies = createEnemies(world);
-    enemies.push(new Endboss(world.level.levelEndX, world.getYPositionForObject(600) + 50, 515, 600));
-    const coins = createInstances(Coin, 4, 0, world.getYPositionForObject(200), 200, 200);
-    coins.push(...createCoins(world));
-    const bottles = createInstances(StandingBottle, 2, 0, world.getYPositionForObject(110), 120, 120);
-    bottles.push(...createBottles(world));
+function createLevelItems(level, canvas, repeatCount) {
+    const backgrounds = createBackgrounds(level, canvas, repeatCount);
+    const enemies = createEnemies(level);
+    enemies.push(new Endboss(level.levelEndX, level.getYPositionForObject(600) + 50, 515, 600));
+    const coins = createInstances(Coin, 4, 0, level.getYPositionForObject(200), 200, 200);
+    coins.push(...createCoins(level));
+    const bottles = createInstances(StandingBottle, 2, 0, level.getYPositionForObject(110), 120, 120);
+    bottles.push(...createBottles(level));
 
     return [
         backgrounds,
@@ -25,36 +25,36 @@ function createLevelItems(world, repeatCount) {
     ]
 }
 
-function createBackgrounds(world, repeatCount) {
+function createBackgrounds(level, canvas, repeatCount) {
     return [
         [
-            ...Level.getBackgroundSecondPart(world, -world.canvas.width),
-            ...Level.getFullBackground(world, repeatCount),
+            ...Level.getBackgroundSecondPart(canvas, -canvas.width),
+            ...Level.getFullBackground(canvas, repeatCount),
         ],
-        new Cloud('./img/5_background/layers/4_clouds/1.png', 0, 0, world.canvas.width * 0.7, world.canvas.height * 0.7),
-        ...world.level.repeatAcrossLevelSegments((offset) => {
-            return new Cloud('./img/5_background/layers/4_clouds/1.png', offset, 0, world.canvas.width * 0.7, world.canvas.height * 0.7);
+        new Cloud('./img/5_background/layers/4_clouds/1.png', 0, 0, canvas.width * 0.7, canvas.height * 0.7),
+        ...level.repeatAcrossLevelSegments((offset) => {
+            return new Cloud('./img/5_background/layers/4_clouds/1.png', offset, 0, canvas.width * 0.7, canvas.height * 0.7);
         }),
     ];
 }
 
-function createEnemies(world) {
-    return world.level.repeatAcrossLevelSegments((offset) => {
+function createEnemies(level) {
+    return level.repeatAcrossLevelSegments((offset) => {
         return [
-            ...createInstances(Chicken, 6, offset, world.getYPositionForObject(100), 100, 100),
-            ...createInstances(Chick, 6, offset, world.getYPositionForObject(70), 70, 70),
+            ...createInstances(Chicken, 6, offset, level.getYPositionForObject(100), 100, 100),
+            ...createInstances(Chick, 6, offset, level.getYPositionForObject(70), 70, 70),
         ];
     });
 }
 
-function createCoins(world) {
-    return world.level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(Coin, 5, offset, world.getYPositionForObject(200), 200, 200);
+function createCoins(level) {
+    return level.repeatAcrossLevelSegments((offset) => {
+        return createInstances(Coin, 5, offset, level.getYPositionForObject(200), 200, 200);
     });
 }
 
-function createBottles(world) {
-    return world.level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(StandingBottle, 2, offset, world.getYPositionForObject(110), 120, 120);
+function createBottles(level) {
+    return level.repeatAcrossLevelSegments((offset) => {
+        return createInstances(StandingBottle, 2, offset, level.getYPositionForObject(110), 120, 120);
     });
 }

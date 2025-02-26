@@ -92,11 +92,7 @@ export default class Endboss extends GameItem {
     update(deltaTime) {
         if (!this.allLoaded) return;
         if (this.isDead) {
-            this.updateAnimation(this.dyingAnimation, deltaTime);
-            if (this.isAnimationAfterLastFrame(this.dyingAnimation)) {
-                window.game.gameOver.isOver = true;
-                window.game.gameOver.playerHasWon = true;
-            }
+            this.handleDead(deltaTime);
         } else if (this.hurtingActionTimer.isPlayable()) {
             this.hurtingActionTimer.play(deltaTime);
         } else if (this.alertedActionTimer.isPlayable() && !this.isEnemyVeryClose()) {
@@ -104,9 +100,21 @@ export default class Endboss extends GameItem {
         } else if (this.attackActionTimer.isPlayable()) {
             this.attackActionTimer.play(deltaTime);
         } else {
-            this.updateAnimation(this.walkingAnimation, deltaTime);
-            this.moveLeft();
+            this.handleWalking(deltaTime);
         }
+    }
+
+    handleDead(deltaTime) {
+        this.updateAnimation(this.dyingAnimation, deltaTime);
+        if (this.isAnimationAfterLastFrame(this.dyingAnimation)) {
+            window.game.gameOver.isOver = true;
+            window.game.gameOver.playerHasWon = true;
+        }
+    }
+
+    handleWalking(deltaTime) {
+        this.updateAnimation(this.walkingAnimation, deltaTime);
+        this.moveLeft();
     }
 
     takeDamage(deltaTime, updateInterval = 0, damage = this.takesDamageAmount) {
@@ -118,10 +126,10 @@ export default class Endboss extends GameItem {
     }
 
     isEnemyClose() {
-        return Math.abs(window.world.character.x - this.x) < 1300;
+        return Math.abs(window.world.level.character.x - this.x) < 1300;
     }
 
     isEnemyVeryClose() {
-        return Math.abs(window.world.character.x - this.x) < 500;
+        return Math.abs(window.world.level.character.x - this.x) < 500;
     }
 }

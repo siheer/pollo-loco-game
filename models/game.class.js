@@ -1,5 +1,7 @@
+import Statusbar from './statusbar.class.js';
 export default class Game {
     constructor(world) {
+        window.game = this;
         this.world = world;
         this.animationFrameId = null;
         this.lastTimestamp = null;
@@ -8,6 +10,7 @@ export default class Game {
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
+        this.setUpStatusbars();
     }
 
     // repaint canvas max 20 times (during 20 seconds), so that hopefully until then all resources has been loaded.
@@ -60,6 +63,7 @@ export default class Game {
 
     handleGameOver() {
         window.playPauseButton.disabled = true;
+        window.playPauseButton.innerHTML = playSVG;
         if (this.gameOver.playerHasWon) {
             this.showGameOverDisplay(true, 'game-won-img');
         } else {
@@ -70,5 +74,12 @@ export default class Game {
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
+    }
+
+    setUpStatusbars() {
+        new Statusbar('character-energy', 'characterEnergyEvent');
+        new Statusbar('bottles', 'bottleEvent');
+        new Statusbar('coins', 'coinEvent');
+        new Statusbar('endboss-energy', 'endbossEnergyEvent');
     }
 }

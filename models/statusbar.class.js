@@ -20,9 +20,9 @@ export default class Statusbar {
             case 'endbossEnergyEvent':
                 return { max: full, current: full };
             case 'bottleEvent':
-                return { max: window.world.character.maxBottleSupply, current: window.world.character.bottleSupply };
+                return { max: window.world.level.character.maxBottleSupply, current: window.world.level.character.bottleSupply };
             case 'coinEvent':
-                return { max: window.world.character.maxCoinSupply, current: window.world.character.coinSupply };
+                return { max: window.world.level.character.maxCoinSupply, current: window.world.level.character.coinSupply };
             default:
                 throw new Error('Invalid event type: ' + eventType);
         }

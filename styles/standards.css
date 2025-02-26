@@ -14,10 +14,6 @@
     --fall-mealy-dark-orange: #e76f51;
 }
 
-:focus {
-    /* outline: none; */
-}
-
 ::placeholder {
     color: darkgrey;
 }

@@ -3,9 +3,9 @@ import Bottle from "./bottle.class.js";
 import ActionTimer from "./action-timer.class.js";
 
 export default class Character extends GameItem {
-    constructor(x, y, width, height, world) {
+    constructor(x, y, width, height, level) {
         super(x, y, width, height);
-        this.world = world;
+        this.level = level;
         this.fixCameraOnCharacter = false;
         this.fixCameraOnCharacterXPosition = 500;
         this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
@@ -82,7 +82,7 @@ export default class Character extends GameItem {
             this.isCameraToBeFixed();
             this.handleJump(deltaTime);
             this.handleHorizontalMovement(deltaTime);
-            if (!this.justJumped && keyboardEvents.nokeyPressed()) {
+            if (this.isIdle()) {
                 this.img = this.idleImg;
             }
             if (this.hurtingActionTimer.isPlayable()) {
@@ -104,11 +104,15 @@ export default class Character extends GameItem {
      * Handle horizontal movement based on left/right arrow key input.
      */
     handleHorizontalMovement(deltaTime) {
-        if (keyboardEvents.keys['ArrowRight'] && this.x < this.world.level.levelEndX) {
+        if (keyboardEvents.keys['ArrowRight'] && this.x < this.level.levelEndX) {
             this.onRight(deltaTime);
         } else if (keyboardEvents.keys['ArrowLeft'] && this.x > 0) {
             this.onLeft(deltaTime);
         }
+    }
+
+    isIdle() {
+        return !this.justJumped && keyboardEvents.nokeyPressed();
     }
 
     /**
@@ -140,7 +144,7 @@ export default class Character extends GameItem {
      */
     setCameraXPosition() {
         if (this.fixCameraOnCharacter) {
-            this.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
+            window.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
         }
     }
 
@@ -150,7 +154,7 @@ export default class Character extends GameItem {
      * - If in the air, always update the jump animation and apply gravity.
      */
     handleJump(deltaTime) {
-        const onGround = !this.world.isAboveGround(this);
+        const onGround = !this.level.isAboveGround(this);
         if (keyboardEvents.keys[' '] && onGround) {
             this.speedY = this.initialSpeedY;
             this.justJumped = true;
@@ -200,7 +204,7 @@ export default class Character extends GameItem {
 
     throwBottle() {
         const x = this.isFacingLeft ? this.x : this.x + this.width - this.offset.right;
-        this.world.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingLeft, true));
+        this.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingLeft, true));
         this.bottleSupply--;
         this.dispatchBottleEvent();
     }
@@ -209,7 +213,7 @@ export default class Character extends GameItem {
         if (this.bottleSupply < this.maxBottleSupply) {
             this.bottleSupply++;
             this.dispatchBottleEvent();
-            this.world.removeBottle(bottle);
+            this.level.removeBottle(bottle);
         }
     }
 
@@ -217,7 +221,7 @@ export default class Character extends GameItem {
         if (this.coinSupply < this.maxCoinSupply) {
             this.coinSupply++;
             this.dispatchCoinEvent();
-            this.world.removeCoin(coin);
+            this.level.removeCoin(coin);
         }
     }
 

@@ -10,10 +10,7 @@ export default class ActionTimer {
     }
 
     isPlayable(arg, ...moreArgs) {
-        if (this.checkCallbackFn(arg, ...moreArgs) && this.hasEnoughTimePassed) {
-            return true;
-        }
-        return false;
+        return this.checkCallbackFn(arg, ...moreArgs) && this.hasEnoughTimePassed;
     }
 
     play(arg, ...moreArgs) {

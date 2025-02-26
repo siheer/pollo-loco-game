@@ -2,24 +2,70 @@
     visibility: hidden;
 } */
 
+@font-face {
+    font-family: "Rye";
+    src: url(fonts/Rye-Regular.ttf) format(truetype);
+    /* font-weight: 400;
+    font-style: normal; */
+}
+
+@font-face {
+    font-family: "Boogaloo";
+    src: url(fonts/Boogaloo-Regular.ttf) format(truetype);
+}
+
+@font-face {
+    font-family: "Smokum";
+    src: url(fonts/Smokum-Regular.ttf) format(truetype);
+}
+
+.rye-regular {
+    font-family: "Rye", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.boogaloo-regular {
+    font-family: "Boogaloo", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.smokum-regular {
+    font-family: "Smokum", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
 :root {
     --game-golden: #fcbd11;
 }
 
-canvas {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    max-width: 87.5rem;
-    max-height: 100dvh;
-    display: block;
+body {
+    color: black;
 
-    &.opacity {
-        opacity: 50%;
-    }
 }
 
 .game-container {
     position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 100dvh;
+    max-width: 87.5rem;
+    margin: auto;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.canvas-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
 }
 
 .game-ui-btn {
@@ -29,13 +75,15 @@ canvas {
     border: none;
     cursor: pointer;
     padding: 0;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 3rem;
+    height: 3rem;
     bottom: 1rem;
 
     & svg {
-        width: 100%;
-        height: 100%
+        width: 80%;
+        height: 80%;
+        display: block;
+        margin: auto;
     }
 
     &.play-pause-button {
@@ -47,11 +95,15 @@ canvas {
     }
 
     &.legal-notice {
-        right: 2rem;
+        left: 6rem;
     }
 
     &.controls {
         left: 52%;
+    }
+
+    &.full-screen {
+        right: 1rem;
     }
 }
 
@@ -71,11 +123,11 @@ canvas {
     left: 2rem;
     pointer-events: none;
 
-    &.bottles {
+    &.character-energy {
         top: 2rem;
     }
 
-    &.character-energy {
+    &.bottles {
         top: 6rem;
     }
 
@@ -136,17 +188,17 @@ canvas {
 }
 
 .canvas-overlay-img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    inset: 0;
     object-fit: cover;
     pointer-events: none;
 
     &.won {
         object-fit: contain;
-        background: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.2);
     }
+}
+
+.game-overlay {
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 80rem) {

@@ -8,7 +8,6 @@ export default class Canvas {
         this.baseHeight = this.baseWidth / canvasAspectRatio;
         this.width = this.baseWidth;
         this.height = this.baseHeight;
-        this.currentDPR = window.devicePixelRatio || 1;
     }
 
     get width() {

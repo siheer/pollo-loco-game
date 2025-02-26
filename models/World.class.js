@@ -1,6 +1,4 @@
 import CanvasObject from './canvas-object.class.js';
-import Character from "./character.class.js";
-import Level from "./level.class.js";
 import GameItem from "./game-item.class.js";
 import Bottle from "./bottle.class.js";
 import Chicken from "./chicken.class.js";
@@ -8,67 +6,23 @@ import Chick from "./chick.class.js";
 import Endboss from "./endboss.class.js";
 import Coin from "./coin.class.js";
 import ActionTimer from './action-timer.class.js';
-import { createEnemies, createCoins, createBottles } from "../levels/level-1.js";
+
 
 export default class World {
-    constructor(gameCanvas) {
-        this.canvas = gameCanvas;
-        this.ctx = gameCanvas.ctx;
-        this.groundLevel = 140;
-        this.groundLevelY = gameCanvas.height - this.groundLevel;
+    constructor(level) {
+        window.world = this;
+        this.canvas = level.canvas;
+        this.ctx = this.canvas.ctx;
+        this.level = level;
         this.cameraX = 0;
         this.collisionsDeltaTime = 0;
         this.initKeyBoardEventsDeltaTime = 0;
         this.bottleActionTimer = new ActionTimer(
-            () => this.character.bottleSupply > 0,
-            () => this.character.throwBottle(),
+            () => this.level.character.bottleSupply > 0,
+            () => this.level.character.throwBottle(),
             0,
             200
-        )
-    }
-
-    addLevel(pathToLevelItems, levelXLengthFactor) {
-        this.level = new Level(this, pathToLevelItems, levelXLengthFactor);
-    }
-
-    async fillWorldWithObjects() {
-        this.character = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if character should not start in air
-        await this.level.fillLevelWithObjects();
-        this.level.levelItems.push(this.character);
-        this.spawnRegularly();
-    }
-
-    spawnRegularly() {
-        setInterval(() => {
-            this.spawnEnemies();
-        }, 10000);
-        setInterval(() => {
-            this.spawnItems();
-        }, 15000);
-        this.moveCharacterReferenceToPaintLast();
-    }
-
-    spawnEnemies() {
-        if (!window.game.isGameRunning) return;
-        this.level.spawnOutsideLevel = true;
-        this.level.levelItems[1].push([
-            createEnemies(this)
-        ]);
-        this.level.spawnOutsideLevel = false;
-    }
-
-    spawnItems() {
-        if (!window.game.isGameRunning) return;
-        this.level.levelItems.push([
-            createCoins(this),
-            createBottles(this),
-        ]);
-    }
-
-    moveCharacterReferenceToPaintLast() {
-        const characterIndex = this.level.levelItems.findIndex(item => item instanceof Character);
-        const character = this.level.levelItems.splice(characterIndex, 1);
-        this.level.levelItems.push(character);
+        );
     }
 
     drawWorld() {
@@ -159,8 +113,8 @@ export default class World {
     }
 
     handleKeyEnter() {
-        if (this.character.canBuyBottle()) {
-            this.character.buyBottle();
+        if (this.level.character.canBuyBottle()) {
+            this.level.character.buyBottle();
         }
     }
 
@@ -176,7 +130,7 @@ export default class World {
     handleEnemyInteractions(deltaTime) {
         const enemies = flattenToArray(this.level.levelItems[1]);
         enemies.forEach(enemy => {
-            if (!enemy.isDead && this.character.isCollidingWith(enemy)) {
+            if (!enemy.isDead && this.level.character.isCollidingWith(enemy)) {
                 this.handleCharacterCollisionWithEnemy(deltaTime, enemy);
             }
             if (!enemy.isDead) {
@@ -186,13 +140,13 @@ export default class World {
     }
 
     handleCharacterCollisionWithEnemy(deltaTime, enemy) {
-        if (this.character.isStomping(enemy)) {
+        if (this.level.character.isStomping(enemy)) {
             enemy.kill();
-            this.character.giveRecoilOnStomp(20);
-            this.character.energy += 3;
-            this.character.dispatchCharacterEnergyEvent();
+            this.level.character.giveRecoilOnStomp(20);
+            this.level.character.energy += 3;
+            this.level.character.dispatchCharacterEnergyEvent();
         } else {
-            this.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, 9);
+            this.level.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, 9);
         }
     }
 
@@ -213,36 +167,16 @@ export default class World {
     handleBottleAndCoinCollections() {
         const bottles = flattenToArray(this.level.levelItems, Bottle);
         bottles.forEach(bottle => {
-            if (!bottle.canDealDamage && bottle.isCollidingWith(this.character)) {
-                this.character.collectBottle(bottle);
+            if (!bottle.canDealDamage && bottle.isCollidingWith(this.level.character)) {
+                this.level.character.collectBottle(bottle);
             }
         });
 
         const coins = flattenToArray(this.level.levelItems, Coin);
         coins.forEach(coin => {
-            if (coin.isCollidingWith(this.character)) {
-                this.character.collectCoin(coin);
+            if (coin.isCollidingWith(this.level.character)) {
+                this.level.character.collectCoin(coin);
             }
         });
-    }
-
-    getYPositionForObject(shiftUpBy) { // argument value is normally height of canvas object
-        return this.canvas.height - shiftUpBy - this.groundLevel;
-    }
-
-    isAboveGround(item) {
-        return (item.y + item.height) < this.groundLevelY;
-    }
-
-    removeEnemy(enemy) {
-        removeItemFromNestedArray(this.level.levelItems, enemy);
-    }
-
-    removeBottle(bottle) {
-        removeItemFromNestedArray(this.level.levelItems, bottle);
-    }
-
-    removeCoin(coin) {
-        removeItemFromNestedArray(this.level.levelItems, coin);
     }
 }
