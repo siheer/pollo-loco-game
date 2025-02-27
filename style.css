@@ -1,49 +1,13 @@
-/* body {
-    visibility: hidden;
-} */
-
-@font-face {
-    font-family: "Rye";
-    src: url(fonts/Rye-Regular.ttf) format(truetype);
-    /* font-weight: 400;
-    font-style: normal; */
-}
-
-@font-face {
-    font-family: "Boogaloo";
-    src: url(fonts/Boogaloo-Regular.ttf) format(truetype);
-}
-
-@font-face {
-    font-family: "Smokum";
-    src: url(fonts/Smokum-Regular.ttf) format(truetype);
-}
-
-.rye-regular {
-    font-family: "Rye", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.boogaloo-regular {
-    font-family: "Boogaloo", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.smokum-regular {
-    font-family: "Smokum", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
 :root {
     --game-golden: #fcbd11;
 }
 
 body {
     color: black;
-
+    background-color: black;
+    background-image: url('./img/bg.jpg');
+    background-position: center;
+    background-size: cover;
 }
 
 .game-container {
@@ -53,6 +17,20 @@ body {
     max-height: 100dvh;
     max-width: 87.5rem;
     margin: auto;
+    overflow: hidden;
+    box-shadow: 0 0 1rem black;
+}
+
+.border-radius-1rem {
+    border-radius: 1rem;
+}
+
+.canvas-container {
+    transition: opacity 1s ease-in-out;
+}
+
+.opacity-0 {
+    opacity: 0;
 }
 
 canvas {
@@ -198,7 +176,8 @@ canvas {
 }
 
 .game-overlay {
-    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 80rem) {

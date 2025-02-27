@@ -1,22 +1,30 @@
-export default class Overlay {
-    constructor() {
-        this.isActive = false;
-        // this.elementId = 'overlay';
-        this.element = null;
+export default class GameOverlay {
+    constructor(templateString = null) {
+        window.gameOverlay = this;
+        this.container = document.getElementById('game-container');
+        this.add();
+        this.setContent(templateString);
     }
 
-    addToDocument() {
+    add() {
         this.element = document.createElement('div');
         this.element.classList.add('canvas-overlay');
         this.element.classList.add('game-overlay');
-        document.body.appendChild(this.element);
+        this.container.appendChild(this.element);
     }
 
     setContent(templateString) {
         this.element.innerHTML = templateString;
     }
 
-    removeFromDocument() {
-        document.body.removeChild(this.element);
+    remove() {
+        if (this.element) {
+            this.container.removeChild(this.element);
+            this.element = null;
+        }
     }
+
+    startScreen = `
+
+    `
 }

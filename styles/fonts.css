@@ -6,3 +6,38 @@ html {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 1rem;
 }
+
+@font-face {
+  font-family: "Rye";
+  src: url(fonts/Rye-Regular.ttf) format(truetype);
+  /* font-weight: 400;
+  font-style: normal; */
+}
+
+@font-face {
+  font-family: "Boogaloo";
+  src: url(fonts/Boogaloo-Regular.ttf) format(truetype);
+}
+
+@font-face {
+  font-family: "Smokum";
+  src: url(fonts/Smokum-Regular.ttf) format(truetype);
+}
+
+.rye-regular {
+  font-family: "Rye", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.boogaloo-regular {
+  font-family: "Boogaloo", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.smokum-regular {
+  font-family: "Smokum", serif;
+  font-weight: 400;
+  font-style: normal;
+}

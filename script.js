@@ -1,3 +1,4 @@
+import GameOverlay from './models/overlay.class.js';
 import KeyboardEvents from './models/keyboard-events.class.js';
 import Canvas from './models/canvas.class.js';
 import Level from './models/level.class.js';
@@ -6,6 +7,7 @@ import Game from './models/game.class.js';
 import UI from './models/ui.class.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    new GameOverlay();
     publishVariablesToWindow();
     new KeyboardEvents().registerKeyboardListener();
     initGame();

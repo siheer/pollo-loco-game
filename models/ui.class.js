@@ -1,36 +1,35 @@
 export default class UI {
     constructor(game) {
-        this.game = game;
+        this.gameContainerElem = document.getElementById('game-container');
+        this.fullScreenBtn = document.getElementById('full-screen');
         this.registerPlayPauseButton(game);
-        this.registerFullScreenButton(game);
+        this.registerFullScreenButton();
         this.registerGoTos();
     }
 
     registerPlayPauseButton(game) {
-        let isPlaying = false;
         window.playPauseButton.addEventListener('click', () => {
-            if (isPlaying) {
+            if (game.isGameRunning) {
                 game.stop();
                 window.playPauseButton.innerHTML = playSVG;
             } else {
                 game.start();
                 window.playPauseButton.innerHTML = pauseSVG;
             }
-            isPlaying = !isPlaying;
+            game.isGameRunning = !game.isGameRunning;
             window.playPauseButton.blur();
         });
     }
 
-    registerFullScreenButton(game) {
-        const fullScreenBtn = document.getElementById('full-screen');
-        fullScreenBtn.addEventListener('click', () => {
-            this.toggleFullScreen(document.getElementById('game-container'));
+    registerFullScreenButton() {
+        this.fullScreenBtn.addEventListener('click', () => {
+            this.toggleFullScreen(this.gameContainerElem);
         })
         document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement) {
-                this.handleFullScreen(fullScreenBtn);
+                this.handleFullScreen();
             } else {
-                this.handleExitFullScreen(fullScreenBtn);
+                this.handleExitFullScreen();
             }
         })
     }
@@ -43,14 +42,16 @@ export default class UI {
         }
     }
 
-    handleFullScreen(fullScreenBtn) {
-        fullScreenBtn.innerHTML = exitFullScreenSVG;
-        fullScreenBtn.title = 'Exit fullscreen (f)';
+    handleFullScreen() {
+        this.gameContainerElem.classList.remove('border-radius-1rem');
+        this.fullScreenBtn.innerHTML = exitFullScreenSVG;
+        this.fullScreenBtn.title = 'Exit fullscreen (f)';
     }
 
-    handleExitFullScreen(fullScreenBtn) {
-        fullScreenBtn.innerHTML = fullScreenSVG;
-        fullScreenBtn.title = 'Enter fullscreen (f)';
+    handleExitFullScreen() {
+        this.gameContainerElem.classList.add('border-radius-1rem');
+        this.fullScreenBtn.innerHTML = fullScreenSVG;
+        this.fullScreenBtn.title = 'Enter fullscreen (f)';
     }
 
     registerGoTos() {

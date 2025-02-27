@@ -2,11 +2,12 @@ import Statusbar from './statusbar.class.js';
 export default class Game {
     constructor(world) {
         window.game = this;
+        this.containerElem = document.getElementById('canvas-container');
         this.world = world;
         this.animationFrameId = null;
         this.lastTimestamp = null;
-        this.isGameRunning = false;
         this.gameOver = { isOver: false, playerHasWon: false };
+        this.isGameRunning = false;
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
@@ -23,16 +24,17 @@ export default class Game {
 
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
+            window.gameOverlay.remove();
+            this.containerElem.classList.remove('opacity-0');
+            this.isGameRunning = true;
             this.world.deltaTime = 0;
             this.lastTimestamp = null;
-            this.isGameRunning = true;
             clearInterval(this.waitOnStartIntervalId);
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }, delayInMilliseconds);
     }
 
     stop() {
-        this.isGameRunning = false;
         cancelAnimationFrame(this.animationFrameId);
     }
 
