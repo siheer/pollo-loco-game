@@ -16,35 +16,35 @@
     <link rel="icon" type="image/png" href="favicon.png">
 </head>
 
-<body>
-    <div id="game-container" class="game-container border-radius-1rem">
-        <div id="canvas-container" class="canvas-container opacity-0">
+<body class="rye-regular start-bg">
+    <div id="game-container" class="game-container">
+        <div id="canvas-container" class="canvas-container opacity-0 border-radius-1rem">
             <canvas id="canvas"></canvas>
             <div id="bottles" class="statusbar bottles">
-                <img src="img/7_statusbars/3_icons/icon_salsa_bottle.png" alt="Bottle icon" class="icon">
+                <img src="img/7_statusbars/3_icons/icon_salsa_bottle.png" alt="Flaschen icon" class="icon">
                 <div class="outer">
                     <div class="inner"></div>
                 </div>
             </div>
             <div id="character-energy" class="statusbar character-energy">
-                <img src="img/7_statusbars/3_icons/icon_health.png" alt="Energy icon" class="icon">
+                <img src="img/7_statusbars/3_icons/icon_health.png" alt="Energie icon" class="icon">
                 <div class="outer">
                     <div class="inner"></div>
                 </div>
             </div>
             <div id="coins" class="statusbar coins">
-                <img src="img/7_statusbars/3_icons/icon_coin.png" alt="Coin icon" class="icon">
+                <img src="img/7_statusbars/3_icons/icon_coin.png" alt="Münzen icon" class="icon">
                 <div class="outer">
                     <div class="inner"></div>
                 </div>
             </div>
             <div id="endboss-energy" class="statusbar endboss-energy">
-                <img src="img/7_statusbars/3_icons/icon_health_endboss.png" alt="Endboss energy icon" class="icon">
+                <img src="img/7_statusbars/3_icons/icon_health_endboss.png" alt="Endboss Energie icon" class="icon">
                 <div class="outer">
                     <div class="inner"></div>
                 </div>
             </div>
-            <button id="go-to-start" class="game-ui-btn goto-start" data-go-to="start" title="Home">
+            <button id="go-to-start" class="game-ui-btn goto-start" title="Startseite">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.433">
                     <g>
                         <polygon fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
@@ -52,22 +52,13 @@
                     </g>
                 </svg>
             </button>
-            <button id="go-to-legal-notice" class="game-ui-btn legal-notice" data-go-to="legal-notice"
-                title="Legal Notice">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 57.288 122.88">
-                    <g>
-                        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
-                            d="M32.499,0c4.436,0,7.926,1.281,10.468,3.819c2.515,2.53,3.785,6.007,3.785,10.481 c0,4.538-2.163,8.572-6.521,12.11c-4.381,3.538-9.463,5.318-15.254,5.318c-4.352,0-7.812-1.218-10.465-3.66 c-2.651-2.47-3.976-5.665-3.976-9.639c0-5.007,2.163-9.322,6.465-12.987C21.301,1.816,26.465,0,32.499,0L32.499,0z M57.288,122.88 H0v-9.64h10.765V54.36H0v-7.674h26.775c6.763,0,13.418-0.812,19.992-2.47v69.024h10.521V122.88L57.288,122.88z" />
-                    </g>
-                </svg>
-            </button>
-            <button id="play-pause-button" class="play-pause-button game-ui-btn" title="Play/Pause">
+            <button id="play-pause-button" class="play-pause-button game-ui-btn" title="Start/Pause">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.72 122.88">
                     <polygon fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
                         points="92.2,60.97 0,122.88 0,0 92.2,60.97" />
                 </svg>
             </button>
-            <button id="go-to-controls" class="game-ui-btn controls" data-go-to="controls" title="Controls">
+            <button id="go-to-controls" class="game-ui-btn controls" title="Steuerung">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 108.95">
                     <g>
                         <path fill="currentColor"
@@ -75,7 +66,7 @@
                     </g>
                 </svg>
             </button>
-            <button id="full-screen" class="game-ui-btn full-screen" title="Enter fullscreen (f)">
+            <button id="full-screen" class="game-ui-btn full-screen" title="Vollbildmodus (f)">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 122.87">
                     <g>
                         <path fill="currentColor" stroke="currentColor" stroke-width="8"
@@ -83,9 +74,10 @@
                     </g>
                 </svg>
             </button>
-            <img id="game-over-img" src="img/9_intro_outro_screens/game_over/game over.png" alt="You lost"
+            <img id="game-over-img" src="img/9_intro_outro_screens/game_over/game over.png" alt="Verloren! 'Game Over'"
                 class="canvas-overlay canvas-overlay-img dn">
-            <img id="game-won-img" src="img/9_intro_outro_screens/won.png" alt="You won"
+            <button id="restart-btn" class="btn restart dn">Neustart</button>
+            <img id="game-won-img" src="img/9_intro_outro_screens/won.png" alt="Gewonnen! 'You won'"
                 class="canvas-overlay canvas-overlay-img dn won">
         </div>
     </div>

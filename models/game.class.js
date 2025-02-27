@@ -2,7 +2,6 @@ import Statusbar from './statusbar.class.js';
 export default class Game {
     constructor(world) {
         window.game = this;
-        this.containerElem = document.getElementById('canvas-container');
         this.world = world;
         this.animationFrameId = null;
         this.lastTimestamp = null;
@@ -22,19 +21,31 @@ export default class Game {
         }
     }
 
+    handlePlayPauseButton() {
+        this.isGameRunning ? this.stop() : this.start();
+    }
+
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
-            window.gameOverlay.remove();
-            this.containerElem.classList.remove('opacity-0');
+            this.updateUIOnStart();
             this.isGameRunning = true;
-            this.world.deltaTime = 0;
             this.lastTimestamp = null;
             clearInterval(this.waitOnStartIntervalId);
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }, delayInMilliseconds);
     }
 
+    updateUIOnStart() {
+        window.playPauseButton.disabled = false;
+        document.getElementById('go-to-controls').disabled = false;
+        window.gameOverlay.remove();
+        window.playPauseButton.innerHTML = pauseSVG;
+        window.playPauseButton.blur();
+    }
+
     stop() {
+        this.isGameRunning = false;
+        window.playPauseButton.innerHTML = playSVG;
         cancelAnimationFrame(this.animationFrameId);
     }
 
@@ -58,13 +69,14 @@ export default class Game {
 
     handleisGameRunning(deltaTime) {
         this.world.checkForInitializingKeyboardEvents(deltaTime);
-        this.world.updateWorld(this.world.level.levelItems, deltaTime);
+        this.world.updateWorld(deltaTime);
         this.world.checkCollisions(deltaTime);
         this.world.drawWorld();
     }
 
     handleGameOver() {
         window.playPauseButton.disabled = true;
+        document.getElementById('go-to-controls').disabled = true;
         window.playPauseButton.innerHTML = playSVG;
         if (this.gameOver.playerHasWon) {
             this.showGameOverDisplay(true, 'game-won-img');
@@ -75,7 +87,9 @@ export default class Game {
 
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
+        const restartBtn = document.getElementById('restart-btn');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
+        show ? restartBtn.classList.remove('dn') : restartBtn.classList.add('dn');
     }
 
     setUpStatusbars() {
@@ -83,5 +97,12 @@ export default class Game {
         new Statusbar('bottles', 'bottleEvent');
         new Statusbar('coins', 'coinEvent');
         new Statusbar('endboss-energy', 'endbossEnergyEvent');
+    }
+
+    restart() {
+        this.showGameOverDisplay(false, 'game-over-img');
+        this.showGameOverDisplay(false, 'game-won-img');
+        window.initGame();
+        window.game.start();
     }
 }

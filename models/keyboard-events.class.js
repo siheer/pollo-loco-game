@@ -13,30 +13,21 @@ export default class KeyboardEvents {
     }
 
     registerKeyboardListener() {
-        this.registerGameKeyboardListener();
-        this.registerUIKeyboardListener();
-    }
-
-    registerGameKeyboardListener() {
-        window.addEventListener('keydown', (event) => {
+        window.onkeydown = (event) => {
             this.handleKeyDown(event);
-        });
-        window.addEventListener('keyup', (event) => {
+        };
+        window.onkeyup = (event) => {
             this.handleKeyUp(event);
-        });
+            this.handleUIKeyEvent(event);
+        };
     }
 
-    registerUIKeyboardListener() {
-        window.addEventListener('keyup', (event) => {
-            if (event.key === 'Escape') {
-                window.playPauseButton.click();
-            }
-        });
-        window.addEventListener('keyup', (event) => {
-            if (event.key === 'f') {
-                document.getElementById('full-screen').click();
-            }
-        })
+    handleUIKeyEvent(event) {
+        if (event.key === 'p') {
+            window.playPauseButton.click();
+        } else if (event.key === 'f') {
+            document.getElementById('full-screen').click();
+        }
     }
 
     handleKeyDown(event) {

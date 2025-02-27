@@ -17,12 +17,46 @@ export default class World {
         this.cameraX = 0;
         this.collisionsDeltaTime = 0;
         this.initKeyBoardEventsDeltaTime = 0;
+        this.createActionTimers();
+    }
+
+    createActionTimers() {
         this.bottleActionTimer = new ActionTimer(
             () => this.level.character.bottleSupply > 0,
             () => this.level.character.throwBottle(),
             0,
             200
         );
+        this.spawnEnemiesActionTimer = new ActionTimer(
+            () => true,
+            () => this.level.spawnEnemies(),
+            0,
+            15000
+        )
+        this.spawnItemsActionTimer = new ActionTimer(
+            () => true,
+            () => this.level.spawnItems(),
+            0,
+            20000
+        )
+    }
+
+    updateWorld(deltaTime) {
+        this.updateWorldItems(this.level.levelItems, deltaTime);
+        if (this.spawnEnemiesActionTimer.isPlayable()) {
+            this.spawnEnemiesActionTimer.play();
+        }
+        if (this.spawnItemsActionTimer.isPlayable()) {
+            this.spawnItemsActionTimer.play();
+        }
+    }
+
+    updateWorldItems(reference, deltaTime) {
+        if (Array.isArray(reference)) {
+            reference.forEach(item => this.updateWorldItems(item, deltaTime));
+        } else {
+            reference.update?.(deltaTime);
+        }
     }
 
     drawWorld() {
@@ -82,14 +116,6 @@ export default class World {
             this.ctx.rect(innerX, innerY, innerWidth, innerHeight);
             this.ctx.stroke();
             this.ctx.restore();
-        }
-    }
-
-    updateWorld(reference, deltaTime) {
-        if (Array.isArray(reference)) {
-            reference.forEach(item => this.updateWorld(item, deltaTime));
-        } else {
-            reference.update?.(deltaTime);
         }
     }
 

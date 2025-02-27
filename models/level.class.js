@@ -21,37 +21,26 @@ export default class Level {
             const level = await import(this.pathToLevelItems);
             this.levelItems = level.createLevelItems(this, this.canvas, this.levelXLengthFactor);
             this.levelItems.push(this.character);
-            this.spawnRegularly();
         } catch (error) {
             console.error('Error loading level items:', error);
         }
     }
 
-    spawnRegularly() {
-        setInterval(() => {
-            this.spawnEnemies();
-        }, 10000);
-        setInterval(() => {
-            this.spawnItems();
-        }, 15000);
-        this.moveCharacterReferenceToPaintLast();
-    }
-
     spawnEnemies() {
-        if (!window.game.isGameRunning) return;
         this.spawnOutsideLevel = true;
         this.levelItems[1].push([
             createEnemies(this)
         ]);
+        this.moveCharacterReferenceToPaintLast();
         this.spawnOutsideLevel = false;
     }
 
     spawnItems() {
-        if (!window.game.isGameRunning) return;
         this.levelItems.push([
             createCoins(this),
             createBottles(this),
         ]);
+        this.moveCharacterReferenceToPaintLast();
     }
 
     moveCharacterReferenceToPaintLast() {

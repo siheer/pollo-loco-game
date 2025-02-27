@@ -1,37 +1,37 @@
 export default class UI {
-    constructor(game) {
-        this.gameContainerElem = document.getElementById('game-container');
+    static staticButtonsAlreadyRegistered = false;
+
+    constructor() {
+        this.canvasContainerElem = document.getElementById('canvas-container');
         this.fullScreenBtn = document.getElementById('full-screen');
-        this.registerPlayPauseButton(game);
-        this.registerFullScreenButton();
-        this.registerGoTos();
+        if (!UI.staticButtonsAlreadyRegistered) {
+            this.registerPlayPauseButton();
+            this.registerFullScreenButton();
+            this.registerGoTos();
+            this.registerRestartButton();
+            UI.staticButtonsAlreadyRegistered = true;
+        }
     }
 
-    registerPlayPauseButton(game) {
-        window.playPauseButton.addEventListener('click', () => {
-            if (game.isGameRunning) {
-                game.stop();
-                window.playPauseButton.innerHTML = playSVG;
-            } else {
-                game.start();
-                window.playPauseButton.innerHTML = pauseSVG;
-            }
-            game.isGameRunning = !game.isGameRunning;
-            window.playPauseButton.blur();
-        });
+    registerPlayPauseButton() {
+        window.playPauseButton = document.getElementById('play-pause-button');
+        window.playPauseButton.onclick = () => {
+            window.game.handlePlayPauseButton();
+        };
+
     }
 
     registerFullScreenButton() {
-        this.fullScreenBtn.addEventListener('click', () => {
-            this.toggleFullScreen(this.gameContainerElem);
-        })
-        document.addEventListener('fullscreenchange', () => {
+        this.fullScreenBtn.onclick = () => {
+            this.toggleFullScreen(document.getElementById('game-container'));
+        };
+        document.onfullscreenchange = () => {
             if (document.fullscreenElement) {
                 this.handleFullScreen();
             } else {
                 this.handleExitFullScreen();
             }
-        })
+        };
     }
 
     toggleFullScreen(elem) {
@@ -43,40 +43,34 @@ export default class UI {
     }
 
     handleFullScreen() {
-        this.gameContainerElem.classList.remove('border-radius-1rem');
+        window.gameOverlay.element.classList.add('start-bg');
+        this.canvasContainerElem.classList.remove('border-radius-1rem');
         this.fullScreenBtn.innerHTML = exitFullScreenSVG;
-        this.fullScreenBtn.title = 'Exit fullscreen (f)';
+        this.fullScreenBtn.title = 'Vollbildmodus beenden (f)';
     }
 
     handleExitFullScreen() {
-        this.gameContainerElem.classList.add('border-radius-1rem');
+        window.gameOverlay.element.classList.remove('start-bg');
+        this.canvasContainerElem.classList.add('border-radius-1rem');
         this.fullScreenBtn.innerHTML = fullScreenSVG;
-        this.fullScreenBtn.title = 'Enter fullscreen (f)';
+        this.fullScreenBtn.title = 'Vollbild (f)';
     }
 
     registerGoTos() {
-        const gameUIBtns = [document.getElementById('go-to-legal-notice'), document.getElementById('go-to-start'), document.getElementById('go-to-controls')];
-        gameUIBtns.forEach(button => {
-            button.addEventListener('click', () => {
-                game.stop();
-                window.playPauseButton.innerHTML = playSVG;
-                this.openGameOverlay(button.dataset.goTo);
-            });
-        });
+        const btnActions = {
+            'go-to-start': () => window.gameOverlay.setContent(window.gameOverlay.startScreen, '.start-btn', 'game'),
+            'go-to-controls': () => window.gameOverlay.setContent(window.gameOverlay.controlsScreen, '.back-btn', 'game'),
+        }
+        Object.entries(btnActions).forEach(([selector, action]) => {
+            const btn = document.getElementById(selector);
+            btn.onclick = () => {
+                window.game.stop();
+                action();
+            };
+        })
     }
 
-    openGameOverlay(goTo) {
-        switch (goTo) {
-            case 'legal-notice':
-                break;
-            case 'start':
-                break;
-            case 'controls':
-                break;
-            case null:
-                break;
-            default:
-                throw new Error('Invalid goTo: ' + goTo);
-        }
+    registerRestartButton() {
+        document.getElementById('restart-btn').addEventListener('click', () => window.game.restart());
     }
 }
