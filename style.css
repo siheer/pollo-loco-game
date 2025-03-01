@@ -1,88 +1,33 @@
+body {
+    margin: 0;
+    height: 100vh;
+}
+
 .start-bg {
     background-image: url('./img/bg.jpg');
-    background-position: center;
     background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .game-container {
     position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    max-height: 100dvh;
+    width: 95%;
+    height: 100%;
     max-width: 87.5rem;
     margin: auto;
     scrollbar-width: auto;
     scrollbar-color: black transparent;
 }
 
-.btn {
-    font-size: 1.5rem;
-    border: .2rem solid black;
-
-    &:hover,
-    &:focus {
-        transform: scale(1.1);
-    }
-
-    &.restart {
-        position: absolute;
-        bottom: 1rem;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 15rem;
-        color: gainsboro;
-        background-color: black;
-        z-index: 2;
-
-        &:hover {
-            transform: translateX(-50%) scale(1.1);
-        }
-    }
-}
-
-.menu {
-    z-index: 2;
-    overflow: auto;
-    padding: 2rem 5rem;
-    font-size: 1.5rem;
-
-    & span,
-    & p {
-        background-color: rgb(254, 135, 5, 0.5);
-        padding: 0 1rem;
-        border-radius: 999rem;
-    }
-
-    & h1 {
-        font-size: 4rem;
-        margin: 2rem auto;
-    }
-
-    & h2 {
-        font-size: 3rem;
-        margin: 1rem auto;
-    }
-
-    & .controls-container {
-        width: 100%;
-    }
-
-    & .key-explanation {
-        width: clamp(0rem, 30rem, 100%);
-    }
-
-    & .key-svg {
-        height: 3rem;
-
-        & svg {
-            height: 100%;
-        }
-    }
+.game-container>div {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 canvas {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     display: block;
 }
 
@@ -90,6 +35,7 @@ canvas {
     position: relative;
     overflow: hidden;
     box-shadow: 0 0 1rem black;
+    aspect-ratio: 16 / 9;
 }
 
 .canvas-overlay {
@@ -110,6 +56,63 @@ canvas {
     &.won {
         object-fit: contain;
         background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.btn {
+    font-size: 1.5rem;
+    border: .2rem solid black;
+
+    &.restart {
+        position: absolute;
+        bottom: 6rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 15rem;
+        color: gainsboro;
+        background-color: black;
+        z-index: 2;
+    }
+}
+
+.menu {
+    z-index: 2;
+    overflow: auto;
+    padding: 2rem 5rem;
+    font-size: 1.5rem;
+    text-align: center;
+
+    & span,
+    & p {
+        background-color: rgb(254, 135, 5, 0.5);
+        padding: 0 1rem;
+        border-radius: 1rem;
+    }
+
+    & h1 {
+        font-size: 4rem;
+        margin: 0 auto 2rem;
+    }
+
+    & h2 {
+        font-size: 3rem;
+        margin: 0 auto 1rem;
+    }
+
+    & .controls-container {
+        width: 100%;
+    }
+
+    & .key-explanation {
+        width: clamp(0rem, 30rem, 100%);
+    }
+
+    & .key-svg {
+        height: 3rem;
+
+        & svg {
+            height: 100%;
+        }
     }
 }
 
@@ -138,6 +141,7 @@ canvas {
     background: none;
     border: none;
     cursor: pointer;
+    user-select: none;
     padding: 0;
     width: 3rem;
     height: 3rem;
@@ -155,11 +159,7 @@ canvas {
     }
 
     &.goto-start {
-        left: 2rem;
-    }
-
-    &.legal-notice {
-        left: 6rem;
+        left: 1.5%;
     }
 
     &.controls {
@@ -167,12 +167,8 @@ canvas {
     }
 
     &.full-screen {
-        right: 1rem;
+        right: 1.5%;
     }
-}
-
-.game-ui-btn:hover {
-    transform: scale(1.1);
 }
 
 .statusbar {
@@ -250,8 +246,85 @@ canvas {
     }
 }
 
+@media (hover: hover) and (pointer: fine) {
+
+    .btn:hover,
+    .btn:focus {
+        transform: scale(1.1);
+    }
+
+    .btn.restart:hover {
+        transform: translateX(-50%) scale(1.1);
+    }
+
+    .game-ui-btn:hover {
+        transform: scale(1.1);
+    }
+}
+
+@media (hover: none) {
+    .game-ui-btn.mobile {
+        position: static;
+        flex-shrink: 0;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .in-game-controls * {
+        opacity: 1;
+    }
+
+    .game-ui-btn.play-pause-button {
+        left: 8%;
+    }
+
+    .game-ui-btn.controls {
+        left: 14%;
+    }
+
+    .mobile-controls {
+        display: flex;
+        gap: 4%;
+        width: 100%;
+    }
+
+    .game-ui-btn.mobile {
+        position: static;
+        flex-shrink: 0;
+        overflow: hidden;
+
+        &>img {
+            flex-shrink: 0;
+        }
+
+        &.throw,
+        &.buy {
+            justify-content: center;
+            align-items: center;
+        }
+
+        &.throw {
+            height: 4.5rem;
+
+            &>img {
+                width: 155%;
+                height: 110%;
+            }
+        }
+
+        &.buy>img {
+            width: 140%;
+            height: 140%;
+        }
+    }
+}
+
 @media (max-width: 80rem) {
     :root {
+        font-size: 90%;
         font-size: 90%;
     }
 }

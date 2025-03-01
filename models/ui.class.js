@@ -8,6 +8,7 @@ export default class UI {
             this.registerPlayPauseButton();
             this.registerFullScreenButton();
             this.registerGoTos();
+            this.registerMobileControls();
             this.registerRestartButton();
             UI.staticButtonsAlreadyRegistered = true;
         }
@@ -72,5 +73,21 @@ export default class UI {
 
     registerRestartButton() {
         document.getElementById('restart-btn').addEventListener('click', () => window.game.restart());
+    }
+
+    registerMobileControls() {
+        document.querySelectorAll('.game-ui-btn.mobile').forEach(btn => {
+            btn.oncontextmenu = (e) => e.preventDefault();
+            btn.onpointerdown = (e) => {
+                e.preventDefault();
+                btn.setPointerCapture(e.pointerId);
+                window.keyboardEvents.handleKeyDown(new KeyboardEvent('keydown', { key: btn.dataset.key }));
+            };
+            btn.onpointerup = btn.onpointercancel = btn.onpointerleave = (e) => {
+                e.preventDefault();
+                btn.releasePointerCapture(e.pointerId);
+                window.keyboardEvents.handleKeyUp(new KeyboardEvent('keyup', { key: btn.dataset.key }));
+            };
+        });
     }
 }
