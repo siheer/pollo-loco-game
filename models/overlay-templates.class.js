@@ -47,6 +47,7 @@ export default class OverlayTemplates {
                     <span class="key-label">Start/Pause</span>
                     <div class="key-svg">${KeyboardKeysSVGs.p}</div>
                 </div>
+                <p>Fahre im Spiel mit der Maus an den unteren Rand, um die Navigation zu öffnen.</p>
                 <button class="btn back-btn">Zurück</button>
         </div>
     `;

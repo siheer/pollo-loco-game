@@ -17,6 +17,13 @@ function createLevelItems(level, canvas, repeatCount) {
     const bottles = createInstances(StandingBottle, 2, 0, level.getYPositionForObject(110), 120, 120);
     bottles.push(...createBottles(level));
 
+    //FDPO
+    // const enemies = createInstances(Chicken, 1, 0.5, level.getYPositionForObject(100), 100, 100);
+    // enemies.push(...createInstances(Chick, 1, 0.5, level.getYPositionForObject(70), 70, 70));
+    // enemies.push(new Endboss(level.levelEndX, level.getYPositionForObject(600) + 50, 515, 600));
+    // const coins = createInstances(Coin, 1, 0.5, level.getYPositionForObject(200), 200, 200);
+    // const bottles = createInstances(StandingBottle, 1, 0.5, level.getYPositionForObject(110), 120, 120);
+
     return [
         backgrounds,
         enemies,

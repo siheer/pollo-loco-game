@@ -15,11 +15,6 @@
     scrollbar-color: black transparent;
 }
 
-.border-radius-1rem {
-    border-radius: 1rem;
-}
-
-
 .btn {
     font-size: 1.5rem;
     border: .2rem solid black;
@@ -45,12 +40,18 @@
     }
 }
 
-.navigation {
+.menu {
     z-index: 2;
-    /* background-color: rgba(255, 255, 255, 0.1); */
     overflow: auto;
-    padding: 5rem;
+    padding: 2rem 5rem;
     font-size: 1.5rem;
+
+    & span,
+    & p {
+        background-color: rgb(254, 135, 5, 0.5);
+        padding: 0 1rem;
+        border-radius: 999rem;
+    }
 
     & h1 {
         font-size: 4rem;
@@ -79,14 +80,6 @@
     }
 }
 
-.transition-opacity {
-    transition: opacity 1s ease-in-out;
-}
-
-.opacity-0 {
-    opacity: 0;
-}
-
 canvas {
     width: 100%;
     height: 100%;
@@ -94,6 +87,7 @@ canvas {
 }
 
 .canvas-container {
+    position: relative;
     overflow: hidden;
     box-shadow: 0 0 1rem black;
 }
@@ -103,6 +97,39 @@ canvas {
     height: 100%;
     position: absolute;
     inset: 0;
+}
+
+.border-radius-1rem {
+    border-radius: 1rem;
+}
+
+.canvas-overlay-img {
+    object-fit: cover;
+    pointer-events: none;
+
+    &.won {
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.in-game-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 5rem;
+
+    & * {
+        opacity: 0;
+    }
+}
+
+.in-game-controls:hover,
+.in-game-controls:focus-within {
+    & * {
+        opacity: 1;
+    }
 }
 
 .game-ui-btn {
@@ -220,16 +247,6 @@ canvas {
             border: var(--border);
             border-radius: inherit;
         }
-    }
-}
-
-.canvas-overlay-img {
-    object-fit: cover;
-    pointer-events: none;
-
-    &.won {
-        object-fit: contain;
-        background: rgba(255, 255, 255, 0.2);
     }
 }
 

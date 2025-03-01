@@ -89,6 +89,14 @@ export default class Endboss extends GameItem {
         );
     }
 
+    isEnemyClose() {
+        return Math.abs(window.world.level.character.x - this.x) < 1300;
+    }
+
+    isEnemyVeryClose() {
+        return Math.abs(window.world.level.character.x - this.x) < 500;
+    }
+
     update(deltaTime) {
         if (!this.allLoaded) return;
         if (this.isDead) {
@@ -100,6 +108,7 @@ export default class Endboss extends GameItem {
         } else if (this.attackActionTimer.isPlayable()) {
             this.attackActionTimer.play(deltaTime);
         } else {
+            this.checkIfGameOver();
             this.handleWalking(deltaTime);
         }
     }
@@ -125,11 +134,10 @@ export default class Endboss extends GameItem {
         this.hurtingAnimation.currentImageIndex = 0;
     }
 
-    isEnemyClose() {
-        return Math.abs(window.world.level.character.x - this.x) < 1300;
-    }
-
-    isEnemyVeryClose() {
-        return Math.abs(window.world.level.character.x - this.x) < 500;
+    checkIfGameOver() {
+        if (this.x < 0) {
+            window.game.gameOver.isOver = true;
+            window.game.gameOver.playerHasWon = false;
+        }
     }
 }

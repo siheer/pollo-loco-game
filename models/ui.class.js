@@ -43,14 +43,14 @@ export default class UI {
     }
 
     handleFullScreen() {
-        window.gameOverlay.element.classList.add('start-bg');
+        window.gameOverlay.element?.classList.add('start-bg');
         this.canvasContainerElem.classList.remove('border-radius-1rem');
         this.fullScreenBtn.innerHTML = exitFullScreenSVG;
         this.fullScreenBtn.title = 'Vollbildmodus beenden (f)';
     }
 
     handleExitFullScreen() {
-        window.gameOverlay.element.classList.remove('start-bg');
+        window.gameOverlay.element?.classList.remove('start-bg');
         this.canvasContainerElem.classList.add('border-radius-1rem');
         this.fullScreenBtn.innerHTML = fullScreenSVG;
         this.fullScreenBtn.title = 'Vollbild (f)';

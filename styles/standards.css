@@ -108,6 +108,10 @@ button:hover {
     cursor: pointer;
 }
 
+.round-border {
+    border-radius: 999rem;
+}
+
 .btn {
     padding: 0.5rem 1.5rem;
     font-size: 1.125rem;
@@ -299,12 +303,16 @@ noscript {
     display: none !important;
 }
 
-.vn {
-    visibility: hidden !important;
+.visibility-hidden {
+    visibility: hidden;
 }
 
-.on {
-    opacity: 0 !important;
+.opacity-0 {
+    opacity: 0;
+}
+
+.transition-opacity {
+    transition: opacity 1s ease-in-out;
 }
 
 .overflow-auto {

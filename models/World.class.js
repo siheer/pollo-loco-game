@@ -31,7 +31,7 @@ export default class World {
             () => true,
             () => this.level.spawnEnemies(),
             0,
-            15000
+            20000
         )
         this.spawnItemsActionTimer = new ActionTimer(
             () => true,
@@ -122,11 +122,13 @@ export default class World {
     checkForInitializingKeyboardEvents(deltaTime) {
         this.initKeyBoardEventsDeltaTime += deltaTime;
         if (this.initKeyBoardEventsDeltaTime > STANDARD_INTERVAL_IN_MILLISECONDS) {
-            if (keyboardEvents.keys['a']) {
-                this.handleKeyA();
-            }
-            if (keyboardEvents.keys['Enter']) {
-                this.handleKeyEnter();
+            if (!this.level.character.isDead) {
+                if (keyboardEvents.keys['a']) {
+                    this.handleKeyA();
+                }
+                if (keyboardEvents.keys['Enter']) {
+                    this.handleKeyEnter();
+                }
             }
             this.initKeyBoardEventsDeltaTime = 0;
         }

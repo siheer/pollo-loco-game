@@ -15,7 +15,7 @@ export default class Game {
 
     // repaint canvas max 20 times (during 20 seconds), so that hopefully until then all resources has been loaded.
     waitOnStart() {
-        if (this.worldPaintedBeforeStartCount < 20) {
+        if (!this.isGameRunning && this.worldPaintedBeforeStartCount < 20) {
             this.world.drawWorld();
             this.worldPaintedBeforeStartCount++;
         }
@@ -30,7 +30,6 @@ export default class Game {
             this.updateUIOnStart();
             this.isGameRunning = true;
             this.lastTimestamp = null;
-            clearInterval(this.waitOnStartIntervalId);
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }, delayInMilliseconds);
     }
@@ -90,6 +89,7 @@ export default class Game {
         const restartBtn = document.getElementById('restart-btn');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
         show ? restartBtn.classList.remove('dn') : restartBtn.classList.add('dn');
+        show ? restartBtn.focus() : null;
     }
 
     setUpStatusbars() {

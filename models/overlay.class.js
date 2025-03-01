@@ -18,7 +18,7 @@ export default class GameOverlay {
 
     add() {
         this.element = document.createElement('div');
-        this.element.classList.add('canvas-overlay', 'navigation', 'fr', 'jcac');
+        this.element.classList.add('canvas-overlay', 'menu', 'fr', 'jcac');
         if (document.fullscreenElement) {
             this.element.classList.add('start-bg');
         }
@@ -39,10 +39,12 @@ export default class GameOverlay {
     showOverlay() {
         document.getElementById('canvas-container').classList.remove('transition-opacity');
         document.getElementById('canvas-container').classList.add('opacity-0');
+        document.getElementById('canvas-container').classList.add('visibility-hidden');
     }
 
     remove() {
         if (this.element) {
+            document.getElementById('canvas-container').classList.remove('visibility-hidden');
             document.getElementById('canvas-container').classList.add('transition-opacity');
             document.getElementById('canvas-container').classList.remove('opacity-0');
             this.container.removeChild(this.element);

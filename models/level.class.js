@@ -21,6 +21,8 @@ export default class Level {
             const level = await import(this.pathToLevelItems);
             this.levelItems = level.createLevelItems(this, this.canvas, this.levelXLengthFactor);
             this.levelItems.push(this.character);
+            //FDPO
+            window.levelItems = this.levelItems;
         } catch (error) {
             console.error('Error loading level items:', error);
         }
