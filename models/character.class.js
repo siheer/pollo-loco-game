@@ -12,7 +12,7 @@ export default class Character extends GameItem {
         this.idleImg = this.img;
         this.speedX = 40;
         this.initialSpeedY = -50;
-        this.isFacingLeft = false;
+        this.isFacingOtherDirection = false;
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
@@ -119,7 +119,7 @@ export default class Character extends GameItem {
      * Handle movement to the right.
      */
     onRight(deltaTime) {
-        this.isFacingLeft = false;
+        this.isFacingOtherDirection = false;
         if (!this.justJumped) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
@@ -131,7 +131,7 @@ export default class Character extends GameItem {
      * Handle movement to the left.
      */
     onLeft(deltaTime) {
-        this.isFacingLeft = true;
+        this.isFacingOtherDirection = true;
         if (!this.justJumped) {
             this.updateAnimation(this.walkingAnimation, deltaTime, 60);
         }
@@ -203,8 +203,8 @@ export default class Character extends GameItem {
     }
 
     throwBottle() {
-        const x = this.isFacingLeft ? this.x : this.x + this.width - this.offset.right;
-        this.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingLeft, true));
+        const x = this.isFacingOtherDirection ? this.x : this.x + this.width - this.offset.right;
+        this.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingOtherDirection, true));
         this.bottleSupply--;
         this.dispatchBottleEvent();
     }

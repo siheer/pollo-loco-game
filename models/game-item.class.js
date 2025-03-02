@@ -48,8 +48,8 @@ export default class GameItem extends CanvasObject {
         animation.currentImageIndex++;
     }
 
-    moveRight() {
-        this.x += this.speedX;
+    moveRight(speedX = this.speedX) {
+        this.x += speedX;
     }
 
     moveLeft(speedX = this.speedX) {

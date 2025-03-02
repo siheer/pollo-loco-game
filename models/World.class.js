@@ -87,7 +87,7 @@ export default class World {
 
     drawWorldItem(item) {
         if (item instanceof CanvasObject) {
-            if (item.isFacingLeft) {
+            if (item.isFacingOtherDirection) {
                 this.ctx.save();
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);

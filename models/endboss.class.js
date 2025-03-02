@@ -62,6 +62,12 @@ export default class Endboss extends GameItem {
     }
 
     initializeActionTimer() {
+        this.directionAction = new ActionTimer(
+            () => true,
+            () => this.updateDirection(),
+            0,
+            200
+        )
         this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
@@ -73,7 +79,7 @@ export default class Endboss extends GameItem {
             () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
             deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
             2000,
-            3000,
+            1500,
             () => this.alertedAnimation.currentImageIndex = 0
         );
         this.attackAction = new ActionTimer(
@@ -81,7 +87,7 @@ export default class Endboss extends GameItem {
             deltaTime => {
                 this.updateAnimation(this.attackingAnimation, deltaTime);
                 if (this.attackingAnimation.currentImageIndex === 5) {
-                    this.moveLeft(40);
+                    this.isFacingOtherDirection ? this.moveRight(40) : this.moveLeft(40);
                 }
             },
             2000,
@@ -90,26 +96,36 @@ export default class Endboss extends GameItem {
     }
 
     isEnemyClose() {
-        return Math.abs(window.world.level.character.x - this.x) < 1300;
+        return this.isWithinRangeOf(1300);
     }
 
     isEnemyVeryClose() {
-        return Math.abs(window.world.level.character.x - this.x) < 500;
+        return this.isWithinRangeOf(500);
+    }
+
+    isWithinRangeOf(range) {
+        const distance = Math.abs(window.world.level.character.x - this.x);
+        return this.isFacingOtherDirection ? distance < range + this.width : distance < range;
     }
 
     update(deltaTime) {
         if (!this.allLoaded) return;
-        if (this.isDead) {
-            this.handleDead(deltaTime);
-        } else if (this.hurtingAction.updateAndIsExecutable(deltaTime)) {
-            this.hurtingAction.execute(deltaTime);
-        } else if (this.alertedAction.updateAndIsExecutable(deltaTime) && !this.isEnemyVeryClose()) {
-            this.alertedAction.execute(deltaTime);
-        } else if (this.attackAction.updateAndIsExecutable(deltaTime)) {
-            this.attackAction.execute(deltaTime);
-        } else {
+        if (this.directionAction.updateAndIsExecutable(deltaTime)) this.directionAction.execute();
+        if (this.isDead) this.handleDead(deltaTime);
+        else if (this.hurtingAction.updateAndIsExecutable(deltaTime)) this.hurtingAction.execute(deltaTime);
+        else if (this.alertedAction.updateAndIsExecutable(deltaTime) && !this.isEnemyVeryClose()) this.alertedAction.execute(deltaTime);
+        else if (this.attackAction.updateAndIsExecutable(deltaTime)) this.attackAction.execute(deltaTime);
+        else {
             this.checkIfGameOver();
             this.handleWalking(deltaTime);
+        }
+    }
+
+    updateDirection() {
+        if (window.world.level.character.x - this.x > this.width / 4) {
+            this.isFacingOtherDirection = true;
+        } else {
+            this.isFacingOtherDirection = false;
         }
     }
 
@@ -123,7 +139,7 @@ export default class Endboss extends GameItem {
 
     handleWalking(deltaTime) {
         this.updateAnimation(this.walkingAnimation, deltaTime);
-        this.moveLeft();
+        this.isFacingOtherDirection ? this.moveRight() : this.moveLeft();
     }
 
     takeDamage(deltaTime, updateInterval = 0, damage = this.takesDamageAmount) {
