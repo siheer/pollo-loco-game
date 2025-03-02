@@ -1,50 +1,52 @@
 export default class ActionTimer {
-    constructor(checkCallbackFn, actionCallbackFn, actionDuration, minTimeBetweenActions, restoreStatesCallbackFn = null) {
+    constructor(checkCallbackFn, actionCallbackFn, actionDuration, minTimeBetweenActions, resetStatesCallbackFn = null) {
         this.checkCallbackFn = checkCallbackFn;
         this.actionCallbackFn = actionCallbackFn;
         this.actionDuration = actionDuration;
         this.minTimeBetweenActions = minTimeBetweenActions;
-        this.restoreStatesCallbackFn = restoreStatesCallbackFn;
-        this.isPlaying = false;
-        this.hasEnoughTimePassed = true;
+        this.resetStatesCallbackFn = resetStatesCallbackFn;
+        this.isPlayable = false;
+        this.hasEnoughTimePassed = false;
+        this.timeSinceActionStarted = 0;
+        this.timeToPassBetweenActions = minTimeBetweenActions;
     }
 
-    isPlayable(arg, ...moreArgs) {
-        return this.checkCallbackFn(arg, ...moreArgs) && this.hasEnoughTimePassed;
+    updateAndIsExecutable(deltaTime, arg, ...moreArgs) {
+        if (!Number.isFinite(deltaTime)) {
+            throw new Error('deltaTime must be provided as a number in milliseconds.');
+        }
+        this.updateActionTimer(deltaTime);
+        return (this.hasEnoughTimePassed || this.isPlayable) && this.checkCallbackFn(arg, ...moreArgs);
     }
 
-    play(arg, ...moreArgs) {
-        if (this.isPlaying) {
-            this.actionCallbackFn(arg, ...moreArgs);
-        } else if (this.hasEnoughTimePassed) {
-            this.isPlaying = true;
-            if (this.hasNoPositiveDuration()) {
-                this.playActionOnce(arg, ...moreArgs);
-            } else {
-                setTimeout(() => {
-                    this.stop();
-                }, this.actionDuration);
+    updateActionTimer(deltaTime) {
+        if (!this.isPlayable) {
+            this.timeToPassBetweenActions -= deltaTime;
+            if (this.timeToPassBetweenActions < 0) { // prevent overflow to positive
+                this.timeToPassBetweenActions = 0;
+            }
+            this.hasEnoughTimePassed = this.timeToPassBetweenActions === 0;
+        } else {
+            this.timeSinceActionStarted += deltaTime;
+            this.isPlayable = this.timeSinceActionStarted < this.actionDuration;
+            if (!this.isPlayable) {
+                this.stop();
             }
         }
     }
 
-    hasNoPositiveDuration() {
-        return this.actionDuration <= 0;
-    }
-
-    playActionOnce(arg, ...moreArgs) {
-        if (this.actionDuration <= 0) {
-            this.actionCallbackFn(arg, ...moreArgs);
-            this.stop();
+    execute(arg, ...moreArgs) {
+        if (!this.isPlayable) {
+            this.hasEnoughTimePassed = false;
+            this.timeSinceActionStarted = 0;
+            this.isPlayable = true;
         }
+        this.actionCallbackFn(arg, ...moreArgs);
     }
 
     stop() {
-        this.isPlaying = false;
-        this.hasEnoughTimePassed = false;
-        this.restoreStatesCallbackFn?.();
-        setTimeout(() => {
-            this.hasEnoughTimePassed = true;
-        }, this.minTimeBetweenActions);
+        this.isPlayable = false;
+        this.timeToPassBetweenActions = this.minTimeBetweenActions;
+        this.resetStatesCallbackFn?.();
     }
 }

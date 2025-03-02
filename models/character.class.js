@@ -16,8 +16,8 @@ export default class Character extends GameItem {
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
-        this.takesDamageAmount = 3;
-        this.hurtingActionTimer = new ActionTimer(
+        this.takesDamageAmount = 2;
+        this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
             300,
@@ -85,8 +85,8 @@ export default class Character extends GameItem {
             if (this.isIdle()) {
                 this.img = this.idleImg;
             }
-            if (this.hurtingActionTimer.isPlayable()) {
-                this.hurtingActionTimer.play(deltaTime);
+            if (this.hurtingAction.updateAndIsExecutable(deltaTime)) {
+                this.hurtingAction.execute(deltaTime);
             }
         }
     }

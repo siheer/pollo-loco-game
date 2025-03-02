@@ -253,7 +253,8 @@ canvas {
         transform: scale(1.1);
     }
 
-    .btn.restart:hover {
+    .btn.restart:hover,
+    .btn.restart:focus {
         transform: translateX(-50%) scale(1.1);
     }
 

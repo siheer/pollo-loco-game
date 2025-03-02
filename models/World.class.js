@@ -21,12 +21,18 @@ export default class World {
     }
 
     createActionTimers() {
-        this.bottleActionTimer = new ActionTimer(
-            () => this.level.character.bottleSupply > 0,
+        this.bottleThrowAction = new ActionTimer(
+            () => keyboardEvents.keys['a'] && this.level.character.bottleSupply > 0,
             () => this.level.character.throwBottle(),
             0,
             200
         );
+        this.bottleBuyAction = new ActionTimer(
+            () => keyboardEvents.keys['Enter'] && this.level.character.canBuyBottle(),
+            () => this.level.character.buyBottle(),
+            0,
+            100
+        )
         this.spawnEnemiesActionTimer = new ActionTimer(
             () => true,
             () => this.level.spawnEnemies(),
@@ -43,11 +49,11 @@ export default class World {
 
     updateWorld(deltaTime) {
         this.updateWorldItems(this.level.levelItems, deltaTime);
-        if (this.spawnEnemiesActionTimer.isPlayable()) {
-            this.spawnEnemiesActionTimer.play();
+        if (this.spawnEnemiesActionTimer.updateAndIsExecutable(deltaTime)) {
+            this.spawnEnemiesActionTimer.execute();
         }
-        if (this.spawnItemsActionTimer.isPlayable()) {
-            this.spawnItemsActionTimer.play();
+        if (this.spawnItemsActionTimer.updateAndIsExecutable(deltaTime)) {
+            this.spawnItemsActionTimer.execute();
         }
     }
 
@@ -120,29 +126,13 @@ export default class World {
     }
 
     checkForInitializingKeyboardEvents(deltaTime) {
-        this.initKeyBoardEventsDeltaTime += deltaTime;
-        if (this.initKeyBoardEventsDeltaTime > STANDARD_INTERVAL_IN_MILLISECONDS) {
-            if (!this.level.character.isDead) {
-                if (keyboardEvents.keys['a']) {
-                    this.handleKeyA();
-                }
-                if (keyboardEvents.keys['Enter']) {
-                    this.handleKeyEnter();
-                }
+        if (!this.level.character.isDead) {
+            if (this.bottleThrowAction.updateAndIsExecutable(deltaTime)) {
+                this.bottleThrowAction.execute();
             }
-            this.initKeyBoardEventsDeltaTime = 0;
-        }
-    }
-
-    handleKeyA() {
-        if (this.bottleActionTimer.isPlayable()) {
-            this.bottleActionTimer.play();
-        }
-    }
-
-    handleKeyEnter() {
-        if (this.level.character.canBuyBottle()) {
-            this.level.character.buyBottle();
+            if (this.bottleBuyAction.updateAndIsExecutable(deltaTime)) {
+                this.bottleBuyAction.execute();
+            }
         }
     }
 
@@ -174,7 +164,8 @@ export default class World {
             this.level.character.energy += 3;
             this.level.character.dispatchCharacterEnergyEvent();
         } else {
-            this.level.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, 9);
+            const damageAmount = enemy instanceof Endboss ? 9 : this.level.character.takesDamageAmount;
+            this.level.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, damageAmount);
         }
     }
 
@@ -199,7 +190,6 @@ export default class World {
                 this.level.character.collectBottle(bottle);
             }
         });
-
         const coins = flattenToArray(this.level.levelItems, Coin);
         coins.forEach(coin => {
             if (coin.isCollidingWith(this.level.character)) {

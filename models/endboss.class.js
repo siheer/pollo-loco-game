@@ -62,21 +62,21 @@ export default class Endboss extends GameItem {
     }
 
     initializeActionTimer() {
-        this.hurtingActionTimer = new ActionTimer(
+        this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
             500,
             0,
             () => this.isHurt = false
         )
-        this.alertedActionTimer = new ActionTimer(
+        this.alertedAction = new ActionTimer(
             () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
             deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
             2000,
             3000,
             () => this.alertedAnimation.currentImageIndex = 0
         );
-        this.attackActionTimer = new ActionTimer(
+        this.attackAction = new ActionTimer(
             () => this.isEnemyVeryClose(),
             deltaTime => {
                 this.updateAnimation(this.attackingAnimation, deltaTime);
@@ -101,12 +101,12 @@ export default class Endboss extends GameItem {
         if (!this.allLoaded) return;
         if (this.isDead) {
             this.handleDead(deltaTime);
-        } else if (this.hurtingActionTimer.isPlayable()) {
-            this.hurtingActionTimer.play(deltaTime);
-        } else if (this.alertedActionTimer.isPlayable() && !this.isEnemyVeryClose()) {
-            this.alertedActionTimer.play(deltaTime);
-        } else if (this.attackActionTimer.isPlayable()) {
-            this.attackActionTimer.play(deltaTime);
+        } else if (this.hurtingAction.updateAndIsExecutable(deltaTime)) {
+            this.hurtingAction.execute(deltaTime);
+        } else if (this.alertedAction.updateAndIsExecutable(deltaTime) && !this.isEnemyVeryClose()) {
+            this.alertedAction.execute(deltaTime);
+        } else if (this.attackAction.updateAndIsExecutable(deltaTime)) {
+            this.attackAction.execute(deltaTime);
         } else {
             this.checkIfGameOver();
             this.handleWalking(deltaTime);

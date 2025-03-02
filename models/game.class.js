@@ -86,10 +86,11 @@ export default class Game {
 
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
+        const fullScreenBtn = document.getElementById('full-screen');
         const restartBtn = document.getElementById('restart-btn');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
         show ? restartBtn.classList.remove('dn') : restartBtn.classList.add('dn');
-        show ? restartBtn.focus() : null;
+        show ? fullScreenBtn.focus() : null;
     }
 
     setUpStatusbars() {
