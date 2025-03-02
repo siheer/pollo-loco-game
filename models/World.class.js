@@ -160,8 +160,7 @@ export default class World {
     handleCharacterCollisionWithEnemy(deltaTime, enemy) {
         if (this.level.character.isStomping(enemy)) {
             enemy.kill();
-            this.level.character.giveRecoilOnStomp(20);
-            // this.level.character.energy += 3;
+            if (!this.level.isAboveGround(enemy)) this.level.character.giveRecoilOnStomp(20);
             this.level.character.dispatchCharacterEnergyEvent();
         } else {
             const damageAmount = enemy instanceof Endboss ? 9 : this.level.character.takesDamageAmount;

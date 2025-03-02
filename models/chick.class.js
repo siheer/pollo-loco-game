@@ -20,16 +20,14 @@ export default class Chick extends GameItem {
     }
 
     update(deltaTime) {
-        if (!this.isDead) {
-            if (this.isJumpingDue()) {
-                this.handleJump(deltaTime);
-            } else if (window.world.level.isAboveGround(this)) {
-                this.applyGravity(deltaTime);
-            } else {
-                this.handleOnGround(deltaTime);
-            }
-            this.moveLeft();
+        if (this.isDead) {
+            if (window.world.level.isAboveGround(this)) this.y += 20;
+            return;
         }
+        else if (this.isJumpingDue()) this.handleJump(deltaTime);
+        else if (window.world.level.isAboveGround(this)) this.applyGravity(deltaTime);
+        else this.handleOnGround(deltaTime);
+        this.moveLeft();
     }
 
     isJumpingDue() {
