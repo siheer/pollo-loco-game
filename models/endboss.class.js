@@ -5,9 +5,9 @@ export default class Endboss extends GameItem {
     constructor(x, y, width, height) {
         super(x, y, width, height);
         this.offset = { left: 80, top: 120, right: 60, bottom: 50 };
-        this.speedX = 3;
+        this.speedX = 5;
         this.energy = this.maxEnergy = 100;
-        this.takesDamageAmount = 10;
+        this.takesDamageAmount = 5;
         this.hurtingDuration = 500;
         this.loadImage('./img/4_enemie_boss_chicken/1_walk/G4.png');
         this.allLoaded = false;

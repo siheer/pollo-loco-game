@@ -16,13 +16,19 @@ export default class Character extends GameItem {
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
-        this.takesDamageAmount = 2;
+        this.takesDamageAmount = 4;
         this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
             300,
             0,
             () => this.isHurt = false
+        )
+        this.healingAction = new ActionTimer(
+            () => true,
+            () => this.heal(2),
+            0,
+            1000
         )
         this.bottleSupply = 5;
         this.maxBottleSupply = 10;
@@ -79,15 +85,12 @@ export default class Character extends GameItem {
         if (this.isDead) {
             this.handleDead(deltaTime);
         } else {
+            if (this.healingAction.updateAndIsExecutable(deltaTime)) this.healingAction.execute();
             this.isCameraToBeFixed();
             this.handleJump(deltaTime);
             this.handleHorizontalMovement(deltaTime);
-            if (this.isIdle()) {
-                this.img = this.idleImg;
-            }
-            if (this.hurtingAction.updateAndIsExecutable(deltaTime)) {
-                this.hurtingAction.execute(deltaTime);
-            }
+            if (this.isIdle()) this.img = this.idleImg;
+            if (this.hurtingAction.updateAndIsExecutable(deltaTime)) this.hurtingAction.execute(deltaTime);
         }
     }
 
@@ -235,6 +238,13 @@ export default class Character extends GameItem {
             this.bottleSupply++;
             this.dispatchBottleEvent();
             this.dispatchCoinEvent();
+        }
+    }
+
+    heal(energy) {
+        if (this.energy + energy <= this.maxEnergy) {
+            this.energy += energy;
+            this.dispatchCharacterEnergyEvent();
         }
     }
 

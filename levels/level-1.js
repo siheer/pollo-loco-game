@@ -56,12 +56,12 @@ function createEnemies(level) {
 
 function createCoins(level) {
     return level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(Coin, 5, offset, level.getYPositionForObject(200), 200, 200);
+        return createInstances(Coin, 2, offset, level.getYPositionForObject(200), 200, 200);
     });
 }
 
 function createBottles(level) {
     return level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(StandingBottle, 2, offset, level.getYPositionForObject(110), 120, 120);
+        return createInstances(StandingBottle, 1, offset, level.getYPositionForObject(110), 120, 120);
     });
 }

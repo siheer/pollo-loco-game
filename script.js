@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 window.initGame = function initGame() {
     const gameCanvas = new Canvas(document.getElementById('canvas'));
-    const level = new Level(gameCanvas, '../levels/level-1.js', 2);
+    const level = new Level(gameCanvas, '../levels/level-1.js', 4);
     level.init();
     const world = new World(level);
     new Game(world);
