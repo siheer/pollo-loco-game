@@ -56,25 +56,13 @@ export default class OverlayTemplates {
             <div class="legal-screen-content">
                 <h2>Impressum</h2>
                 <p>
-                    Anbieter: El Pollo Loco<br>
-                    Verantwortlich: Pepe Mustermann<br>
-                    Adresse: Musterstraße 1, 12345 Musterstadt, Deutschland<br>
-                    Telefon: +49 123 4567890<br>
-                    E-Mail: info@elpolloloco.de
-                </p>
-                <p>
-                    Umsatzsteuer-ID gemäß §27a UStG: DE123456789<br>
-                    Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: Pepe Mustermann
+                    Verantwortlich:  [Name]<br>
+                    E-Mail: <a href="mailto:[email]">[email]</a>
                 </p>
                 <p>
                     Bildnachweis: 
                     <a href="https://www.freepik.com/free-vector/desert-forest-landscape-sunset-time-scene-with-many-cactuses_16445168.htm#fromView=image_search_similar&page=2&position=30&uuid=222b09f2-4eec-47b6-afc1-825755a85c87&query=desert" target="_blank">
                         Image by brgfx on Freepik
-                    </a>
-                    <br>
-                    Iconsnachweis:
-                    <a href="https://www.freepik.com/free-vector/wooden-web-buttons-round-icons-game-interface_25278491.htm#fromView=search&page=3&position=2&uuid=7cede53c-103a-420b-832c-bd2ab4c152ea&query=game+icons+wood">
-                        Image by upklyak on Freepik
                     </a>
                 </p>
                 <button class="btn back-btn">Zurück</button>
