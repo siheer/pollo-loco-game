@@ -6,6 +6,7 @@ export default class UI {
         this.fullScreenBtn = document.getElementById('full-screen');
         if (!UI.staticButtonsAlreadyRegistered) {
             this.registerPlayPauseButton();
+            this.registerMusicOnOffButton();
             this.registerFullScreenButton();
             this.registerGoTos();
             this.registerMobileControls();
@@ -19,7 +20,31 @@ export default class UI {
         window.playPauseButton.onclick = () => {
             window.game.handlePlayPauseButton();
         };
+    }
 
+    registerMusicOnOffButton() {
+        const musicBtn = document.getElementById('music-btn');
+        let isMuted = localStorage.getItem('soundMuted') === 'true';
+        if (isMuted) handleMusicOff();
+        musicBtn.onclick = () => {
+            if (isMuted) {
+                handleMusicOn();
+            } else {
+                handleMusicOff();
+            }
+            isMuted = !isMuted;
+            window.soundManager.toggleMute();
+        }
+
+        function handleMusicOn() {
+            musicBtn.innerHTML = musicOffSVG;
+            musicBtn.title = 'Musik aus (m)';
+        }
+
+        function handleMusicOff() {
+            musicBtn.innerHTML = musicOnSVG;
+            musicBtn.title = 'Musik an (m)';
+        }
     }
 
     registerFullScreenButton() {

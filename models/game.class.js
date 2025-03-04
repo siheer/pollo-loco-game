@@ -8,6 +8,7 @@ export default class Game {
         this.gameOver = { isOver: false, playerHasWon: false };
         this.isGameRunning = false;
         this.firstStart = true;
+        this.firstGameOver = true;
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
@@ -85,7 +86,20 @@ export default class Game {
         } else {
             this.showGameOverDisplay(true, 'game-over-img');
         }
-        window.soundManager.stopBackgroundMusic();
+        if (this.firstGameOver) {
+            this.handleGameOverSounds(this.gameOver.playerHasWon);
+            this.firstGameOver = false;
+        }
+    }
+
+    handleGameOverSounds(hasWon) {
+        window.soundManager.muteAllImmediately();
+        window.soundManager.resetMasterGain();
+        if (hasWon) {
+            window.soundManager.play('gameWon');
+        } else {
+            window.soundManager.play('gameLost');
+        }
     }
 
     showGameOverDisplay(show, elementId) {

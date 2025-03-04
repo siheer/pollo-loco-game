@@ -114,6 +114,11 @@ canvas {
             height: 100%;
         }
     }
+
+    & .attribution-item {
+        margin: .5rem;
+        display: block;
+    }
 }
 
 .in-game-controls {
@@ -164,6 +169,10 @@ canvas {
 
     &.controls {
         left: 51%;
+    }
+
+    &.music {
+        right: 8%;
     }
 
     &.full-screen {

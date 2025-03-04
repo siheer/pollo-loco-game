@@ -27,6 +27,8 @@ export default class KeyboardEvents {
             window.playPauseButton.click();
         } else if (event.key === 'f') {
             document.getElementById('full-screen').click();
+        } else if (event.key === 'm') {
+            document.getElementById('music-btn').click();
         }
     }
 

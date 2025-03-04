@@ -74,6 +74,7 @@ export default class Bottle extends GameItem {
     }
 
     breakBottle() {
+        window.soundManager.play('bottleSmash');
         callAfterCurrentGameLoop(() => { this.isBroken = true });
     }
 }

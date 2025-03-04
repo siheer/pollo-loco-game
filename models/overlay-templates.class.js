@@ -66,21 +66,108 @@ export default class OverlayTemplates {
                     </a>
                 </p>
                 <p>
-                    Music by <a href="https://pixabay.com/users/alba_mac-40740995/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=176807">Alba MacKenna</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=176807">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/ribhavagrawal-39286533/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=230500">Ribhav Agrawal</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=230500">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=140506">Universfield</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=140506">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/floraphonic-38928062/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=197870">floraphonic</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=197870">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/nikin-253338/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=171389">Nikin</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=171389">Pixabay</a>  
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6056">freesound_community</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6056">Pixabay</a>
-                    <br>
-                    Sound Effect by <a href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=29496">freesound_community</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=29496">Pixabay</a>
+                    <span class="attribution-item">
+                        Music by <a
+                            href="https://pixabay.com/users/alba_mac-40740995/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=176807">Alba
+                            MacKenna</a> from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=176807">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/ribhavagrawal-39286533/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=230500">Ribhav
+                            Agrawal</a> from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=230500">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=140506">Universfield</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=140506">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6462">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/floraphonic-38928062/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=197870">floraphonic</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=197870">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/nikin-253338/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=171389">Nikin</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=171389">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6056">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=6056">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=29496">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=29496">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/liecio-3298866/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">LIECIO</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=190037">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        Sound Effect by <a
+                            href="https://pixabay.com/users/audiopapkin-14728698/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=301880">Paweł
+                            Spychała</a> from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=301880">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Bottle breaking) Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=101001">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=101001">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Purchase) Sound Effect by <a
+                            href="https://pixabay.com/users/floraphonic-38928062/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=180438">floraphonic</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=180438">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Running) Sound Effect by <a
+                            href="https://pixabay.com/users/audiopapkin-14728698/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=301880">Paweł
+                            Spychała</a> from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=301880">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Hurt) Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=48124">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Friggin Hurt) Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=37029">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=37029">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Won) Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=103141">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com/sound-effects//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=103141">Pixabay</a>
+                    </span>
+                    <span class="attribution-item">
+                        (Lost) Sound Effect by <a
+                            href="https://pixabay.com/users/freesound_community-46691455/?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=36586">freesound_community</a>
+                        from <a
+                            href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=music&utm_content=36586">Pixabay</a>
+                    </span>
                 </p>
                 <button class="btn back-btn">Zurück</button>
             </div>

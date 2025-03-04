@@ -10,26 +10,26 @@ export default class Character extends GameItem {
         this.fixCameraOnCharacterXPosition = 500;
         this.loadImage('img/2_character_pepe/1_idle/idle/I-1.png');
         this.idleImg = this.img;
-        this.speedX = 40;
+        this.speedX = 30;
         this.initialSpeedY = -50;
         this.isFacingOtherDirection = false;
         this.offset = { left: 60, top: 200, right: 70, bottom: 30 };
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
-        this.takesDamageAmount = 4;
+        this.takesDamageAmount = 5;
         this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
             300,
             0,
             () => this.isHurt = false
-        )
+        );
         this.healingAction = new ActionTimer(
             () => true,
             () => this.heal(2),
             0,
             1000
-        )
+        );
         this.bottleSupply = 5;
         this.maxBottleSupply = 10;
         this.coinSupply = 50;
@@ -63,7 +63,7 @@ export default class Character extends GameItem {
             './img/2_character_pepe/4_hurt/H-41.png',
             './img/2_character_pepe/4_hurt/H-42.png',
             './img/2_character_pepe/4_hurt/H-43.png',
-        ])
+        ]);
 
         this.dyingAnimation = this.createAnimation([
             './img/2_character_pepe/5_dead/D-51.png',
@@ -73,14 +73,9 @@ export default class Character extends GameItem {
             './img/2_character_pepe/5_dead/D-55.png',
             './img/2_character_pepe/5_dead/D-56.png',
             './img/2_character_pepe/5_dead/D-57.png',
-        ])
+        ]);
     }
 
-    /**
-     * Main update method called on every frame.
-     * It updates the camera, handles jump and horizontal movement,
-     * and reverts to the idle state if no movement is triggered.
-     */
     update(deltaTime) {
         if (this.isDead) {
             this.handleDead(deltaTime);
@@ -94,19 +89,27 @@ export default class Character extends GameItem {
         }
     }
 
-    /**
-     * Fix the camera on the character when the x-position exceeds a threshold.
-     */
+    handleDead(deltaTime) {
+        window.soundManager.stopSoundImmediatelyByKey('walking');
+        window.soundManager.stopSoundImmediatelyByKey('characterHurt');
+        this.updateAnimation(this.dyingAnimation, deltaTime, 150);
+        if (this.dyingAnimation.currentImageIndex === this.dyingAnimation.imageCache.length) {
+            window.game.gameOver.isOver = true;
+        }
+    }
+
     isCameraToBeFixed() {
         if (!this.fixCameraOnCharacter && this.x > this.fixCameraOnCharacterXPosition) {
             this.fixCameraOnCharacter = true;
         }
     }
 
-    /**
-     * Handle horizontal movement based on left/right arrow key input.
-     */
     handleHorizontalMovement(deltaTime) {
+        if ((keyboardEvents.keys['ArrowRight'] || keyboardEvents.keys['ArrowLeft']) && !this.justJumped) {
+            window.soundManager.playWalkingSound();
+        } else {
+            window.soundManager.stopSoundImmediatelyByKey("walking");
+        }
         if (keyboardEvents.keys['ArrowRight'] && this.x < this.level.levelEndX) {
             this.onRight(deltaTime);
         } else if (keyboardEvents.keys['ArrowLeft'] && this.x > 0) {
@@ -118,9 +121,6 @@ export default class Character extends GameItem {
         return !this.justJumped && keyboardEvents.nokeyPressed();
     }
 
-    /**
-     * Handle movement to the right.
-     */
     onRight(deltaTime) {
         this.isFacingOtherDirection = false;
         if (!this.justJumped) {
@@ -130,9 +130,6 @@ export default class Character extends GameItem {
         this.setCameraXPosition();
     }
 
-    /**
-     * Handle movement to the left.
-     */
     onLeft(deltaTime) {
         this.isFacingOtherDirection = true;
         if (!this.justJumped) {
@@ -142,23 +139,16 @@ export default class Character extends GameItem {
         this.setCameraXPosition();
     }
 
-    /**
-     * Adjust the world camera based on the character's x-position.
-     */
     setCameraXPosition() {
         if (this.fixCameraOnCharacter) {
             window.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
         }
     }
 
-    /**
-     * Handle jump logic:
-     * - If the jump key is pressed while on the ground, initiate a jump.
-     * - If in the air, always update the jump animation and apply gravity.
-     */
     handleJump(deltaTime) {
         const onGround = !this.level.isAboveGround(this);
         if (keyboardEvents.keys[' '] && onGround) {
+            window.soundManager.play('jump');
             this.speedY = this.initialSpeedY;
             this.justJumped = true;
             this.applyGravity(deltaTime, 0);
@@ -172,20 +162,10 @@ export default class Character extends GameItem {
         }
     }
 
-    /**
-     * Update jump animation and apply gravity.
-     */
     onJump(deltaTime) {
         this.updateAnimation(this.jumpingAnimation, deltaTime);
         this.applyGravity(deltaTime);
         this.setItemOnGroundIfUnderGround(18);
-    }
-
-    handleDead(deltaTime) {
-        this.updateAnimation(this.dyingAnimation, deltaTime, 150);
-        if (this.dyingAnimation.currentImageIndex === this.dyingAnimation.imageCache.length) {
-            window.game.gameOver.isOver = true;
-        }
     }
 
     isStomping(enemy) {
@@ -201,11 +181,13 @@ export default class Character extends GameItem {
     }
 
     takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = this.takesDamageAmount) {
+        if (!this.isDead) window.soundManager.playNonOverlapping('characterHurt');
         super.takeDamage(deltaTime, updateInterval, damage);
         this.dispatchCharacterEnergyEvent();
     }
 
     throwBottle() {
+        window.soundManager.play('throw');
         const x = this.isFacingOtherDirection ? this.x : this.x + this.width - this.offset.right;
         this.level.levelItems.push(new Bottle(x, this.y + this.offset.top, 120, 120, this.isFacingOtherDirection, true));
         this.bottleSupply--;
@@ -214,6 +196,7 @@ export default class Character extends GameItem {
 
     collectBottle(bottle) {
         if (this.bottleSupply < this.maxBottleSupply) {
+            window.soundManager.play('bottleCollected');
             this.bottleSupply++;
             this.dispatchBottleEvent();
             this.level.removeBottle(bottle);
@@ -222,6 +205,7 @@ export default class Character extends GameItem {
 
     collectCoin(coin) {
         if (this.coinSupply < this.maxCoinSupply) {
+            window.soundManager.play('coinCollected');
             this.coinSupply++;
             this.dispatchCoinEvent();
             this.level.removeCoin(coin);
@@ -234,6 +218,7 @@ export default class Character extends GameItem {
 
     buyBottle() {
         if (this.canBuyBottle()) {
+            window.soundManager.play('buyBottle');
             this.coinSupply -= this.bottlePurchaseCost;
             this.bottleSupply++;
             this.dispatchBottleEvent();

@@ -163,7 +163,7 @@ export default class World {
             if (!this.level.isAboveGround(enemy)) this.level.character.giveRecoilOnStomp(20);
             this.level.character.dispatchCharacterEnergyEvent();
         } else {
-            const damageAmount = enemy instanceof Endboss ? 9 : this.level.character.takesDamageAmount;
+            const damageAmount = enemy instanceof Endboss ? 10 : this.level.character.takesDamageAmount;
             this.level.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, damageAmount);
         }
     }
@@ -176,6 +176,7 @@ export default class World {
                 if (enemy instanceof Chicken || enemy instanceof Chick) {
                     enemy.kill();
                 } else if (enemy instanceof Endboss) {
+                    window.soundManager.playNonOverlapping('endbossHurt');
                     enemy.takeDamage(deltaTime);
                 }
             }

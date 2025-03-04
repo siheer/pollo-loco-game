@@ -89,11 +89,20 @@ export default class GameItem extends CanvasObject {
 
     kill() {
         this.isDead = true;
+        this.playKilledSounds();
         if (this.deadImg) {
             this.img = this.deadImg;
         }
         setTimeout(() => {
             window.world.level.removeEnemy(this);
         }, 500);
+    }
+
+    playKilledSounds() {
+        if (this.constructor.name === 'Chick') {
+            window.soundManager.play('chickStomped');
+        } else if (this.constructor.name === 'Chicken') {
+            window.soundManager.play('chickenStomped');
+        }
     }
 }
