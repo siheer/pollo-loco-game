@@ -5,6 +5,7 @@ import Level from './models/level.class.js';
 import World from './models/world.class.js';
 import Game from './models/game.class.js';
 import UI from './models/ui.class.js';
+import SoundManager from './models/sound-manager.class.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     new KeyboardEvents().registerKeyboardListener();
@@ -19,4 +20,6 @@ window.initGame = function initGame() {
     level.init();
     const world = new World(level);
     new Game(world);
+    new SoundManager();
+
 }

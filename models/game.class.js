@@ -7,6 +7,7 @@ export default class Game {
         this.lastTimestamp = null;
         this.gameOver = { isOver: false, playerHasWon: false };
         this.isGameRunning = false;
+        this.firstStart = true;
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
@@ -27,6 +28,7 @@ export default class Game {
 
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
+            if (this.firstStart) window.soundManager.playBackground();
             this.updateUIOnStart();
             this.isGameRunning = true;
             this.lastTimestamp = null;
@@ -43,6 +45,7 @@ export default class Game {
     }
 
     stop() {
+        this.firstStart = false;
         this.isGameRunning = false;
         window.playPauseButton.innerHTML = playSVG;
         cancelAnimationFrame(this.animationFrameId);
@@ -82,6 +85,7 @@ export default class Game {
         } else {
             this.showGameOverDisplay(true, 'game-over-img');
         }
+        window.soundManager.stopBackgroundMusic();
     }
 
     showGameOverDisplay(show, elementId) {
