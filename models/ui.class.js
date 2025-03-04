@@ -25,25 +25,12 @@ export default class UI {
     registerMusicOnOffButton() {
         const musicBtn = document.getElementById('music-btn');
         let isMuted = localStorage.getItem('soundMuted') === 'true';
-        if (isMuted) handleMusicOff();
-        musicBtn.onclick = () => {
-            if (isMuted) {
-                handleMusicOn();
-            } else {
-                handleMusicOff();
-            }
-            isMuted = !isMuted;
-            window.soundManager.toggleMute();
-        }
-
-        function handleMusicOn() {
-            musicBtn.innerHTML = musicOffSVG;
-            musicBtn.title = 'Musik aus (m)';
-        }
-
-        function handleMusicOff() {
+        if (isMuted) {
             musicBtn.innerHTML = musicOnSVG;
             musicBtn.title = 'Musik an (m)';
+        }
+        musicBtn.onclick = () => {
+            window.game.toggleMusicOnOff();
         }
     }
 
@@ -92,6 +79,7 @@ export default class UI {
             btn.onclick = () => {
                 window.game.stop();
                 action();
+                window.game.stopMusicIfPlaying();
             };
         })
     }

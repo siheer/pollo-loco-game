@@ -27,6 +27,28 @@ export default class Game {
         this.isGameRunning ? this.stop() : this.start();
     }
 
+    toggleMusicOnOff() {
+        const musicBtn = document.getElementById('music-btn');
+        if (window.soundManager.isMuted) {
+            musicBtn.innerHTML = musicOffSVG;
+            musicBtn.title = 'Musik aus (m)';
+        } else {
+            musicBtn.innerHTML = musicOnSVG;
+            musicBtn.title = 'Musik an (m)';
+        }
+        window.soundManager.toggleMute();
+    }
+
+    stopMusicIfPlaying() {
+        if (!window.soundManager.isMuted) {
+            localStorage.setItem('was-game-muted', 'false');
+            this.toggleMusicOnOff();
+        }
+        else {
+            localStorage.setItem('was-game-muted', 'true');
+        }
+    }
+
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
             if (this.firstStart) window.soundManager.playBackground();

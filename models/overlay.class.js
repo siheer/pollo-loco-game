@@ -66,6 +66,7 @@ export default class GameOverlay {
     }
 
     resumeGame() {
+        if (this.currentReferrer === 'game' && localStorage.getItem('was-game-muted') === 'false') window.game.toggleMusicOnOff();
         this.remove();
         document.getElementById('canvas-container').classList.remove('opacity-0');
         window.game.start(1000);

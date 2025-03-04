@@ -29,6 +29,8 @@ export default class KeyboardEvents {
             document.getElementById('full-screen').click();
         } else if (event.key === 'm') {
             document.getElementById('music-btn').click();
+        } else if (event.key === 'Escape') {
+            document.activeElement.blur();
         }
     }
 
