@@ -67,7 +67,6 @@ export default class OverlayTemplates {
                 <h2>Impressum</h2>
                 <p>
                     Verantwortlich:  [Name]<br>
-                    E-Mail: <a href="mailto:[email]">[email]</a>
                 </p>
                 <p>
                     Bildnachweis: 
