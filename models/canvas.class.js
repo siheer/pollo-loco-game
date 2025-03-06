@@ -2,59 +2,70 @@ export default class Canvas {
     /**
      * Creates a new Canvas instance.
      * @param {HTMLCanvasElement} canvasElement - The HTML canvas element.
-     * @param {number} [baseWidth=1920] - The base width for the canvas.
+     * @param {number} [scale=1] - The scaling factor for internal resolution (e.g., 0.5 reduces resolution by half).
+     * @param {number} [baseWidth=1920] - The logical width for the canvas.
      * @param {number} [canvasAspectRatio=16/9] - The aspect ratio of the canvas.
-     * @throws {Error} If the provided element is not an HTMLCanvasElement.
+     * @throws {Error} If the provided element is not a valid HTMLCanvasElement.
      */
-    constructor(canvasElement, baseWidth = 1920, canvasAspectRatio = 16 / 9) {
+    constructor(canvasElement, scale = 1, baseWidth = 1920, canvasAspectRatio = 16 / 9) {
         if (!(canvasElement instanceof HTMLCanvasElement))
             throw new Error('Provided element is not a valid HTMLCanvasElement.');
         this.canvasElement = canvasElement;
         this.ctx = canvasElement.getContext('2d');
-        this.baseWidth = baseWidth;
-        this.baseHeight = this.baseWidth / canvasAspectRatio;
-        this.width = this.baseWidth;
-        this.height = this.baseHeight;
+        this.logicalWidth = baseWidth;
+        this.logicalHeight = baseWidth / canvasAspectRatio;
+        this.setDimensionsAndScale(scale);
     }
 
     /**
-     * Gets the width of the canvas element.
+     * Sets width and height and scales depending on scaling factor
+     * @param {number} scale - The scaling factor for internal resolution (e.g., 0.5 reduces resolution by half).
+     */
+    setDimensionsAndScale(scale) {
+        this.scale = scale;
+        this.canvasElement.width = this.logicalWidth * this.scale;
+        this.canvasElement.height = this.logicalHeight * this.scale;
+        this.ctx.scale(this.scale, this.scale);
+    }
+
+    /**
+     * Gets the logical width of the canvas.
      * @returns {number}
      */
     get width() {
-        return this.canvasElement.width;
+        return this.logicalWidth;
     }
 
     /**
-     * Sets the width of the canvas element.
-     * @param {number} value - The new width.
+     * Sets the logical width of the canvas and updates internal resolution.
+     * @param {number} value - The new logical width.
      * @throws {TypeError} If value is not a number.
      */
     set width(value) {
-        if (typeof value !== 'number')
-            throw new TypeError('Width must be a number.');
-        value = value < 0 ? (console.warn(`Canvas drawing width received a negative value (${value}). Using absolute value instead.`), Math.abs(value)) : value;
-        this.canvasElement.width = value;
+        if (typeof value !== 'number' || value <= 0)
+            throw new TypeError('Width must be a positive number.');
+        this.logicalWidth = value;
+        this.canvasElement.width = this.logicalWidth * this.scale;
     }
 
     /**
-     * Gets the height of the canvas element.
+     * Gets the logical height of the canvas.
      * @returns {number}
      */
     get height() {
-        return this.canvasElement.height;
+        return this.logicalHeight;
     }
 
     /**
-     * Sets the height of the canvas element.
-     * @param {number} value - The new height.
+     * Sets the logical height of the canvas and updates internal resolution.
+     * @param {number} value - The new logical height.
      * @throws {TypeError} If value is not a number.
      */
     set height(value) {
-        if (typeof value !== 'number')
-            throw new TypeError('Height must be a number.');
-        value = value < 0 ? (console.warn(`Canvas drawing height received a negative value (${value}). Using absolute value instead.`), Math.abs(value)) : value;
-        this.canvasElement.height = value;
+        if (typeof value !== 'number' || value <= 0)
+            throw new TypeError('Height must be a positive number.');
+        this.logicalHeight = value;
+        this.canvasElement.height = this.logicalHeight * this.scale;
     }
 
     /**
@@ -110,4 +121,4 @@ export default class Canvas {
             throw new TypeError('Style height must be a number or a valid string value for this css property.');
         this.canvasElement.style.height = typeof value === 'number' ? `${value}px` : value;
     }
-}
+}  

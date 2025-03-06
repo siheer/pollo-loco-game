@@ -120,13 +120,9 @@ export default class World {
                 this.ctx.save();
                 this.ctx.scale(-1, 1);
                 this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
-                // this.drawOuterFrame(item, -item.x - item.width, item.y, item.width, item.height);
-                // this.drawInnerFrame(item, -item.x - item.width, item.y, item.width, item.height);
                 this.ctx.restore();
             } else {
                 this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
-                // this.drawOuterFrame(item, item.x, item.y, item.width, item.height);
-                // this.drawInnerFrame(item, item.x, item.y, item.width, item.height);
             }
         }
     }

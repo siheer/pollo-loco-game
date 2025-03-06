@@ -11,10 +11,10 @@ export default class Cloud extends CanvasObject {
      * @param {string} srcPath - The source path of the cloud image.
      * @param {number} [segmentIndex=0] - The segment index used for horizontal placement.
      * @param {number} [y=0] - The y-coordinate.
-     * @param {number} [width=canvas.width] - The width of the cloud.
-     * @param {number} [height=canvas.height] - The height of the cloud.
+     * @param {number} [width=window.world.canvas.width] - The width of the cloud.
+     * @param {number} [height=window.world.canvas.height] - The height of the cloud.
      */
-    constructor(srcPath, segmentIndex = 0, y = 0, width = canvas.width, height = canvas.height) {
+    constructor(srcPath, segmentIndex = 0, y = 0, width = window.world.canvas.width, height = window.world.canvas.height) {
         const x = window.world.level.getRandomXInSegment(segmentIndex);
         super(x, y, width, height);
         this.loadImage(srcPath);

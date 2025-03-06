@@ -8,10 +8,10 @@ export default class BackgroundObject extends CanvasObject {
      * @param {string} srcPath - The source path of the background image.
      * @param {number} [x=0] - The x-coordinate position; default is 0.
      * @param {number} [y=0] - The y-coordinate position; default is 0.
-     * @param {number} [width=canvas.width] - The width of the object; defaults to canvas.width.
-     * @param {number} [height=canvas.height] - The height of the object; defaults to canvas.height.
+     * @param {number} [width=window.world.canvas.width] - The width of the object; defaults to window.world.canvas.width.
+     * @param {number} [height=window.world.canvas.height] - The height of the object; defaults to window.world.canvas.height.
      */
-    constructor(srcPath, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+    constructor(srcPath, x = 0, y = 0, width = window.world.canvas.width, height = window.world.canvas.height) {
         super(x, y, width, height);
         this.loadImage(srcPath);
     }

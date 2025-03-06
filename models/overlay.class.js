@@ -15,6 +15,7 @@ export default class GameOverlay {
         this.provideScreens();
         this.setContent(this.startScreen, null);
         this.currentReferrer = null;
+        this.resolutionHigh = false;
     }
 
     /**
@@ -45,12 +46,13 @@ export default class GameOverlay {
      * @param {string|null} focusNextQuerySelector - The CSS selector to focus after setting content.
      * @param {string|null} [referrer=null] - The current referrer identifier.
      */
-    setContent(templateString, focusNextQuerySelector, referrer = null) {
+    setContent(templateString, focusNextQuerySelector, referrer = this.currentReferrer) {
         this.currentReferrer = referrer;
         if (!this.element) {
             this.add();
         }
         this.element.innerHTML = templateString;
+        if (this.resolutionHigh) this.element.querySelector('.resolution-btn').textContent = OverlayTemplates.lowResolutionText;
         this.showOverlay();
         this.registerButtonEvents();
         this.element.querySelector(focusNextQuerySelector)?.focus();
@@ -87,6 +89,7 @@ export default class GameOverlay {
             '.controls-btn': () => this.setContent(this.controlsScreen, '.back-btn'),
             '.legal-btn': () => this.setContent(this.legalScreen, '.back-btn'),
             '.back-btn': () => this.currentReferrer === 'game' ? this.resumeGame() : this.setContent(this.startScreen, '.start-btn'),
+            '.resolution-btn': this.setResolution,
         };
         Object.entries(btnActions).forEach(([selector, action]) => {
             const btn = this.element.querySelector(selector);
@@ -95,10 +98,26 @@ export default class GameOverlay {
     }
 
     /**
+     * Sets resolution of canvas and updates button-text
+     */
+    setResolution = () => {
+        const btn = this.element.querySelector('.resolution-btn');
+        if (!window.world) return;
+        if (!this.resolutionHigh) {
+            window.world.canvas.setDimensionsAndScale(1);
+            btn.textContent = OverlayTemplates.lowResolutionText;
+        } else {
+            window.world.canvas.setDimensionsAndScale(0.5);
+            btn.textContent = OverlayTemplates.highResolutionText;
+        }
+        this.resolutionHigh = !this.resolutionHigh;
+    }
+
+    /**
      * Resumes the game by removing the overlay and restarting the game loop after a delay.
      */
     resumeGame() {
-        if (this.currentReferrer === 'game' && localStorage.getItem('was-game-muted') === 'false') window.game.toggleMusicOnOff();
+        if (!window.game.gameWasMuted()) window.soundManager.fadeUnmute();
         this.remove();
         document.getElementById('canvas-container').classList.remove('opacity-0');
         window.game.start(1000);

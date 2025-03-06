@@ -16,6 +16,7 @@ export default class KeyboardEvents {
             'ArrowDown': false,
             'a': false,
         };
+        this.registerKeyboardListener();
     }
 
     /**

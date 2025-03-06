@@ -22,6 +22,8 @@ export default class Game {
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
+        this.registerHandlingOfFocusOut();
+        this.wasRunningBeforeBlur = false;
     }
 
     /**
@@ -177,6 +179,8 @@ export default class Game {
     restart() {
         this.showGameOverDisplay(false, 'game-over-img');
         this.showGameOverDisplay(false, 'game-won-img');
+        window.soundManager.stopSoundImmediatelyByKey('gameLost');
+        window.soundManager.stopSoundImmediatelyByKey('gameWon');
         window.initGame();
         window.game.start();
     }
@@ -201,11 +205,58 @@ export default class Game {
      */
     stopMusicIfPlaying() {
         if (!window.soundManager.isMuted) {
-            localStorage.setItem('was-game-muted', 'false');
+            this.setGameWasMuted(false);
             this.toggleMusicOnOff();
         }
         else {
-            localStorage.setItem('was-game-muted', 'true');
+            this.setGameWasMuted(true);
         }
+    }
+
+    /**
+     * Registers event handlers to pause the game when the window loses focus
+     * and resume it when focus is regained.
+     */
+    registerHandlingOfFocusOut() {
+        window.onblur = () => {
+            this.handleOnWindowBlur();
+        }
+        window.onfocus = () => {
+            this.handleOnWindowFocus();
+        }
+    }
+
+    /**
+     * Handles the window blur event by stopping the game and music.
+     * Records that the game was running before the blur.
+     */
+    handleOnWindowBlur() {
+        if (this.isGameRunning) {
+            this.wasRunningBeforeBlur = true;
+        }
+        this.stop();
+        this.stopMusicIfPlaying();
+    }
+
+    /**
+     * Handles the window focus event by restarting the game if it was running before blur
+     * and toggling music on if the game was not muted.
+     */
+    handleOnWindowFocus() {
+        if (this.wasRunningBeforeBlur) {
+            this.start();
+            this.wasRunningBeforeBlur = false;
+        }
+        if (!this.gameWasMuted()) {
+            this.toggleMusicOnOff();
+        }
+    }
+
+    setGameWasMuted(wasMuted) {
+        localStorage.setItem('gameWasMuted', wasMuted);
+    }
+
+    gameWasMuted() {
+        return localStorage.getItem('gameWasMuted') === 'true';
     }
 }

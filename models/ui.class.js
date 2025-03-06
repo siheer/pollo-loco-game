@@ -106,8 +106,9 @@ export default class UI {
             const btn = document.getElementById(selector);
             btn.onclick = () => {
                 window.game.stop();
-                action();
                 window.game.stopMusicIfPlaying();
+                btn.blur();
+                action();
             };
         })
     }

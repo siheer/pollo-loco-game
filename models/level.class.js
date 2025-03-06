@@ -81,7 +81,7 @@ export default class Level {
      */
     static getBackgroundFirstPart(canvas, shift = 0) {
         return [
-            new BackgroundObject('./img/5_background/layers/air.png', shift, 0, canvas.width + 1), // +1 to remove a strange line on the left
+            new BackgroundObject('./img/5_background/layers/air.png', shift, 0, canvas.width + 1), // +1 to remove a strange line on the right
             new BackgroundObject('./img/5_background/layers/3_third_layer/1.png', shift),
             new BackgroundObject('./img/5_background/layers/2_second_layer/1.png', shift),
             new BackgroundObject('./img/5_background/layers/1_first_layer/1.png', shift),
@@ -96,7 +96,7 @@ export default class Level {
      */
     static getBackgroundSecondPart(canvas, shift = canvas.width) {
         return [
-            new BackgroundObject('./img/5_background/layers/air.png', shift, 0, canvas.width + 1), // +1 to remove a strange line on the left
+            new BackgroundObject('./img/5_background/layers/air.png', shift, 0, canvas.width + 1), // +1 to remove a strange line on the right
             new BackgroundObject('./img/5_background/layers/3_third_layer/2.png', shift),
             new BackgroundObject('./img/5_background/layers/2_second_layer/2.png', shift),
             new BackgroundObject('./img/5_background/layers/1_first_layer/2.png', shift),

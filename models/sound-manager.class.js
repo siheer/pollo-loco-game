@@ -9,7 +9,7 @@ export default class SoundManager {
     constructor() {
         window.soundManager = this;
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        this.masterVolume = 0.5;
+        this.masterVolume = 0.6;
         this.masterGain = this.audioContext.createGain();
         this.isMuted = localStorage.getItem('soundMuted') === 'true';
         this.masterGain.gain.value = this.isMuted ? 0 : this.masterVolume;
@@ -29,12 +29,14 @@ export default class SoundManager {
      */
     initSoundVolumes() {
         this.soundVolumes = {
-            background: 0.5,
+            background: 0.7,
+            jump: 0.5,
             walking: 0.4,
             coinCollected: 0.8,
             bottleCollected: 0.7,
             bottleSmash: 0.5,
             chickenStomped: 0.4,
+            gameLost: 0.8,
         };
     }
 
@@ -57,7 +59,7 @@ export default class SoundManager {
             endbossHurt: '../audio/endboss-hurt.mp3',
             characterHurt: '../audio/character-hurt.mp3',
             gameWon: '../audio/game-won.mp3',
-            gameLost: '../audio/game-lost.mp3',
+            gameLost: '../audio/game-over.mp3',
         };
     }
 
@@ -103,16 +105,14 @@ export default class SoundManager {
      * @param {GainNode} gainNode - The gain node to fade.
      * @param {number} targetValue - The target gain value.
      * @param {number} duration - Duration in seconds.
-     * @param {Function} [callback] - Optional callback after fade completes.
+     * @param {Function} [callback] - Optional immediate callback.
      */
     fadeGain(gainNode, targetValue, duration, callback) {
+        callback?.();
         const currentTime = this.audioContext.currentTime;
         gainNode.gain.cancelScheduledValues(currentTime);
         gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime);
         gainNode.gain.linearRampToValueAtTime(targetValue, currentTime + duration);
-        setTimeout(() => {
-            if (callback) callback();
-        }, duration * 1000);
     }
 
     /**
@@ -296,7 +296,7 @@ export default class SoundManager {
      * Resets the master gain to the master volume.
      */
     resetMasterGain() {
-        this.masterGain.gain.setValueAtTime(this.masterVolume, this.audioContext.currentTime);
+        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.masterVolume, this.audioContext.currentTime);
     }
 
     /**

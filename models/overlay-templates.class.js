@@ -9,12 +9,17 @@ export default class OverlayTemplates {
         throw new Error('Static class');
     }
 
+    static lowResolutionText = 'Niedrige Auflösung';
+
+    static highResolutionText = 'Hohe Auflösung';
+
     static startScreen = `
         <div class="fc jcac">
             <h1>El Pollo Loco</h1>
             <div class="fc jcac gap1">
                 <button class="btn start-btn">Spielen</button>
                 <button class="btn controls-btn">Steuerung</button>
+                <button class="btn resolution-btn">Hohe Auflösung</button>
                 <button class="btn legal-btn">Impressum</button>
             </div>
         </div>
