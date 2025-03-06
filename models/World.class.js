@@ -7,8 +7,14 @@ import Endboss from "./endboss.class.js";
 import Coin from "./coin.class.js";
 import ActionTimer from './action-timer.class.js';
 
-
+/**
+ * Represents the game world, handling updates, drawing, and collision checks.
+ */
 export default class World {
+    /**
+     * Creates a new World instance with a given level.
+     * @param {Level} level - The current game level.
+     */
     constructor(level) {
         window.world = this;
         this.canvas = level.canvas;
@@ -20,6 +26,9 @@ export default class World {
         this.createActionTimers();
     }
 
+    /**
+     * Initializes action timers for bottle throwing, bottle buying, enemy spawning, and item spawning.
+     */
     createActionTimers() {
         this.bottleThrowAction = new ActionTimer(
             () => keyboardEvents.keys['a'] && this.level.character.bottleSupply > 0,
@@ -47,6 +56,10 @@ export default class World {
         )
     }
 
+    /**
+     * Updates the world state by updating all items and executing spawn timers.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     updateWorld(deltaTime) {
         this.updateWorldItems(this.level.levelItems, deltaTime);
         if (this.spawnEnemiesActionTimer.updateAndIsExecutable(deltaTime)) {
@@ -57,6 +70,11 @@ export default class World {
         }
     }
 
+    /**
+     * Recursively updates all items in the nested level items structure.
+     * @param {*} reference - The current level items or sub-items.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     updateWorldItems(reference, deltaTime) {
         if (Array.isArray(reference)) {
             reference.forEach(item => this.updateWorldItems(item, deltaTime));
@@ -65,6 +83,9 @@ export default class World {
         }
     }
 
+    /**
+     * Clears the canvas, applies camera translation, and draws all world items.
+     */
     drawWorld() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
@@ -73,6 +94,10 @@ export default class World {
         this.ctx.restore();
     }
 
+    /**
+     * Recursively draws all items from a nested structure.
+     * @param {*} items - The collection of world items.
+     */
     drawWorldItems(items) {
         if (items) {
             if (Array.isArray(items)) {
@@ -85,6 +110,10 @@ export default class World {
         }
     }
 
+    /**
+     * Draws a single world item, handling horizontal flipping if necessary.
+     * @param {*} item - The world item to draw.
+     */
     drawWorldItem(item) {
         if (item instanceof CanvasObject) {
             if (item.isFacingOtherDirection) {
@@ -102,6 +131,14 @@ export default class World {
         }
     }
 
+    /**
+     * (Optional) Draws an outer frame around a game item.
+     * @param {GameItem} item - The game item.
+     * @param {number} x - The x-coordinate.
+     * @param {number} y - The y-coordinate.
+     * @param {number} width - The width.
+     * @param {number} height - The height.
+     */
     drawOuterFrame(item, x, y, width, height) {
         if (item instanceof GameItem) {
             this.ctx.beginPath();
@@ -110,6 +147,14 @@ export default class World {
         }
     }
 
+    /**
+     * (Optional) Draws an inner frame based on the item's offset.
+     * @param {GameItem} item - The game item.
+     * @param {number} x - The x-coordinate.
+     * @param {number} y - The y-coordinate.
+     * @param {number} width - The width.
+     * @param {number} height - The height.
+     */
     drawInnerFrame(item, x, y, width, height) {
         if (item instanceof GameItem) {
             const innerX = x + item.offset.left;
@@ -125,6 +170,10 @@ export default class World {
         }
     }
 
+    /**
+     * Checks for keyboard events to trigger bottle throw or bottle buy actions.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     checkForInitializingKeyboardEvents(deltaTime) {
         if (!this.level.character.isDead) {
             if (this.bottleThrowAction.updateAndIsExecutable(deltaTime)) {
@@ -136,6 +185,10 @@ export default class World {
         }
     }
 
+    /**
+     * Checks for collisions between the character, enemies, bottles, and coins.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     checkCollisions(deltaTime) {
         this.collisionsDeltaTime += deltaTime;
         if (this.collisionsDeltaTime >= MIN_INTERVAL_IN_MILLISECONDS) {
@@ -145,6 +198,10 @@ export default class World {
         }
     }
 
+    /**
+     * Processes collisions between the character and enemies, handling interactions.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleEnemyInteractions(deltaTime) {
         const enemies = flattenToArray(this.level.levelItems[1]);
         enemies.forEach(enemy => {
@@ -157,6 +214,12 @@ export default class World {
         });
     }
 
+    /**
+     * Handles collision between the character and an enemy.
+     * Applies stomping logic or inflicts damage.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     * @param {*} enemy - The enemy involved in the collision.
+     */
     handleCharacterCollisionWithEnemy(deltaTime, enemy) {
         if (this.level.character.isStomping(enemy)) {
             enemy.kill();
@@ -168,6 +231,12 @@ export default class World {
         }
     }
 
+    /**
+     * Processes collisions between thrown bottles and enemies.
+     * Breaks bottles and affects enemies accordingly.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     * @param {*} enemy - The enemy involved in the collision.
+     */
     handleBottlesCollisionWithEnemy(deltaTime, enemy) {
         const bottles = flattenToArray(this.level.levelItems, Bottle);
         bottles.forEach(bottle => {
@@ -183,6 +252,9 @@ export default class World {
         });
     }
 
+    /**
+     * Handles collisions between the character and collectible bottles and coins.
+     */
     handleBottleAndCoinCollections() {
         const bottles = flattenToArray(this.level.levelItems, Bottle);
         bottles.forEach(bottle => {

@@ -1,6 +1,20 @@
 import GameItem from "./game-item.class.js";
 
+/**
+ * Represents a bottle object in the game.
+ * Extends GameItem.
+ */
 export default class Bottle extends GameItem {
+    /**
+     * Creates a new Bottle instance.
+     * @param {number} x - The x-coordinate.
+     * @param {number} y - The y-coordinate.
+     * @param {number} width - The width of the bottle.
+     * @param {number} height - The height of the bottle.
+     * @param {boolean} flyingToLeft - Whether the bottle flies to the left.
+     * @param {boolean} isThrowable - Indicates if the bottle can be thrown.
+     * @param {boolean} [canDealDamage=true] - Whether the bottle can deal damage.
+     */
     constructor(x, y, width, height, flyingToLeft, isThrowable, canDealDamage = true) {
         super(x, y, width, height);
         this.offset = { left: 20, top: 20, right: 20, bottom: 20 };
@@ -15,6 +29,9 @@ export default class Bottle extends GameItem {
         this.canDealDamage = canDealDamage;
     }
 
+    /**
+     * Sets up the animations for the bottle.
+     */
     provideAnimations() {
         this.thrownAnimation = this.createAnimation([
             './img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -26,7 +43,6 @@ export default class Bottle extends GameItem {
             './img/6_salsa_bottle/bottle_rotation/7_bottle_rotation.png',
             './img/6_salsa_bottle/bottle_rotation/8_bottle_rotation.png',
         ]);
-
         this.splashingAnimation = this.createAnimation([
             './img/6_salsa_bottle/bottle_splash/1_bottle_splash.png',
             './img/6_salsa_bottle/bottle_splash/2_bottle_splash.png',
@@ -37,6 +53,10 @@ export default class Bottle extends GameItem {
         ]);
     }
 
+    /**
+     * Updates the bottle state including animations, movement, gravity, and state transitions.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     update(deltaTime) {
         if (this.isThrowable) {
             if (this.isBroken) {
@@ -51,6 +71,10 @@ export default class Bottle extends GameItem {
         }
     }
 
+    /**
+     * Handles the splash animation for a broken bottle.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleSplash(deltaTime) {
         this.updateAnimation(this.splashingAnimation, deltaTime, 50);
         if (this.isAnimationAfterLastFrame(this.splashingAnimation)) {
@@ -58,6 +82,9 @@ export default class Bottle extends GameItem {
         }
     }
 
+    /**
+     * Moves the bottle horizontally based on its flying direction.
+     */
     moveX() {
         if (this.flyingToLeft) {
             this.moveLeft();
@@ -66,6 +93,9 @@ export default class Bottle extends GameItem {
         }
     }
 
+    /**
+     * Sets the bottle on the ground and spawns a new static bottle.
+     */
     setBottleOnGround() {
         window.world.level.removeBottle(this);
         callAfterCurrentGameLoop(() => {
@@ -73,6 +103,9 @@ export default class Bottle extends GameItem {
         });
     }
 
+    /**
+     * Breaks the bottle by playing a sound and marking it as broken.
+     */
     breakBottle() {
         window.soundManager.play('bottleSmash');
         callAfterCurrentGameLoop(() => { this.isBroken = true });

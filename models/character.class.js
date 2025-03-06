@@ -2,7 +2,19 @@ import GameItem from "./game-item.class.js";
 import Bottle from "./bottle.class.js";
 import ActionTimer from "./action-timer.class.js";
 
+/**
+ * Represents the main character in the game.
+ * Extends GameItem.
+ */
 export default class Character extends GameItem {
+    /**
+     * Creates a new Character instance.
+     * @param {number} x - The starting x-coordinate.
+     * @param {number} y - The starting y-coordinate.
+     * @param {number} width - The width of the character.
+     * @param {number} height - The height of the character.
+     * @param {Level} level - The current level instance.
+     */
     constructor(x, y, width, height, level) {
         super(x, y, width, height);
         this.level = level;
@@ -37,6 +49,9 @@ export default class Character extends GameItem {
         this.bottlePurchaseCost = 10;
     }
 
+    /**
+     * Sets up the walking, jumping, hurting, and dying animations for the character.
+     */
     provideAnimations() {
         this.walkingAnimation = this.createAnimation([
             './img/2_character_pepe/2_walk/W-21.png',
@@ -46,7 +61,6 @@ export default class Character extends GameItem {
             './img/2_character_pepe/2_walk/W-25.png',
             './img/2_character_pepe/2_walk/W-26.png',
         ]);
-
         this.jumpingAnimation = this.createAnimation([
             './img/2_character_pepe/3_jump/J-31.png',
             './img/2_character_pepe/3_jump/J-32.png',
@@ -58,13 +72,11 @@ export default class Character extends GameItem {
             './img/2_character_pepe/3_jump/J-38.png',
             './img/2_character_pepe/3_jump/J-39.png',
         ]);
-
         this.hurtingAnimation = this.createAnimation([
             './img/2_character_pepe/4_hurt/H-41.png',
             './img/2_character_pepe/4_hurt/H-42.png',
             './img/2_character_pepe/4_hurt/H-43.png',
         ]);
-
         this.dyingAnimation = this.createAnimation([
             './img/2_character_pepe/5_dead/D-51.png',
             './img/2_character_pepe/5_dead/D-52.png',
@@ -76,6 +88,11 @@ export default class Character extends GameItem {
         ]);
     }
 
+    /**
+     * Updates the character state each frame.
+     * Handles death, healing, camera fixing, jumping, horizontal movement, idle state, and hurt animation.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     update(deltaTime) {
         if (this.isDead) {
             this.handleDead(deltaTime);
@@ -89,6 +106,10 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Handles the character's death by updating the dying animation and triggering game over.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleDead(deltaTime) {
         window.soundManager.stopSoundImmediatelyByKey('walking');
         window.soundManager.stopSoundImmediatelyByKey('characterHurt');
@@ -98,12 +119,20 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Checks and fixes the camera on the character if the x-coordinate exceeds a threshold.
+     * @returns {boolean} True if camera is set to be fixed.
+     */
     isCameraToBeFixed() {
         if (!this.fixCameraOnCharacter && this.x > this.fixCameraOnCharacterXPosition) {
             this.fixCameraOnCharacter = true;
         }
     }
 
+    /**
+     * Handles horizontal movement based on arrow key input and plays walking sound.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleHorizontalMovement(deltaTime) {
         if ((keyboardEvents.keys['ArrowRight'] || keyboardEvents.keys['ArrowLeft']) && !this.justJumped) {
             window.soundManager.playWalkingSound();
@@ -117,10 +146,18 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Determines if the character is idle (no movement keys pressed and not jumping).
+     * @returns {boolean} True if idle.
+     */
     isIdle() {
         return !this.justJumped && keyboardEvents.nokeyPressed();
     }
 
+    /**
+     * Handles movement to the right, updates walking animation and camera position.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     onRight(deltaTime) {
         this.isFacingOtherDirection = false;
         if (!this.justJumped) {
@@ -130,6 +167,10 @@ export default class Character extends GameItem {
         this.setCameraXPosition();
     }
 
+    /**
+     * Handles movement to the left, updates walking animation and camera position.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     onLeft(deltaTime) {
         this.isFacingOtherDirection = true;
         if (!this.justJumped) {
@@ -139,12 +180,20 @@ export default class Character extends GameItem {
         this.setCameraXPosition();
     }
 
+    /**
+     * Sets the camera's X position based on the character's fixed position.
+     */
     setCameraXPosition() {
         if (this.fixCameraOnCharacter) {
             window.world.cameraX = this.fixCameraOnCharacterXPosition - this.x;
         }
     }
 
+    /**
+     * Manages the jump input and state.
+     * Applies gravity, updates jump state, and plays jump sound when initiating jump.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleJump(deltaTime) {
         const onGround = !this.level.isAboveGround(this);
         if (keyboardEvents.keys[' '] && onGround) {
@@ -162,12 +211,21 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Handles the jump state by updating the jump animation, applying gravity, and setting the character on the ground if necessary.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     onJump(deltaTime) {
         this.updateAnimation(this.jumpingAnimation, deltaTime);
         this.applyGravity(deltaTime);
         this.setItemOnGroundIfUnderGround(18);
     }
 
+    /**
+     * Determines if the character is stomping an enemy.
+     * @param {*} enemy - The enemy object to check against.
+     * @returns {boolean} True if stomping based on vertical speed.
+     */
     isStomping(enemy) {
         if (enemy.constructor.name === 'Chicken' || enemy.constructor.name === 'Chick') {
             return this.speedY > 0;
@@ -175,17 +233,31 @@ export default class Character extends GameItem {
         return false;
     }
 
+    /**
+     * Applies a recoil effect to the character after stomping an enemy.
+     * @param {number} recoil - The recoil speed to apply.
+     */
     giveRecoilOnStomp(recoil) {
         this.speedY = -recoil;
         this.applyGravity(1, 0); // always make character jump on kill, even if notAboveGround
     }
 
+    /**
+     * Inflicts damage to the character and dispatches an energy update event.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     * @param {number} [updateInterval=STANDARD_INTERVAL_IN_MILLISECONDS] - The update interval for taking damage.
+     * @param {number} [damage=this.takesDamageAmount] - The damage amount.
+     */
     takeDamage(deltaTime, updateInterval = STANDARD_INTERVAL_IN_MILLISECONDS, damage = this.takesDamageAmount) {
         if (!this.isDead) window.soundManager.playNonOverlapping('characterHurt');
         super.takeDamage(deltaTime, updateInterval, damage);
         this.dispatchCharacterEnergyEvent();
     }
 
+    /**
+     * Throws a bottle from the character's current position.
+     * Decreases bottle supply and dispatches a bottle event.
+     */
     throwBottle() {
         window.soundManager.play('throw');
         const x = this.isFacingOtherDirection ? this.x : this.x + this.width - this.offset.right;
@@ -194,6 +266,10 @@ export default class Character extends GameItem {
         this.dispatchBottleEvent();
     }
 
+    /**
+     * Collects a bottle if below maximum supply and dispatches a bottle event.
+     * @param {*} bottle - The bottle object to collect.
+     */
     collectBottle(bottle) {
         if (this.bottleSupply < this.maxBottleSupply) {
             window.soundManager.play('bottleCollected');
@@ -203,6 +279,10 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Collects a coin if below maximum supply and dispatches a coin event.
+     * @param {*} coin - The coin object to collect.
+     */
     collectCoin(coin) {
         if (this.coinSupply < this.maxCoinSupply) {
             window.soundManager.play('coinCollected');
@@ -212,10 +292,17 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Determines if the character can purchase a bottle.
+     * @returns {boolean} True if the character has enough coins and bottle supply is below maximum.
+     */
     canBuyBottle() {
         return this.coinSupply >= this.bottlePurchaseCost && this.bottleSupply < this.maxBottleSupply;
     }
 
+    /**
+     * Buys a bottle by reducing coin supply, increasing bottle supply, and dispatching events.
+     */
     buyBottle() {
         if (this.canBuyBottle()) {
             window.soundManager.play('buyBottle');
@@ -226,6 +313,10 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Increases the character's energy by a specified amount, not exceeding maximum energy.
+     * @param {number} energy - The energy amount to add.
+     */
     heal(energy) {
         if (this.energy + energy <= this.maxEnergy) {
             this.energy += energy;
@@ -233,18 +324,27 @@ export default class Character extends GameItem {
         }
     }
 
+    /**
+     * Dispatches a custom event to update the bottle status.
+     */
     dispatchBottleEvent() {
         document.dispatchEvent(new CustomEvent('bottleEvent', {
             detail: { max: this.maxBottleSupply, current: this.bottleSupply }
         }));
     }
 
+    /**
+     * Dispatches a custom event to update the coin status.
+     */
     dispatchCoinEvent() {
         document.dispatchEvent(new CustomEvent('coinEvent', {
             detail: { max: this.maxCoinSupply, current: this.coinSupply }
         }));
     }
 
+    /**
+     * Dispatches a custom event to update the character's energy status.
+     */
     dispatchCharacterEnergyEvent() {
         document.dispatchEvent(new CustomEvent('characterEnergyEvent', {
             detail: { max: this.maxEnergy, current: this.energy }

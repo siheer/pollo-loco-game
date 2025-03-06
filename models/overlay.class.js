@@ -1,6 +1,13 @@
 import OverlayTemplates from "./overlay-templates.class.js";
 
+/**
+ * Manages the game overlay which displays menus and screens over the game canvas.
+ */
 export default class GameOverlay {
+    /**
+     * Creates a new GameOverlay instance, attaches the overlay element to the container,
+     * sets up available screens, and initializes with the start screen.
+     */
     constructor() {
         window.gameOverlay = this;
         this.container = document.getElementById('game-container');
@@ -10,12 +17,18 @@ export default class GameOverlay {
         this.currentReferrer = null;
     }
 
+    /**
+     * Initializes overlay screen templates from OverlayTemplates.
+     */
     provideScreens() {
         this.startScreen = OverlayTemplates.startScreen;
         this.controlsScreen = OverlayTemplates.controlScreen;
         this.legalScreen = OverlayTemplates.legalScreen;
     }
 
+    /**
+     * Creates and appends the overlay element to the game container.
+     */
     add() {
         this.element = document.createElement('div');
         this.element.classList.add('canvas-overlay', 'menu', 'fr', 'jcac');
@@ -25,6 +38,13 @@ export default class GameOverlay {
         this.container.appendChild(this.element);
     }
 
+    /**
+     * Sets the overlay content to the specified template, optionally focusing on a query selector,
+     * and stores the referrer.
+     * @param {string} templateString - The HTML template to set.
+     * @param {string|null} focusNextQuerySelector - The CSS selector to focus after setting content.
+     * @param {string|null} [referrer=null] - The current referrer identifier.
+     */
     setContent(templateString, focusNextQuerySelector, referrer = null) {
         this.currentReferrer = referrer;
         if (!this.element) {
@@ -36,12 +56,18 @@ export default class GameOverlay {
         this.element.querySelector(focusNextQuerySelector)?.focus();
     }
 
+    /**
+     * Applies CSS classes to hide the canvas container while the overlay is visible.
+     */
     showOverlay() {
         document.getElementById('canvas-container').classList.remove('transition-opacity');
         document.getElementById('canvas-container').classList.add('opacity-0');
         document.getElementById('canvas-container').classList.add('visibility-hidden');
     }
 
+    /**
+     * Removes the overlay element and restores the canvas container's visibility.
+     */
     remove() {
         if (this.element) {
             document.getElementById('canvas-container').classList.remove('visibility-hidden');
@@ -52,6 +78,9 @@ export default class GameOverlay {
         }
     }
 
+    /**
+     * Registers click events for overlay buttons to navigate between screens or resume the game.
+     */
     registerButtonEvents() {
         const btnActions = {
             '.start-btn': () => this.resumeGame(),
@@ -65,6 +94,9 @@ export default class GameOverlay {
         });
     }
 
+    /**
+     * Resumes the game by removing the overlay and restarting the game loop after a delay.
+     */
     resumeGame() {
         if (this.currentReferrer === 'game' && localStorage.getItem('was-game-muted') === 'false') window.game.toggleMusicOnOff();
         this.remove();

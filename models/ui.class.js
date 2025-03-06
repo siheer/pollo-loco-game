@@ -1,6 +1,12 @@
+/**
+ * Manages the user interface elements such as buttons and full screen toggling.
+ */
 export default class UI {
     static staticButtonsAlreadyRegistered = false;
 
+    /**
+     * Creates a new UI instance and registers UI buttons if not already registered.
+     */
     constructor() {
         this.canvasContainerElem = document.getElementById('canvas-container');
         this.fullScreenBtn = document.getElementById('full-screen');
@@ -15,6 +21,9 @@ export default class UI {
         }
     }
 
+    /**
+     * Registers the play/pause button click event to toggle the game state.
+     */
     registerPlayPauseButton() {
         window.playPauseButton = document.getElementById('play-pause-button');
         window.playPauseButton.onclick = () => {
@@ -22,6 +31,9 @@ export default class UI {
         };
     }
 
+    /**
+     * Registers the music on/off button to toggle background music.
+     */
     registerMusicOnOffButton() {
         const musicBtn = document.getElementById('music-btn');
         let isMuted = localStorage.getItem('soundMuted') === 'true';
@@ -34,6 +46,9 @@ export default class UI {
         }
     }
 
+    /**
+     * Registers the full screen button to toggle full screen mode and handles full screen change events.
+     */
     registerFullScreenButton() {
         this.fullScreenBtn.onclick = () => {
             this.toggleFullScreen(document.getElementById('game-container'));
@@ -47,6 +62,10 @@ export default class UI {
         };
     }
 
+    /**
+     * Toggles full screen mode for the specified element.
+     * @param {HTMLElement} elem - The element to toggle full screen.
+     */
     toggleFullScreen(elem) {
         if (!document.fullscreenElement) {
             elem.requestFullscreen();
@@ -55,6 +74,9 @@ export default class UI {
         }
     }
 
+    /**
+     * Updates the UI when entering full screen mode.
+     */
     handleFullScreen() {
         window.gameOverlay.element?.classList.add('start-bg');
         this.canvasContainerElem.classList.remove('border-radius-1rem');
@@ -62,6 +84,9 @@ export default class UI {
         this.fullScreenBtn.title = 'Vollbildmodus beenden (f)';
     }
 
+    /**
+     * Updates the UI when exiting full screen mode.
+     */
     handleExitFullScreen() {
         window.gameOverlay.element?.classList.remove('start-bg');
         this.canvasContainerElem.classList.add('border-radius-1rem');
@@ -69,6 +94,9 @@ export default class UI {
         this.fullScreenBtn.title = 'Vollbild (f)';
     }
 
+    /**
+     * Registers navigation buttons to switch between overlay screens and stops the game if needed.
+     */
     registerGoTos() {
         const btnActions = {
             'go-to-start': () => window.gameOverlay.setContent(window.gameOverlay.startScreen, '.start-btn', 'game'),
@@ -84,10 +112,16 @@ export default class UI {
         })
     }
 
+    /**
+     * Registers the restart button to restart the game.
+     */
     registerRestartButton() {
         document.getElementById('restart-btn').addEventListener('click', () => window.game.restart());
     }
 
+    /**
+     * Registers touch controls for mobile devices to simulate keyboard events.
+     */
     registerMobileControls() {
         document.querySelectorAll('.game-ui-btn.mobile').forEach(btn => {
             btn.oncontextmenu = (e) => e.preventDefault();

@@ -1,7 +1,19 @@
 import GameItem from './game-item.class.js';
 import ActionTimer from './action-timer.class.js';
 
+/**
+ * Represents the endboss enemy in the game.
+ * Extends GameItem.
+ */
 export default class Endboss extends GameItem {
+    /**
+     * Creates a new Endboss instance with initial energy, speed, and image.
+     * Sets up animations and action timers after a delay.
+     * @param {number} x - The x-coordinate.
+     * @param {number} y - The y-coordinate.
+     * @param {number} width - The width of the endboss.
+     * @param {number} height - The height of the endboss.
+     */
     constructor(x, y, width, height) {
         super(x, y, width, height);
         this.offset = { left: 80, top: 120, right: 60, bottom: 50 };
@@ -18,6 +30,9 @@ export default class Endboss extends GameItem {
         }, 2000);
     }
 
+    /**
+     * Initializes animations for walking, alerted, attacking, hurting, and dying states.
+     */
     provideAnimations() {
         this.walkingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/1_walk/G1.png',
@@ -25,7 +40,6 @@ export default class Endboss extends GameItem {
             './img/4_enemie_boss_chicken/1_walk/G3.png',
             './img/4_enemie_boss_chicken/1_walk/G4.png',
         ]);
-
         this.alertedAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/2_alert/G5.png',
             './img/4_enemie_boss_chicken/2_alert/G6.png',
@@ -36,7 +50,6 @@ export default class Endboss extends GameItem {
             './img/4_enemie_boss_chicken/2_alert/G11.png',
             './img/4_enemie_boss_chicken/2_alert/G12.png',
         ]);
-
         this.attackingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/3_attack/G13.png',
             './img/4_enemie_boss_chicken/3_attack/G14.png',
@@ -47,13 +60,11 @@ export default class Endboss extends GameItem {
             './img/4_enemie_boss_chicken/3_attack/G19.png',
             './img/4_enemie_boss_chicken/3_attack/G20.png',
         ]);
-
         this.hurtingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/4_hurt/G21.png',
             './img/4_enemie_boss_chicken/4_hurt/G22.png',
             './img/4_enemie_boss_chicken/4_hurt/G23.png',
         ]);
-
         this.dyingAnimation = this.createAnimation([
             './img/4_enemie_boss_chicken/5_dead/G24.png',
             './img/4_enemie_boss_chicken/5_dead/G25.png',
@@ -61,6 +72,9 @@ export default class Endboss extends GameItem {
         ]);
     }
 
+    /**
+     * Initializes action timers for direction updates, hurting, alerted, and attacking actions.
+     */
     initializeActionTimer() {
         this.directionAction = new ActionTimer(
             () => true,
@@ -95,19 +109,36 @@ export default class Endboss extends GameItem {
         );
     }
 
+    /**
+     * Determines if an enemy is within a close range of the endboss.
+     * @returns {boolean} True if an enemy is close.
+     */
     isEnemyClose() {
         return this.isWithinRangeOf(1300);
     }
 
+    /**
+     * Determines if an enemy is within a very close range of the endboss.
+     * @returns {boolean} True if an enemy is very close.
+     */
     isEnemyVeryClose() {
         return this.isWithinRangeOf(500);
     }
 
+    /**
+     * Checks if the distance between the endboss and the character is within a given range.
+     * @param {number} range - The range to check.
+     * @returns {boolean} True if within range.
+     */
     isWithinRangeOf(range) {
         const distance = Math.abs(window.world.level.character.x - this.x);
         return this.isFacingOtherDirection ? distance < range + this.width : distance < range;
     }
 
+    /**
+     * Updates the endboss state each frame, handling action timers, animations, and game over conditions.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     update(deltaTime) {
         if (!this.allLoaded) return;
         if (this.directionAction.updateAndIsExecutable(deltaTime)) this.directionAction.execute();
@@ -121,6 +152,9 @@ export default class Endboss extends GameItem {
         }
     }
 
+    /**
+     * Updates the facing direction of the endboss based on the character's position.
+     */
     updateDirection() {
         if (window.world.level.character.x - this.x > this.width / 4) {
             this.isFacingOtherDirection = true;
@@ -129,6 +163,10 @@ export default class Endboss extends GameItem {
         }
     }
 
+    /**
+     * Handles the death animation and triggers game over win conditions.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleDead(deltaTime) {
         this.updateAnimation(this.dyingAnimation, deltaTime);
         if (this.isAnimationAfterLastFrame(this.dyingAnimation)) {
@@ -137,11 +175,21 @@ export default class Endboss extends GameItem {
         }
     }
 
+    /**
+     * Updates the walking animation and moves the endboss based on its facing direction.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleWalking(deltaTime) {
         this.updateAnimation(this.walkingAnimation, deltaTime);
         this.isFacingOtherDirection ? this.moveRight() : this.moveLeft();
     }
 
+    /**
+     * Inflicts damage on the endboss, dispatching an energy update event and resetting the hurting animation.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     * @param {number} [updateInterval=0] - The update interval.
+     * @param {number} [damage=this.takesDamageAmount] - The damage amount.
+     */
     takeDamage(deltaTime, updateInterval = 0, damage = this.takesDamageAmount) {
         super.takeDamage(deltaTime, updateInterval, damage);
         document.dispatchEvent(new CustomEvent('endbossEnergyEvent', {
@@ -150,6 +198,9 @@ export default class Endboss extends GameItem {
         this.hurtingAnimation.currentImageIndex = 0;
     }
 
+    /**
+     * Checks if the endboss has moved off-screen and triggers game over loss conditions.
+     */
     checkIfGameOver() {
         if (this.x < 0) {
             window.game.gameOver.isOver = true;

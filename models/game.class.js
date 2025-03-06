@@ -1,7 +1,17 @@
 import Statusbar from './statusbar.class.js';
+
+/**
+ * Represents the main game instance.
+ * Manages the game loop, state transitions, and UI updates.
+ */
 export default class Game {
+    /**
+     * Creates a new Game instance and sets up initial game state and status bars.
+     * @param {World} world - The game world instance.
+     */
     constructor(world) {
         window.game = this;
+        this.setUpStatusbars();
         this.world = world;
         this.animationFrameId = null;
         this.lastTimestamp = null;
@@ -12,10 +22,22 @@ export default class Game {
         this.reducingLoadInterval = false;
         this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
-        this.setUpStatusbars();
     }
 
-    // repaint canvas max 20 times (during 20 seconds), so that hopefully until then all resources has been loaded.
+    /**
+     * Sets up status bars for character energy, bottles, coins, and endboss energy.
+     */
+    setUpStatusbars() {
+        new Statusbar('character-energy', 'characterEnergyEvent');
+        new Statusbar('bottles', 'bottleEvent');
+        new Statusbar('coins', 'coinEvent');
+        new Statusbar('endboss-energy', 'endbossEnergyEvent');
+    }
+
+    /**
+     * Repaints the canvas a limited number of times before the game starts,
+     * allowing resources to finish loading.
+     */
     waitOnStart() {
         if (!this.isGameRunning && this.worldPaintedBeforeStartCount < 20) {
             this.world.drawWorld();
@@ -23,32 +45,10 @@ export default class Game {
         }
     }
 
-    handlePlayPauseButton() {
-        this.isGameRunning ? this.stop() : this.start();
-    }
-
-    toggleMusicOnOff() {
-        const musicBtn = document.getElementById('music-btn');
-        if (window.soundManager.isMuted) {
-            musicBtn.innerHTML = musicOffSVG;
-            musicBtn.title = 'Musik aus (m)';
-        } else {
-            musicBtn.innerHTML = musicOnSVG;
-            musicBtn.title = 'Musik an (m)';
-        }
-        window.soundManager.toggleMute();
-    }
-
-    stopMusicIfPlaying() {
-        if (!window.soundManager.isMuted) {
-            localStorage.setItem('was-game-muted', 'false');
-            this.toggleMusicOnOff();
-        }
-        else {
-            localStorage.setItem('was-game-muted', 'true');
-        }
-    }
-
+    /**
+     * Starts the game loop after an optional delay and plays background music on first start.
+     * @param {number} [delayInMilliseconds=0] - Delay before starting the game loop.
+     */
     start(delayInMilliseconds = 0) {
         setTimeout(() => {
             if (this.firstStart) window.soundManager.playBackground();
@@ -59,6 +59,16 @@ export default class Game {
         }, delayInMilliseconds);
     }
 
+    /**
+     * Handles the play/pause button click to toggle the game running state.
+     */
+    handlePlayPauseButton() {
+        this.isGameRunning ? this.stop() : this.start();
+    }
+
+    /**
+     * Updates UI elements when the game starts.
+     */
     updateUIOnStart() {
         window.playPauseButton.disabled = false;
         document.getElementById('go-to-controls').disabled = false;
@@ -67,6 +77,9 @@ export default class Game {
         window.playPauseButton.blur();
     }
 
+    /**
+     * Stops the game loop and updates UI to reflect the paused state.
+     */
     stop() {
         this.firstStart = false;
         this.isGameRunning = false;
@@ -74,6 +87,11 @@ export default class Game {
         cancelAnimationFrame(this.animationFrameId);
     }
 
+    /**
+     * The main game loop that updates game state and renders the world.
+     * Continues until game over, then handles game over state.
+     * @param {number} timestamp - The current timestamp.
+     */
     gameLoop(timestamp) {
         if (!this.gameOver.isOver) {
             this.timeGameLoop(timestamp);
@@ -83,6 +101,10 @@ export default class Game {
         }
     }
 
+    /**
+     * Calculates deltaTime between frames and updates game state if sufficient time has passed.
+     * @param {number} timestamp - The current timestamp.
+     */
     timeGameLoop(timestamp) {
         this.lastTimestamp ??= timestamp;
         const deltaTime = timestamp - this.lastTimestamp;
@@ -92,6 +114,10 @@ export default class Game {
         }
     }
 
+    /**
+     * Processes game updates including keyboard events, world updates, collision checks, and drawing.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     handleisGameRunning(deltaTime) {
         this.world.checkForInitializingKeyboardEvents(deltaTime);
         this.world.updateWorld(deltaTime);
@@ -99,6 +125,9 @@ export default class Game {
         this.world.drawWorld();
     }
 
+    /**
+     * Handles the game over state, disables UI controls, displays game over overlay, and plays appropriate sounds.
+     */
     handleGameOver() {
         window.playPauseButton.disabled = true;
         document.getElementById('go-to-controls').disabled = true;
@@ -114,6 +143,10 @@ export default class Game {
         }
     }
 
+    /**
+     * Plays game over sounds based on whether the player has won or lost.
+     * @param {boolean} hasWon - True if the player has won.
+     */
     handleGameOverSounds(hasWon) {
         window.soundManager.muteAllImmediately();
         window.soundManager.resetMasterGain();
@@ -124,6 +157,11 @@ export default class Game {
         }
     }
 
+    /**
+     * Shows or hides the game over overlay display.
+     * @param {boolean} show - Whether to show the overlay.
+     * @param {string} elementId - The id of the overlay element to display.
+     */
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
         const fullScreenBtn = document.getElementById('full-screen');
@@ -133,17 +171,41 @@ export default class Game {
         show ? fullScreenBtn.focus() : null;
     }
 
-    setUpStatusbars() {
-        new Statusbar('character-energy', 'characterEnergyEvent');
-        new Statusbar('bottles', 'bottleEvent');
-        new Statusbar('coins', 'coinEvent');
-        new Statusbar('endboss-energy', 'endbossEnergyEvent');
-    }
-
+    /**
+     * Restarts the game by hiding the game over overlay, re-initializing the game, and starting the game loop.
+     */
     restart() {
         this.showGameOverDisplay(false, 'game-over-img');
         this.showGameOverDisplay(false, 'game-won-img');
         window.initGame();
         window.game.start();
+    }
+
+    /**
+     * Toggles background music on or off and updates the corresponding UI button.
+     */
+    toggleMusicOnOff() {
+        const musicBtn = document.getElementById('music-btn');
+        if (window.soundManager.isMuted) {
+            musicBtn.innerHTML = musicOffSVG;
+            musicBtn.title = 'Musik aus (m)';
+        } else {
+            musicBtn.innerHTML = musicOnSVG;
+            musicBtn.title = 'Musik an (m)';
+        }
+        window.soundManager.toggleMute();
+    }
+
+    /**
+     * Stops the music if it is playing and updates local storage with the muted state.
+     */
+    stopMusicIfPlaying() {
+        if (!window.soundManager.isMuted) {
+            localStorage.setItem('was-game-muted', 'false');
+            this.toggleMusicOnOff();
+        }
+        else {
+            localStorage.setItem('was-game-muted', 'true');
+        }
     }
 }

@@ -1,3 +1,10 @@
+/**
+ * Creates an array of instances of a given class type, each initialized with the provided arguments.
+ * @param {Function} ClassType - The class constructor.
+ * @param {number} length - The number of instances to create.
+ * @param {...*} args - Arguments to pass to the constructor.
+ * @returns {Array} Array of created instances.
+ */
 function createInstances(ClassType, length, ...args) {
     return Array(length).fill(null).map(() => new ClassType(...args));
 }
@@ -6,15 +13,29 @@ function createInstances(ClassType, length, ...args) {
 //     const canvasElement = document.getElementById('canvas');
 //     console.log(`Canvas: client width: ${canvasElement.clientWidth}, client height: ${canvasElement.clientHeight}`);
 //     console.log(`Canvas: width: ${canvasElement.width}, height: ${canvasElement.height}`);
+//     // This function is commented out.
 // }
 
-// set ClassType if you want to extract only instances of this class
+// Flattens a nested collection into a flat array.
+// If ClassType is provided, only includes instances of that class.
+/**
+ * Flattens a nested collection into a single array.
+ * @param {*} collection - The nested collection (array or object).
+ * @param {Function|null} [ClassType=null] - Optional class type to filter instances.
+ * @returns {Array} The flattened array.
+ */
 function flattenToArray(collection, ClassType = null) {
     let resultArray = [];
     flattenToArrayRecursive(resultArray, collection, ClassType);
     return resultArray;
 }
 
+/**
+ * Helper function to recursively flatten a collection.
+ * @param {Array} resultArray - The accumulator array for results.
+ * @param {*} collection - The collection to flatten.
+ * @param {Function|null} ClassType - Optional class type to filter instances.
+ */
 function flattenToArrayRecursive(resultArray, collection, ClassType) {
     if (collection) {
         if (Array.isArray(collection)) {
@@ -29,6 +50,11 @@ function flattenToArrayRecursive(resultArray, collection, ClassType) {
     }
 }
 
+/**
+ * Removes a specified item from a nested array.
+ * @param {Array} arr - The nested array.
+ * @param {*} item - The item to remove.
+ */
 function removeItemFromNestedArray(arr, item) {
     for (let i = arr.length - 1; i >= 0; i--) {
         if (arr[i] === item) {
@@ -39,6 +65,10 @@ function removeItemFromNestedArray(arr, item) {
     }
 }
 
+/**
+ * Schedules a callback to be executed after the current game loop.
+ * @param {Function} callbackFn - The callback function.
+ */
 function callAfterCurrentGameLoop(callbackFn) {
     setTimeout(() => {
         callbackFn();

@@ -1,6 +1,17 @@
 import GameItem from "./game-item.class.js";
 
+/**
+ * Represents a normal chicken enemy in the game.
+ * Extends GameItem.
+ */
 export default class Chicken extends GameItem {
+    /**
+     * Creates a new Chicken enemy instance.
+     * @param {number} segmentIndex - The segment index used to determine the x-coordinate.
+     * @param {number} y - The y-coordinate for the chicken.
+     * @param {number} width - The width of the chicken.
+     * @param {number} height - The height of the chicken.
+     */
     constructor(segmentIndex, y, width, height) {
         const x = window.world.level.getRandomXInSegment(segmentIndex);
         super(x, y, width, height);
@@ -11,6 +22,9 @@ export default class Chicken extends GameItem {
         this.deadImg = this.createImage('./img/3_enemies_chicken/chicken_normal/2_dead/dead.png');
     }
 
+    /**
+     * Sets up the walking animation for the chicken.
+     */
     provideAnimations() {
         this.walkingAnimation = this.createAnimation([
             './img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
@@ -19,6 +33,10 @@ export default class Chicken extends GameItem {
         ]);
     }
 
+    /**
+     * Updates the chicken's state by updating its animation and moving it left.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     */
     update(deltaTime) {
         if (!this.isDead) {
             this.updateAnimation(this.walkingAnimation, deltaTime);

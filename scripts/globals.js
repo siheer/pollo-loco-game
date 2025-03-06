@@ -1,3 +1,6 @@
+/**
+ * Defines global constants and SVG icons used in the game.
+ */
 const MIN_INTERVAL_IN_MILLISECONDS = 25;
 const STANDARD_INTERVAL_IN_MILLISECONDS = 100;
 const pauseSVG = `

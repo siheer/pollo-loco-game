@@ -1,5 +1,9 @@
 import KeyboardKeysSVGs from "./keyboard-keys-svg.class.js";
 
+/**
+ * Provides static HTML templates for game overlay screens.
+ * Contains templates for start, control, and legal screens.
+ */
 export default class OverlayTemplates {
     constructor() {
         throw new Error('Static class');
@@ -51,6 +55,7 @@ export default class OverlayTemplates {
                 <button class="btn back-btn">Zurück</button>
         </div>
     `;
+
     static legalScreen = `
         <div class="legal-screen-container fc jcac">
             <div class="legal-screen-content">

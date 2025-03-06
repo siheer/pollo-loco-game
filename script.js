@@ -7,6 +7,10 @@ import Game from './models/game.class.js';
 import UI from './models/ui.class.js';
 import SoundManager from './models/sound-manager.class.js';
 
+/**
+ * Handles the DOMContentLoaded event to initialize the game.
+ * Registers keyboard events, creates the overlay and UI, then starts the game.
+ */
 document.addEventListener('DOMContentLoaded', async () => {
     new KeyboardEvents().registerKeyboardListener();
     new GameOverlay();
@@ -14,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     initGame();
 });
 
+/**
+ * Initializes the game by setting up the canvas, level, world, game and sound manager.
+ */
 window.initGame = function initGame() {
     const gameCanvas = new Canvas(document.getElementById('canvas'));
     const level = new Level(gameCanvas, '../levels/level-1.js', 4);
@@ -21,5 +28,4 @@ window.initGame = function initGame() {
     const world = new World(level);
     new Game(world);
     new SoundManager();
-
 }
