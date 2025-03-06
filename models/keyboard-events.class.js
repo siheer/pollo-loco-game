@@ -33,7 +33,7 @@ export default class KeyboardEvents {
     }
 
     /**
-     * Handles UI-specific key events (e.g. for play/pause, full screen, and music toggling).
+     * Handles UI-specific key events (e.g. for play/pause, full screen, and sound toggling).
      * @param {KeyboardEvent} event - The keyboard event.
      */
     handleUIKeyEvent(event) {
@@ -42,7 +42,7 @@ export default class KeyboardEvents {
         } else if (event.key === 'f') {
             document.getElementById('full-screen').click();
         } else if (event.key === 'm') {
-            document.getElementById('music-btn').click();
+            document.getElementById('sound-btn').click();
         } else if (event.key === 'Escape') {
             document.activeElement.blur();
         }

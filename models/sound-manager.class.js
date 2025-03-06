@@ -149,8 +149,8 @@ export default class SoundManager {
     }
 
     /**
- * Plays background music by scheduling a start sound and a looping sound.
- */
+     * Plays background music by scheduling a start sound and a looping sound.
+     */
     playBackground() {
         this.loadPromise.then(() => {
             const bgGain = this.createGainForSound("background");
@@ -176,29 +176,6 @@ export default class SoundManager {
         src.connect(gainNode);
         src.start(startTime);
         return src;
-    }
-
-    /**
-     * Plays background music by scheduling a start sound and a looping sound.
-     */
-    playBackground() {
-        this.loadPromise.then(() => {
-            const bgGain = this.createGainForSound("background");
-            const startTime = this.audioContext.currentTime;
-
-            const sourceStart = this.audioContext.createBufferSource();
-            sourceStart.buffer = this.buffers.backgroundStart;
-            sourceStart.connect(bgGain);
-            sourceStart.start(startTime);
-
-            const sourceLoop = this.audioContext.createBufferSource();
-            sourceLoop.buffer = this.buffers.backgroundLoop;
-            sourceLoop.loop = true;
-            sourceLoop.connect(bgGain);
-            sourceLoop.start(startTime + sourceStart.buffer.duration);
-
-            this.currentSource = sourceLoop;
-        });
     }
 
     /**
@@ -345,17 +322,6 @@ export default class SoundManager {
             this.isMuted = false;
             localStorage.setItem('soundMuted', 'false');
         });
-    }
-
-    /**
-     * Toggles the mute state by fading the master gain accordingly.
-     */
-    toggleMute() {
-        if (this.isMuted) {
-            this.fadeUnmute();
-        } else {
-            this.fadeMute();
-        }
     }
 
     /**

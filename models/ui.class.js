@@ -12,7 +12,7 @@ export default class UI {
         this.fullScreenBtn = document.getElementById('full-screen');
         if (!UI.staticButtonsAlreadyRegistered) {
             this.registerPlayPauseButton();
-            this.registerMusicOnOffButton();
+            this.registerSoundOnOffButton();
             this.registerFullScreenButton();
             this.registerGoTos();
             this.registerMobileControls();
@@ -27,23 +27,25 @@ export default class UI {
      */
     registerPlayPauseButton() {
         window.playPauseButton = document.getElementById('play-pause-button');
-        window.playPauseButton.onclick = () => {
-            window.game.handlePlayPauseButton();
+        window.playPauseButton.onclick = (e) => {
+            window.game.handlePlayPauseButton(e);
+
         };
     }
 
     /**
-     * Registers the music on/off button to toggle background music.
+     * Registers the sound on/off button to toggle background sound.
      */
-    registerMusicOnOffButton() {
-        const musicBtn = document.getElementById('music-btn');
+    registerSoundOnOffButton() {
+        const soundBtn = document.getElementById('sound-btn');
         let isMuted = localStorage.getItem('soundMuted') === 'true';
         if (isMuted) {
-            musicBtn.innerHTML = musicOnSVG;
-            musicBtn.title = 'Musik an (m)';
+            soundBtn.innerHTML = soundOnSVG;
+            soundBtn.title = 'Musik an (m)';
         }
-        musicBtn.onclick = () => {
-            window.game.toggleMusicOnOff();
+        soundBtn.onclick = (e) => {
+            window.game.toggleSoundOnOff();
+            e.currentTarget.blur();
         }
     }
 
@@ -51,8 +53,9 @@ export default class UI {
      * Registers the full screen button to toggle full screen mode and handles full screen change events.
      */
     registerFullScreenButton() {
-        this.fullScreenBtn.onclick = () => {
+        this.fullScreenBtn.onclick = (e) => {
             this.toggleFullScreen(document.getElementById('game-container'));
+            e.currentTarget.blur();
         };
         document.onfullscreenchange = () => {
             if (document.fullscreenElement) {
@@ -108,7 +111,6 @@ export default class UI {
             const btn = document.getElementById(selector);
             btn.onclick = () => {
                 window.game.stop();
-                window.game.stopMusicIfPlaying();
                 btn.blur();
                 action();
             };

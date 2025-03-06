@@ -57,6 +57,7 @@ export default class Game {
         setTimeout(() => {
             if (this.firstStart) window.soundManager.playBackground();
             this.updateUIOnStart();
+            this.handleSoundOnStart();
             this.isGameRunning = true;
             this.lastTimestamp = null;
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
@@ -64,9 +65,17 @@ export default class Game {
     }
 
     /**
+     * Turn on sound, if not muted by user choice.
+     */
+    handleSoundOnStart() {
+        if (!this.gameWasMuted() || !window.soundManager.isMuted) this.turnSoundOn();
+    }
+
+    /**
      * Handles the play/pause button click to toggle the game running state.
      */
-    handlePlayPauseButton() {
+    handlePlayPauseButton(e) {
+        if (!this.isGameRunning) e.currentTarget.blur();
         this.isGameRunning ? this.stop() : this.start();
     }
 
@@ -88,6 +97,20 @@ export default class Game {
         this.isGameRunning = false;
         window.playPauseButton.innerHTML = playSVG;
         cancelAnimationFrame(this.animationFrameId);
+        this.handleSoundOnStop();
+    }
+
+    /**
+     * Turn of sound if is playing and updates local storage with the muted state.
+     */
+    handleSoundOnStop() {
+        if (!window.soundManager.isMuted) {
+            this.setGameWasMuted(false);
+            this.toggleSoundOnOff();
+        }
+        else {
+            this.setGameWasMuted(true);
+        }
     }
 
     /**
@@ -186,41 +209,30 @@ export default class Game {
     }
 
     /**
-     * Toggles background music on or off and updates the corresponding UI button.
-     * @param {boolean} turnOn - set flag to turn music on instead of toggling
+     * Toggles sound on/off
      */
-    toggleMusicOnOff(turnOn) {
-        const musicBtn = document.getElementById('music-btn');
-        if (turnOn) {
-            window.soundManager.fadeUnmute();
-            setMusicIconToOff();
-            return;
-        }
-        if (window.soundManager.isMuted) {
-            setMusicIconToOff();
-        } else {
-            musicBtn.innerHTML = musicOnSVG;
-            musicBtn.title = 'Musik an (m)';
-        }
-        window.soundManager.toggleMute();
-
-        function setMusicIconToOff() {
-            musicBtn.innerHTML = musicOffSVG;
-            musicBtn.title = 'Musik aus (m)';
-        }
+    toggleSoundOnOff() {
+        window.soundManager.isMuted ? this.turnSoundOn() : this.turnSoundOff();
     }
 
     /**
-     * Stops the music if it is playing and updates local storage with the muted state.
+     * Turn sound off an update UI button
      */
-    stopMusicIfPlaying() {
-        if (!window.soundManager.isMuted) {
-            this.setGameWasMuted(false);
-            this.toggleMusicOnOff();
-        }
-        else {
-            this.setGameWasMuted(true);
-        }
+    turnSoundOff() {
+        const soundBtn = document.getElementById('sound-btn');
+        soundBtn.innerHTML = soundOnSVG;
+        soundBtn.title = 'Musik an (m)';
+        window.soundManager.fadeMute();
+    }
+
+    /**
+     * Turn sound on an update UI button
+     */
+    turnSoundOn() {
+        const soundBtn = document.getElementById('sound-btn');
+        soundBtn.innerHTML = soundOffSVG;
+        soundBtn.title = 'Musik aus (m)';
+        window.soundManager.fadeUnmute();
     }
 
     /**
@@ -237,7 +249,7 @@ export default class Game {
     }
 
     /**
-     * Handles the window blur event by stopping the game and music.
+     * Handles the window blur event by stopping the game and sound.
      * Records that the game was running before the blur.
      */
     handleOnWindowBlur() {
@@ -246,22 +258,18 @@ export default class Game {
                 this.wasRunningBeforeBlur = true;
             }
             this.stop();
-            this.stopMusicIfPlaying();
         }
     }
 
     /**
      * Handles the window focus event by restarting the game if it was running before blur
-     * and toggling music on if the game was not muted.
+     * and toggling sound on if the game was not muted.
      */
     handleOnWindowFocus() {
         if (window.matchMedia("(hover: hover)").matches) {
             if (this.wasRunningBeforeBlur) {
                 this.start();
                 this.wasRunningBeforeBlur = false;
-            }
-            if (!this.gameWasMuted()) {
-                this.toggleMusicOnOff();
             }
         }
     }
@@ -291,12 +299,11 @@ export default class Game {
         if (window.matchMedia("(orientation: portrait)").matches) {
             if (this.isGameRunning) {
                 this.wasPlaying = true;
-                this.stopMusicIfPlaying();
                 this.stop();
             }
         } else if (!this.isGameRunning && !this.gameOver.isOver) {
             if (this.wasPlaying) {
-                if (!this.gameWasMuted()) this.toggleMusicOnOff();
+                if (!this.gameWasMuted()) this.toggleSoundOnOff();
                 this.start(1000);
             }
         }

@@ -85,6 +85,10 @@ noscript {
     gap: 1rem;
 }
 
+.gap2 {
+    gap: 2rem;
+}
+
 .sb {
     justify-content: space-between;
 }

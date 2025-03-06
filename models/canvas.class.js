@@ -22,7 +22,7 @@ export default class Canvas {
      * @param {number} scale - The scaling factor for internal resolution (e.g., 0.5 reduces resolution by half).
      */
     setDimensionsAndScale(scale) {
-        this.scale = scale;
+        this.scale = localStorage.getItem('scale') ?? scale;
         this.canvasElement.width = this.logicalWidth * this.scale;
         this.canvasElement.height = this.logicalHeight * this.scale;
         this.ctx.scale(this.scale, this.scale);

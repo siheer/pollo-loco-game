@@ -104,9 +104,11 @@ export default class GameOverlay {
         const btn = this.element.querySelector('.resolution-btn');
         if (!window.world) return;
         if (!this.resolutionHigh) {
+            localStorage.setItem('scale', 1);
             window.world.canvas.setDimensionsAndScale(1);
             btn.textContent = OverlayTemplates.lowResolutionText;
         } else {
+            localStorage.setItem('scale', 0.5);
             window.world.canvas.setDimensionsAndScale(0.5);
             btn.textContent = OverlayTemplates.highResolutionText;
         }
@@ -117,7 +119,6 @@ export default class GameOverlay {
      * Resumes the game by removing the overlay and restarting the game loop after a delay.
      */
     resumeGame() {
-        if (!window.game.gameWasMuted()) window.game.toggleMusicOnOff(true);
         this.remove();
         document.getElementById('canvas-container').classList.remove('opacity-0');
         window.game.start(1000);

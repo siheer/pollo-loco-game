@@ -66,7 +66,9 @@ export default class OverlayTemplates {
             <div class="legal-screen-content">
                 <h2>Impressum</h2>
                 <p>
-                    Verantwortlich:  [Name]<br>
+                    Verantwortlich:  [Name]<br></p>
+                    <h3>Kontakt</h3>
+                    <p>E-Mail: <a href="mailto:[email]">[email]</a></p>
                 </p>
                 <p>
                     Bildnachweis: 
