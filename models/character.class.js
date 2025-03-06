@@ -29,19 +29,7 @@ export default class Character extends GameItem {
         this.provideAnimations();
         this.energy = this.maxEnergy = 200;
         this.takesDamageAmount = 5;
-        this.hurtingAction = new ActionTimer(
-            () => this.isHurt,
-            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
-            300,
-            0,
-            () => this.isHurt = false
-        );
-        this.healingAction = new ActionTimer(
-            () => true,
-            () => this.heal(2),
-            0,
-            1000
-        );
+        this.initializeActionTimer();
         this.bottleSupply = 5;
         this.maxBottleSupply = 10;
         this.coinSupply = 50;
@@ -53,6 +41,18 @@ export default class Character extends GameItem {
      * Sets up the walking, jumping, hurting, and dying animations for the character.
      */
     provideAnimations() {
+        this.idleAnimation = this.createAnimation([
+            './img/2_character_pepe/1_idle/idle/I-1.png',
+            './img/2_character_pepe/1_idle/idle/I-2.png',
+            './img/2_character_pepe/1_idle/idle/I-3.png',
+            './img/2_character_pepe/1_idle/idle/I-4.png',
+            './img/2_character_pepe/1_idle/idle/I-5.png',
+            './img/2_character_pepe/1_idle/idle/I-6.png',
+            './img/2_character_pepe/1_idle/idle/I-7.png',
+            './img/2_character_pepe/1_idle/idle/I-8.png',
+            './img/2_character_pepe/1_idle/idle/I-9.png',
+            './img/2_character_pepe/1_idle/idle/I-10.png',
+        ])
         this.walkingAnimation = this.createAnimation([
             './img/2_character_pepe/2_walk/W-21.png',
             './img/2_character_pepe/2_walk/W-22.png',
@@ -89,6 +89,25 @@ export default class Character extends GameItem {
     }
 
     /**
+     * Initializes action timers for hurting and healing actions.
+     */
+    initializeActionTimer() {
+        this.hurtingAction = new ActionTimer(
+            () => this.isHurt,
+            deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 20),
+            300,
+            0,
+            () => this.isHurt = false
+        );
+        this.healingAction = new ActionTimer(
+            () => true,
+            () => this.heal(2),
+            0,
+            1000
+        );
+    }
+
+    /**
      * Updates the character state each frame.
      * Handles death, healing, camera fixing, jumping, horizontal movement, idle state, and hurt animation.
      * @param {number} deltaTime - Elapsed time in milliseconds.
@@ -101,7 +120,7 @@ export default class Character extends GameItem {
             this.isCameraToBeFixed();
             this.handleJump(deltaTime);
             this.handleHorizontalMovement(deltaTime);
-            if (this.isIdle()) this.img = this.idleImg;
+            if (this.isIdle()) this.updateAnimation(this.idleAnimation, deltaTime, 150);
             if (this.hurtingAction.updateAndIsExecutable(deltaTime)) this.hurtingAction.execute(deltaTime);
         }
     }

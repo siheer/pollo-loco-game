@@ -149,6 +149,36 @@ export default class SoundManager {
     }
 
     /**
+ * Plays background music by scheduling a start sound and a looping sound.
+ */
+    playBackground() {
+        this.loadPromise.then(() => {
+            const bgGain = this.createGainForSound("background");
+            const startTime = this.audioContext.currentTime;
+            const sourceStart = this.createBackgroundSrc(this.buffers.backgroundStart, false, startTime, bgGain);
+            const sourceLoop = this.createBackgroundSrc(this.buffers.backgroundLoop, true, startTime + sourceStart.buffer.duration, bgGain);
+            this.currentSource = sourceLoop;
+        });
+    }
+
+    /**
+     * Creates an AudioBufferSourceNode for the background sound.
+     * @param {AudioBuffer} buffer - The audio buffer to be used.
+     * @param {boolean} loop - Indicates whether the source node should loop.
+     * @param {number} startTime - The time at which the sound should start.
+     * @param {GainNode} gainNode - The GainNode to which the source node will be connected.
+     * @returns {AudioBufferSourceNode} The created AudioBufferSourceNode.
+     */
+    createBackgroundSrc(buffer, loop, startTime, gainNode) {
+        const src = this.audioContext.createBufferSource();
+        src.buffer = buffer;
+        src.loop = loop;
+        src.connect(gainNode);
+        src.start(startTime);
+        return src;
+    }
+
+    /**
      * Plays background music by scheduling a start sound and a looping sound.
      */
     playBackground() {
@@ -156,13 +186,11 @@ export default class SoundManager {
             const bgGain = this.createGainForSound("background");
             const startTime = this.audioContext.currentTime;
 
-            // Background-Start-Sound
             const sourceStart = this.audioContext.createBufferSource();
             sourceStart.buffer = this.buffers.backgroundStart;
             sourceStart.connect(bgGain);
             sourceStart.start(startTime);
 
-            // Background-Loop-Sound, der nahtlos anschließt
             const sourceLoop = this.audioContext.createBufferSource();
             sourceLoop.buffer = this.buffers.backgroundLoop;
             sourceLoop.loop = true;

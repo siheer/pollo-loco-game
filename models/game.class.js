@@ -166,11 +166,11 @@ export default class Game {
      */
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
-        const fullScreenBtn = document.getElementById('full-screen');
         const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('go-to-start');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
         show ? restartBtn.classList.remove('dn') : restartBtn.classList.add('dn');
-        show ? fullScreenBtn.focus() : null;
+        show ? homeBtn.focus() : null;
     }
 
     /**
@@ -252,10 +252,18 @@ export default class Game {
         }
     }
 
+    /**
+     * Set flag in localStorage if game was muted when e.g. going to menu
+     * @param {boolean} wasMuted 
+     */
     setGameWasMuted(wasMuted) {
         localStorage.setItem('gameWasMuted', wasMuted);
     }
 
+    /**
+     * Get flag in localStorage if game was muted from e.g. going to menu
+     * @returns {boolean} - returns if game was muted.
+     */
     gameWasMuted() {
         return localStorage.getItem('gameWasMuted') === 'true';
     }

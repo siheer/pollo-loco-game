@@ -23,37 +23,37 @@ export default class World {
         this.cameraX = 0;
         this.collisionsDeltaTime = 0;
         this.initKeyBoardEventsDeltaTime = 0;
-        this.createActionTimers();
+        this.initializeActionTimer();
     }
 
     /**
      * Initializes action timers for bottle throwing, bottle buying, enemy spawning, and item spawning.
      */
-    createActionTimers() {
+    initializeActionTimer() {
         this.bottleThrowAction = new ActionTimer(
             () => keyboardEvents.keys['a'] && this.level.character.bottleSupply > 0,
             () => this.level.character.throwBottle(),
             0,
-            200
+            500
         );
         this.bottleBuyAction = new ActionTimer(
             () => keyboardEvents.keys['Enter'] && this.level.character.canBuyBottle(),
             () => this.level.character.buyBottle(),
             0,
             100
-        )
+        );
         this.spawnEnemiesActionTimer = new ActionTimer(
             () => true,
             () => this.level.spawnEnemies(),
             0,
             20000
-        )
+        );
         this.spawnItemsActionTimer = new ActionTimer(
             () => true,
             () => this.level.spawnItems(),
             0,
             20000
-        )
+        );
     }
 
     /**

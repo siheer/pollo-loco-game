@@ -17,6 +17,7 @@ export default class UI {
             this.registerGoTos();
             this.registerMobileControls();
             this.registerRestartButton();
+            this.preventContextMenuOnGameButtons();
             UI.staticButtonsAlreadyRegistered = true;
         }
     }
@@ -125,7 +126,6 @@ export default class UI {
      */
     registerMobileControls() {
         document.querySelectorAll('.game-ui-btn.mobile').forEach(btn => {
-            btn.oncontextmenu = (e) => e.preventDefault();
             btn.onpointerdown = (e) => {
                 e.preventDefault();
                 btn.setPointerCapture(e.pointerId);
@@ -137,5 +137,9 @@ export default class UI {
                 window.keyboardEvents.handleKeyUp(new KeyboardEvent('keyup', { key: btn.dataset.key }));
             };
         });
+    }
+
+    preventContextMenuOnGameButtons() {
+        document.querySelectorAll('.game-ui-btn').forEach(btn => btn.oncontextmenu = (e) => e.preventDefault());
     }
 }

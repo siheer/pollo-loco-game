@@ -9,15 +9,6 @@ function createInstances(ClassType, length, ...args) {
     return Array(length).fill(null).map(() => new ClassType(...args));
 }
 
-// function logCanvas() {
-//     const canvasElement = document.getElementById('canvas');
-//     console.log(`Canvas: client width: ${canvasElement.clientWidth}, client height: ${canvasElement.clientHeight}`);
-//     console.log(`Canvas: width: ${canvasElement.width}, height: ${canvasElement.height}`);
-//     // This function is commented out.
-// }
-
-// Flattens a nested collection into a flat array.
-// If ClassType is provided, only includes instances of that class.
 /**
  * Flattens a nested collection into a single array.
  * @param {*} collection - The nested collection (array or object).

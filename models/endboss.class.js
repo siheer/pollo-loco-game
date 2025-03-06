@@ -81,14 +81,14 @@ export default class Endboss extends GameItem {
             () => this.updateDirection(),
             0,
             200
-        )
+        );
         this.hurtingAction = new ActionTimer(
             () => this.isHurt,
             deltaTime => this.updateAnimation(this.hurtingAnimation, deltaTime, 150),
             500,
             0,
             () => this.isHurt = false
-        )
+        );
         this.alertedAction = new ActionTimer(
             () => this.isEnemyClose() && !this.isAnimationAfterLastFrame(this.alertedAnimation),
             deltaTime => this.updateAnimation(this.alertedAnimation, deltaTime),
