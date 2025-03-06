@@ -117,7 +117,7 @@ export default class GameOverlay {
      * Resumes the game by removing the overlay and restarting the game loop after a delay.
      */
     resumeGame() {
-        if (!window.game.gameWasMuted()) window.soundManager.fadeUnmute();
+        if (!window.game.gameWasMuted()) window.game.toggleMusicOnOff(true);
         this.remove();
         document.getElementById('canvas-container').classList.remove('opacity-0');
         window.game.start(1000);

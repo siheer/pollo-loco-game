@@ -24,6 +24,8 @@ export default class Game {
         this.worldPaintedBeforeStartCount = 0;
         this.registerHandlingOfFocusOut();
         this.wasRunningBeforeBlur = false;
+        window.addEventListener("resize", () => this.checkOrientation());
+        this.wasPlaying = false;
     }
 
     /**
@@ -73,7 +75,6 @@ export default class Game {
      */
     updateUIOnStart() {
         window.playPauseButton.disabled = false;
-        document.getElementById('go-to-controls').disabled = false;
         window.gameOverlay.remove();
         window.playPauseButton.innerHTML = pauseSVG;
         window.playPauseButton.blur();
@@ -132,7 +133,6 @@ export default class Game {
      */
     handleGameOver() {
         window.playPauseButton.disabled = true;
-        document.getElementById('go-to-controls').disabled = true;
         window.playPauseButton.innerHTML = playSVG;
         if (this.gameOver.playerHasWon) {
             this.showGameOverDisplay(true, 'game-won-img');
@@ -166,11 +166,11 @@ export default class Game {
      */
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
-        const restartBtn = document.getElementById('restart-btn');
-        const homeBtn = document.getElementById('go-to-start');
+        const restartBtns = document.getElementById('restart-btns');
+        const homeBtnGameOver = document.getElementById('home-btn-game-over');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
-        show ? restartBtn.classList.remove('dn') : restartBtn.classList.add('dn');
-        show ? homeBtn.focus() : null;
+        show ? restartBtns.classList.remove('dn') : restartBtns.classList.add('dn');
+        show ? homeBtnGameOver.focus() : null;
     }
 
     /**
@@ -187,17 +187,27 @@ export default class Game {
 
     /**
      * Toggles background music on or off and updates the corresponding UI button.
+     * @param {boolean} turnOn - set flag to turn music on instead of toggling
      */
-    toggleMusicOnOff() {
+    toggleMusicOnOff(turnOn) {
         const musicBtn = document.getElementById('music-btn');
+        if (turnOn) {
+            window.soundManager.fadeUnmute();
+            setMusicIconToOff();
+            return;
+        }
         if (window.soundManager.isMuted) {
-            musicBtn.innerHTML = musicOffSVG;
-            musicBtn.title = 'Musik aus (m)';
+            setMusicIconToOff();
         } else {
             musicBtn.innerHTML = musicOnSVG;
             musicBtn.title = 'Musik an (m)';
         }
         window.soundManager.toggleMute();
+
+        function setMusicIconToOff() {
+            musicBtn.innerHTML = musicOffSVG;
+            musicBtn.title = 'Musik aus (m)';
+        }
     }
 
     /**
@@ -231,11 +241,13 @@ export default class Game {
      * Records that the game was running before the blur.
      */
     handleOnWindowBlur() {
-        if (this.isGameRunning) {
-            this.wasRunningBeforeBlur = true;
+        if (window.matchMedia("(hover: hover)").matches) {
+            if (this.isGameRunning) {
+                this.wasRunningBeforeBlur = true;
+            }
+            this.stop();
+            this.stopMusicIfPlaying();
         }
-        this.stop();
-        this.stopMusicIfPlaying();
     }
 
     /**
@@ -243,12 +255,14 @@ export default class Game {
      * and toggling music on if the game was not muted.
      */
     handleOnWindowFocus() {
-        if (this.wasRunningBeforeBlur) {
-            this.start();
-            this.wasRunningBeforeBlur = false;
-        }
-        if (!this.gameWasMuted()) {
-            this.toggleMusicOnOff();
+        if (window.matchMedia("(hover: hover)").matches) {
+            if (this.wasRunningBeforeBlur) {
+                this.start();
+                this.wasRunningBeforeBlur = false;
+            }
+            if (!this.gameWasMuted()) {
+                this.toggleMusicOnOff();
+            }
         }
     }
 
@@ -266,5 +280,25 @@ export default class Game {
      */
     gameWasMuted() {
         return localStorage.getItem('gameWasMuted') === 'true';
+    }
+
+    /**
+     * Checks the device orientation and starts or stops the game accordingly.
+     * If the device is in portrait mode, the game is stopped;
+     * in landscape mode, the game is started (provided it isn’t already running and the game isn’t over).
+     */
+    checkOrientation() {
+        if (window.matchMedia("(orientation: portrait)").matches) {
+            if (this.isGameRunning) {
+                this.wasPlaying = true;
+                this.stopMusicIfPlaying();
+                this.stop();
+            }
+        } else if (!this.isGameRunning && !this.gameOver.isOver) {
+            if (this.wasPlaying) {
+                if (!this.gameWasMuted()) this.toggleMusicOnOff();
+                this.start(1000);
+            }
+        }
     }
 }

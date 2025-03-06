@@ -103,14 +103,17 @@
             </div>
             <img id="game-over-img" src="img/9_intro_outro_screens/game_over/game over.png" alt="Verloren! 'Game Over'"
                 class="canvas-overlay canvas-overlay-img dn">
-            <button id="restart-btn" class="btn restart dn">Neustart</button>
+            <div id="restart-btns" class="restart-btns dn fr gap1">
+                <button id="home-btn-game-over" class="btn">Menü</button>
+                <button id="restart-btn" class="btn">Neustart</button>
+            </div>
             <img id="game-won-img" src="img/9_intro_outro_screens/won.png" alt="Gewonnen! 'You won'"
                 class="canvas-overlay canvas-overlay-img dn won">
         </div>
         <div class="landscape-prompt dn">
-            <img id="turn-your-phone-svg" src="icons/mobile-landscape-mode-icon.svg"
-                alt="Turn your device to landscape mode to play." class="landscape-prompt-icon">
-            <span>Drehe das Gerät, um zu spielen.</span>
+            <h1 class="landscape-prompt-headline">El Pollo Loco</h1>
+            <img src="icons/mobile-landscape-mode-icon.svg" alt="Turn your device to landscape mode to play.">
+            <span class="landscape-prompt-text">Drehe das Gerät, um zu spielen.</span>
         </div>
     </div>
     <noscript>

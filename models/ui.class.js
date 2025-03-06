@@ -101,6 +101,7 @@ export default class UI {
     registerGoTos() {
         const btnActions = {
             'go-to-start': () => window.gameOverlay.setContent(window.gameOverlay.startScreen, '.start-btn', 'game'),
+            'home-btn-game-over': () => window.gameOverlay.setContent(window.gameOverlay.startScreen, '.start-btn', 'game'),
             'go-to-controls': () => window.gameOverlay.setContent(window.gameOverlay.controlsScreen, '.back-btn', 'game'),
         }
         Object.entries(btnActions).forEach(([selector, action]) => {

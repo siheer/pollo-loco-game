@@ -63,16 +63,19 @@ canvas {
 .btn {
     font-size: 1.5rem;
     border: .2rem solid black;
+}
 
-    &.restart {
-        position: absolute;
-        bottom: 6rem;
-        left: 50%;
-        transform: translateX(-50%);
+.restart-btns {
+    position: absolute;
+    bottom: 6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+
+    & button {
         width: 15rem;
         color: gainsboro;
         background-color: black;
-        z-index: 2;
     }
 }
 
@@ -330,6 +333,31 @@ canvas {
             width: 140%;
             height: 140%;
         }
+    }
+}
+
+@media only screen and (hover: none) and (orientation: portrait) {
+    .landscape-prompt {
+        display: block;
+        position: absolute;
+        width: 50vw;
+    }
+
+    .landscape-prompt-headline {
+        font-size: 4rem;
+        margin: 1rem;
+    }
+
+    .landscape-prompt-text {
+        display: inline-block;
+        padding: 1.5rem 0;
+        font-size: 2.5rem;
+    }
+
+    .canvas-container,
+    .canvas-overlay,
+    .canvas-overlay-img {
+        display: none;
     }
 }
 
