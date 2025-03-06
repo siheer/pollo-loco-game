@@ -45,21 +45,21 @@ export default class SoundManager {
      */
     provideSoundSources() {
         this.soundKeySources = {
-            backgroundStart: '../audio/game-start.mp3',
-            backgroundLoop: '../audio/game-loop.mp3',
-            jump: '../audio/jump.mp3',
-            throw: '../audio/throw.mp3',
-            walking: '../audio/walking.mp3',
-            coinCollected: '../audio/coin-collected.mp3',
-            bottleCollected: '../audio/bottle-collected.mp3',
-            chickStomped: '../audio/chick-stomped.mp3',
-            chickenStomped: '../audio/chicken-stomped.mp3',
-            bottleSmash: '../audio/bottle-smash.mp3',
-            buyBottle: '../audio/buy-bottle.mp3',
-            endbossHurt: '../audio/endboss-hurt.mp3',
-            characterHurt: '../audio/character-hurt.mp3',
-            gameWon: '../audio/game-won.mp3',
-            gameLost: '../audio/game-over.mp3',
+            backgroundStart: 'audio/game-start.mp3',
+            backgroundLoop: 'audio/game-loop.mp3',
+            jump: 'audio/jump.mp3',
+            throw: 'audio/throw.mp3',
+            walking: 'audio/walking.mp3',
+            coinCollected: 'audio/coin-collected.mp3',
+            bottleCollected: 'audio/bottle-collected.mp3',
+            chickStomped: 'audio/chick-stomped.mp3',
+            chickenStomped: 'audio/chicken-stomped.mp3',
+            bottleSmash: 'audio/bottle-smash.mp3',
+            buyBottle: 'audio/buy-bottle.mp3',
+            endbossHurt: 'audio/endboss-hurt.mp3',
+            characterHurt: 'audio/character-hurt.mp3',
+            gameWon: 'audio/game-won.mp3',
+            gameLost: 'audio/game-over.mp3',
         };
     }
 
