@@ -147,7 +147,6 @@ export default class Endboss extends GameItem {
         else if (this.alertedAction.updateAndIsExecutable(deltaTime) && !this.isEnemyVeryClose()) this.alertedAction.execute(deltaTime);
         else if (this.attackAction.updateAndIsExecutable(deltaTime)) this.attackAction.execute(deltaTime);
         else {
-            this.checkIfGameOver();
             this.handleWalking(deltaTime);
         }
     }
@@ -196,15 +195,5 @@ export default class Endboss extends GameItem {
             detail: { max: this.maxEnergy, current: this.energy }
         }));
         this.hurtingAnimation.currentImageIndex = 0;
-    }
-
-    /**
-     * Checks if the endboss has moved off-screen and triggers game over loss conditions.
-     */
-    checkIfGameOver() {
-        if (this.x < 0) {
-            window.game.gameOver.isOver = true;
-            window.game.gameOver.playerHasWon = false;
-        }
     }
 }

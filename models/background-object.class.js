@@ -5,13 +5,14 @@ import CanvasObject from './canvas-object.class.js';
 export default class BackgroundObject extends CanvasObject {
     /**
      * Creates a BackgroundObject instance and loads the image from the provided source path.
+     * @param {Canvas} canvas - The canvas instance in which the background exists.
      * @param {string} srcPath - The source path of the background image.
-     * @param {number} [x=0] - The x-coordinate position; default is 0.
-     * @param {number} [y=0] - The y-coordinate position; default is 0.
-     * @param {number} [width=window.world.canvas.width] - The width of the object; defaults to window.world.canvas.width.
-     * @param {number} [height=window.world.canvas.height] - The height of the object; defaults to window.world.canvas.height.
+     * @param {number} [x=0] - The x-coordinate position.
+     * @param {number} [y=0] - The y-coordinate position.
+     * @param {number} [width=canvas.width] 1- The width of the object.
+     * @param {number} [height=canvas.height] - The height of the object.
      */
-    constructor(srcPath, x = 0, y = 0, width = window.world.canvas.width, height = window.world.canvas.height) {
+    constructor(canvas, srcPath, x = 0, y = 0, width = canvas.width, height = canvas.height) {
         super(x, y, width, height);
         this.loadImage(srcPath);
     }

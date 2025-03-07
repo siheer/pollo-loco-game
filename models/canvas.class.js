@@ -3,17 +3,17 @@ export default class Canvas {
      * Creates a new Canvas instance.
      * @param {HTMLCanvasElement} canvasElement - The HTML canvas element.
      * @param {number} [scale=1] - The scaling factor for internal resolution (e.g., 0.5 reduces resolution by half).
-     * @param {number} [baseWidth=1920] - The logical width for the canvas.
-     * @param {number} [canvasAspectRatio=16/9] - The aspect ratio of the canvas.
+     * @param {number} [logicalWidth=CANVAS_LOGICAL_WIDTH] - The logical width for the canvas.
+     * @param {number} [canvasAspectRatio=CANVAS_WIDTH_HEIGHT_RATIO] - The aspect ratio of the canvas.
      * @throws {Error} If the provided element is not a valid HTMLCanvasElement.
      */
-    constructor(canvasElement, scale = 1, baseWidth = 1920, canvasAspectRatio = 16 / 9) {
+    constructor(canvasElement, scale = 1, logicalWidth = CANVAS_LOGICAL_WIDTH, canvasAspectRatio = CANVAS_WIDTH_HEIGHT_RATIO) {
         if (!(canvasElement instanceof HTMLCanvasElement))
             throw new Error('Provided element is not a valid HTMLCanvasElement.');
         this.canvasElement = canvasElement;
         this.ctx = canvasElement.getContext('2d');
-        this.logicalWidth = baseWidth;
-        this.logicalHeight = baseWidth / canvasAspectRatio;
+        this.logicalWidth = logicalWidth;
+        this.logicalHeight = logicalWidth / canvasAspectRatio;
         this.setDimensionsAndScale(scale);
     }
 

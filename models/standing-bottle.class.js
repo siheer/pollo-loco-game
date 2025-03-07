@@ -7,13 +7,14 @@ import Bottle from './bottle.class.js';
 export default class StandingBottle extends Bottle {
     /**
      * Creates a new StandingBottle instance positioned at a random x-coordinate in the given segment.
+     * @param {Level} level - The level instance in which the bottle exists.
      * @param {number} segmentX - The segment index for horizontal placement.
      * @param {number} y - The y-coordinate.
      * @param {number} width - The width of the bottle.
      * @param {number} height - The height of the bottle.
      */
-    constructor(segmentX, y, width, height) {
-        const x = window.world.level.getRandomXInSegment(segmentX);
+    constructor(level, segmentX, y, width, height) {
+        const x = level.getRandomXInSegment(segmentX);
         super(x, y, width, height, false, false, false);
         this.setImage();
     }

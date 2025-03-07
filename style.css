@@ -32,6 +32,10 @@ canvas {
     display: block;
 }
 
+canvas:focus {
+    outline: none;
+}
+
 .canvas-container {
     position: relative;
     overflow: hidden;

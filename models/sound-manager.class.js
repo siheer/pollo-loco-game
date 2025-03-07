@@ -1,6 +1,3 @@
-/**
- * Manages game sound effects and background music using the Web Audio API.
- */
 export default class SoundManager {
     /**
      * Creates a new SoundManager instance.
@@ -11,17 +8,32 @@ export default class SoundManager {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         this.masterVolume = 0.6;
         this.masterGain = this.audioContext.createGain();
-        this.isMuted = localStorage.getItem('soundMuted') === 'true';
-        this.masterGain.gain.value = this.isMuted ? 0 : this.masterVolume;
+        this.masterGain.gain.value = this.hasUserMuted() ? 0 : this.masterVolume;
         this.masterGain.connect(this.audioContext.destination);
         this.buffers = {};
         this.currentSource = null;
-        this.fadeDuration = 1; // Für alle Sounds außer walking
+        this.fadeDuration = 1;
         this.currentlyPlaying = {};
         this.loopingSources = {};
         this.initSoundVolumes();
         this.provideSoundSources();
         this.loadPromise = this.preloadSounds();
+    }
+
+    /**
+     * Retrieves the user's muted state from localStorage.
+     * @returns {boolean} True if the muted state is set to true.
+     */
+    hasUserMuted() {
+        return JSON.parse(localStorage.getItem('hasUserMuted')) === true;
+    }
+
+    /**
+     * Stores the user's muted state in localStorage.
+     * @param {boolean} value The muted state to be stored.
+     */
+    setHasUserMuted(value) {
+        localStorage.setItem('hasUserMuted', JSON.stringify(value));
     }
 
     /**
@@ -89,6 +101,37 @@ export default class SoundManager {
     }
 
     /**
+     * Plays background music by scheduling a start sound and a looping sound.
+     */
+    playBackground() {
+        this.loadPromise.then(() => {
+            if (this.audioContext.state !== 'running') this.audioContext.resume();
+            const bgGain = this.createGainForSound("background");
+            const startTime = this.audioContext.currentTime;
+            const { source: sourceStart } = this.createSource('backgroundStart', false, bgGain);
+            sourceStart.start(startTime);
+            const { source: sourceLoop } = this.createSource('backgroundLoop', true, bgGain);
+            sourceLoop.start(startTime + sourceStart.buffer.duration);
+            this.currentSource = sourceLoop;
+        });
+    }
+
+    /**
+     * Create an AudioBufferSourceNode and associated GainNode for a sound.
+     * @param {string} soundKey - The key identifying the sound.
+     * @param {boolean} loop - Whether the source should loop.
+     * @returns {object} An object containing the source and gainNode.
+     */
+    createSource(soundKey, loop, gainNode) {
+        const source = this.audioContext.createBufferSource();
+        source.buffer = this.buffers[soundKey];
+        source.loop = loop;
+        if (!gainNode) gainNode = this.createGainForSound(soundKey);
+        source.connect(gainNode);
+        return { source, gainNode };
+    }
+
+    /**
      * Creates a gain node for a specific sound and connects it to the master gain.
      * @param {string} soundKey - The key identifying the sound.
      * @returns {GainNode} The created gain node.
@@ -101,92 +144,12 @@ export default class SoundManager {
     }
 
     /**
-     * Fades a gain node to a target value over a specified duration and executes an optional callback.
-     * @param {GainNode} gainNode - The gain node to fade.
-     * @param {number} targetValue - The target gain value.
-     * @param {number} duration - Duration in seconds.
-     * @param {Function} [callback] - Optional immediate callback.
+     * Retrieves the volume for a specific sound key.
+     * @param {string} soundKey - The key identifying the sound.
+     * @returns {number} The volume level (default is 1.0 if not set).
      */
-    fadeGain(gainNode, targetValue, duration, callback) {
-        callback?.();
-        const currentTime = this.audioContext.currentTime;
-        gainNode.gain.cancelScheduledValues(currentTime);
-        gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime);
-        gainNode.gain.linearRampToValueAtTime(targetValue, currentTime + duration);
-    }
-
-    /**
-     * Stops a sound source by fading its gain to 0 over the specified duration, then stopping the source.
-     * @param {AudioBufferSourceNode} source - The sound source.
-     * @param {GainNode} gainNode - The associated gain node.
-     * @param {number} duration - Duration in seconds for the fade out.
-     * @param {Function} [callback] - Optional callback after stopping.
-     */
-    stopSound(source, gainNode, duration, callback) {
-        this.fadeGain(gainNode, 0, duration, () => {
-            if (source) source.stop();
-            if (callback) callback();
-        });
-    }
-
-    /**
-     * Immediately stops a sound by its key, handling both looping and non-looping sounds.
-     * @param {string} soundKey - The key of the sound to stop.
-     */
-    stopSoundImmediatelyByKey(soundKey) {
-        // Falls der Sound als Loop läuft, stoppen wir ihn sofort:
-        if (this.loopingSources[soundKey]) {
-            const { source, gainNode } = this.loopingSources[soundKey];
-            source.stop(); // sofort stoppen
-            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-            delete this.loopingSources[soundKey];
-        }
-        // Falls der Sound als einzelner (non-looping) Sound gerade läuft:
-        if (this.currentlyPlaying[soundKey]) {
-            this.currentlyPlaying[soundKey].stop();
-            this.currentlyPlaying[soundKey] = null;
-        }
-    }
-
-    /**
-     * Plays background music by scheduling a start sound and a looping sound.
-     */
-    playBackground() {
-        this.loadPromise.then(() => {
-            const bgGain = this.createGainForSound("background");
-            const startTime = this.audioContext.currentTime;
-            const sourceStart = this.createBackgroundSrc(this.buffers.backgroundStart, false, startTime, bgGain);
-            const sourceLoop = this.createBackgroundSrc(this.buffers.backgroundLoop, true, startTime + sourceStart.buffer.duration, bgGain);
-            this.currentSource = sourceLoop;
-        });
-    }
-
-    /**
-     * Creates an AudioBufferSourceNode for the background sound.
-     * @param {AudioBuffer} buffer - The audio buffer to be used.
-     * @param {boolean} loop - Indicates whether the source node should loop.
-     * @param {number} startTime - The time at which the sound should start.
-     * @param {GainNode} gainNode - The GainNode to which the source node will be connected.
-     * @returns {AudioBufferSourceNode} The created AudioBufferSourceNode.
-     */
-    createBackgroundSrc(buffer, loop, startTime, gainNode) {
-        const src = this.audioContext.createBufferSource();
-        src.buffer = buffer;
-        src.loop = loop;
-        src.connect(gainNode);
-        src.start(startTime);
-        return src;
-    }
-
-    /**
-     * Stops the background music and resets the master gain.
-     */
-    stopBackgroundMusic() {
-        if (this.currentSource) {
-            this.currentSource.stop();
-            this.currentSource = null;
-        }
-        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.masterVolume, this.audioContext.currentTime);
+    getSoundVolume(soundKey) {
+        return this.soundVolumes[soundKey] !== undefined ? this.soundVolumes[soundKey] : 1.0;
     }
 
     /**
@@ -196,10 +159,7 @@ export default class SoundManager {
     play(soundKey) {
         this.loadPromise.then(() => {
             if (this.buffers[soundKey]) {
-                const source = this.audioContext.createBufferSource();
-                source.buffer = this.buffers[soundKey];
-                const gainNode = this.createGainForSound(soundKey);
-                source.connect(gainNode);
+                const { source } = this.createSource(soundKey, false);
                 this.handlePlayingStatus(soundKey, source);
                 source.start();
             }
@@ -231,15 +191,88 @@ export default class SoundManager {
      */
     playLoopingSound(soundKey) {
         this.loadPromise.then(() => {
-            if (this.loopingSources[soundKey]) return; // Sound läuft bereits
-            const source = this.audioContext.createBufferSource();
-            source.buffer = this.buffers[soundKey];
-            source.loop = true;
-            const gainNode = this.createGainForSound(soundKey);
-            source.connect(gainNode);
+            if (this.loopingSources[soundKey]) return;
+            const { source, gainNode } = this.createSource(soundKey, true);
             source.start();
             this.loopingSources[soundKey] = { source, gainNode };
         });
+    }
+
+    /**
+     * Plays the walking sound as a looping sound immediately.
+     */
+    playWalkingSound() {
+        this.playLoopingSound("walking");
+    }
+
+    /**
+     * Fades the master gain to 0 over the fade duration.
+     */
+    fadeMute() {
+        this.fadeGain(this.masterGain, 0, this.fadeDuration);
+    }
+
+    /**
+     * Fades the master gain to the master volume over the fade duration.
+     */
+    fadeUnmute() {
+        this.fadeGain(this.masterGain, this.masterVolume, this.fadeDuration);
+    }
+
+    /**
+     * Fades a gain node to a target value over a specified duration.
+     * @param {GainNode} gainNode - The gain node to fade.
+     * @param {number} targetValue - The target gain value.
+     * @param {number} duration - Duration in seconds.
+     */
+    fadeGain(gainNode, targetValue, duration) {
+        const currentTime = this.audioContext.currentTime;
+        gainNode.gain.cancelScheduledValues(currentTime);
+        gainNode.gain.setValueAtTime(gainNode.gain.value, currentTime);
+        gainNode.gain.linearRampToValueAtTime(targetValue, currentTime + duration);
+    }
+
+    /**
+     * Stops the background music and resets the master gain.
+     */
+    stopBackgroundMusic() {
+        if (this.currentSource) {
+            this.currentSource.stop();
+            this.currentSource = null;
+        }
+        this.masterGain.gain.setValueAtTime(this.hasUserMuted() ? 0 : this.masterVolume, this.audioContext.currentTime);
+    }
+
+    /**
+     * Stops a sound source by fading its gain to 0 over the specified duration, then stopping the source.
+     * @param {AudioBufferSourceNode} source - The sound source.
+     * @param {GainNode} gainNode - The associated gain node.
+     * @param {number} duration - Duration in seconds for the fade out.
+     * @param {Function} [callback] - Optional callback after stopping.
+     */
+    stopSound(source, gainNode, duration, callback) {
+        this.fadeGain(gainNode, 0, duration);
+        setTimeout(() => {
+            if (source) source.stop();
+            if (callback) callback();
+        }, duration * 1000);
+    }
+
+    /**
+     * Immediately stops a sound by its key, handling both looping and non-looping sounds.
+     * @param {string} soundKey - The key of the sound to stop.
+     */
+    stopSoundImmediatelyByKey(soundKey) {
+        if (this.loopingSources[soundKey]) {
+            const { source, gainNode } = this.loopingSources[soundKey];
+            source.stop();
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            delete this.loopingSources[soundKey];
+        }
+        if (this.currentlyPlaying[soundKey]) {
+            this.currentlyPlaying[soundKey].stop();
+            this.currentlyPlaying[soundKey] = null;
+        }
     }
 
     /**
@@ -257,43 +290,20 @@ export default class SoundManager {
     }
 
     /**
-     * Plays the walking sound as a looping sound immediately.
-     */
-    playWalkingSound() {
-        this.loadPromise.then(() => {
-            if (this.loopingSources["walking"]) return; // läuft bereits
-            const source = this.audioContext.createBufferSource();
-            source.buffer = this.buffers.walking;
-            source.loop = true;
-            const gainNode = this.createGainForSound("walking");
-            source.connect(gainNode);
-            source.start();
-            this.loopingSources["walking"] = { source, gainNode };
-        });
-    }
-
-    /**
      * Immediately stops all sounds and mutes the master gain.
      */
     muteAllImmediately() {
         this.stopBackgroundMusic();
-        // Stoppe alle loopenden Sounds
         for (const key in this.loopingSources) {
             const { source } = this.loopingSources[key];
-            if (source) {
-                source.stop();
-            }
+            if (source) source.stop();
         }
         this.loopingSources = {};
-        // Stoppe alle aktuell spielenden Sounds
         for (const key in this.currentlyPlaying) {
             const source = this.currentlyPlaying[key];
-            if (source) {
-                source.stop();
-            }
+            if (source) source.stop();
         }
         this.currentlyPlaying = {};
-        // Setze Master-Gain sofort auf 0
         this.masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
     }
 
@@ -301,35 +311,9 @@ export default class SoundManager {
      * Resets the master gain to the master volume.
      */
     resetMasterGain() {
-        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : this.masterVolume, this.audioContext.currentTime);
-    }
-
-    /**
-     * Fades the master gain to 0 over the fade duration and sets the muted flag.
-     */
-    fadeMute() {
-        this.fadeGain(this.masterGain, 0, this.fadeDuration, () => {
-            this.isMuted = true;
-            localStorage.setItem('soundMuted', 'true');
-        });
-    }
-
-    /**
-     * Fades the master gain to the master volume over the fade duration and clears the muted flag.
-     */
-    fadeUnmute() {
-        this.fadeGain(this.masterGain, this.masterVolume, this.fadeDuration, () => {
-            this.isMuted = false;
-            localStorage.setItem('soundMuted', 'false');
-        });
-    }
-
-    /**
-     * Retrieves the volume for a specific sound key.
-     * @param {string} soundKey - The key identifying the sound.
-     * @returns {number} The volume level (default is 1.0 if not set).
-     */
-    getSoundVolume(soundKey) {
-        return this.soundVolumes[soundKey] !== undefined ? this.soundVolumes[soundKey] : 1.0;
+        this.masterGain.gain.setValueAtTime(
+            this.hasUserMuted() ? 0 : this.masterVolume,
+            this.audioContext.currentTime
+        );
     }
 }

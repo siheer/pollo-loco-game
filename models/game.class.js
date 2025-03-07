@@ -16,16 +16,13 @@ export default class Game {
         this.animationFrameId = null;
         this.lastTimestamp = null;
         this.gameOver = { isOver: false, playerHasWon: false };
+        this.wasGameRunning = true; // true, because initially game should start immediately after leaving menu
         this.isGameRunning = false;
-        this.firstStart = true;
         this.firstGameOver = true;
-        this.reducingLoadInterval = false;
-        this.waitOnStartIntervalId = setInterval(() => this.waitOnStart(), 1000);
         this.worldPaintedBeforeStartCount = 0;
         this.registerHandlingOfFocusOut();
-        this.wasRunningBeforeBlur = false;
+        this.wasDeviceTurnedIntoPortraitMode = false;
         window.addEventListener("resize", () => this.checkOrientation());
-        this.wasPlaying = false;
     }
 
     /**
@@ -39,78 +36,54 @@ export default class Game {
     }
 
     /**
-     * Repaints the canvas a limited number of times before the game starts,
-     * allowing resources to finish loading.
-     */
-    waitOnStart() {
-        if (!this.isGameRunning && this.worldPaintedBeforeStartCount < 20) {
-            this.world.drawWorld();
-            this.worldPaintedBeforeStartCount++;
-        }
-    }
-
-    /**
-     * Starts the game loop after an optional delay and plays background music on first start.
+     * Starts the game loop after an optional delay
      * @param {number} [delayInMilliseconds=0] - Delay before starting the game loop.
      */
     start(delayInMilliseconds = 0) {
+        this.world.drawWorld();
         setTimeout(() => {
-            if (this.firstStart) window.soundManager.playBackground();
-            this.updateUIOnStart();
+            if (this.gameOver.isOver) return;
+            this.updatePlayPauseBtn();
             this.handleSoundOnStart();
             this.isGameRunning = true;
+            this.wasGameRunning = false;
             this.lastTimestamp = null;
             this.animationFrameId = requestAnimationFrame(timestamp => this.gameLoop(timestamp));
         }, delayInMilliseconds);
     }
 
     /**
+     * Updates play/pause button when the game starts.
+     */
+    updatePlayPauseBtn() {
+        window.playPauseButton.innerHTML = pauseSVG;
+        window.world.canvas.canvasElement.focus();
+    }
+
+    /**
      * Turn on sound, if not muted by user choice.
      */
     handleSoundOnStart() {
-        if (!this.gameWasMuted() || !window.soundManager.isMuted) this.turnSoundOn();
+        if (!window.soundManager.hasUserMuted()) this.turnSoundOn();
+        else this.turnSoundOff();
     }
 
     /**
      * Handles the play/pause button click to toggle the game running state.
      */
-    handlePlayPauseButton(e) {
-        if (!this.isGameRunning) e.currentTarget.blur();
+    handlePlayPauseButton() {
+        if (this.gameOver.isOver) return;
         this.isGameRunning ? this.stop() : this.start();
-    }
-
-    /**
-     * Updates UI elements when the game starts.
-     */
-    updateUIOnStart() {
-        window.playPauseButton.disabled = false;
-        window.gameOverlay.remove();
-        window.playPauseButton.innerHTML = pauseSVG;
-        window.playPauseButton.blur();
     }
 
     /**
      * Stops the game loop and updates UI to reflect the paused state.
      */
     stop() {
-        this.firstStart = false;
         this.isGameRunning = false;
         window.playPauseButton.innerHTML = playSVG;
         cancelAnimationFrame(this.animationFrameId);
-        this.handleSoundOnStop();
-    }
-
-    /**
-     * Turn of sound if is playing and updates local storage with the muted state.
-     */
-    handleSoundOnStop() {
-        if (!window.soundManager.isMuted) {
-            this.setGameWasMuted(false);
-            this.toggleSoundOnOff();
-        }
-        else {
-            this.setGameWasMuted(true);
-        }
+        this.turnSoundOff();
     }
 
     /**
@@ -155,13 +128,9 @@ export default class Game {
      * Handles the game over state, disables UI controls, displays game over overlay, and plays appropriate sounds.
      */
     handleGameOver() {
-        window.playPauseButton.disabled = true;
-        window.playPauseButton.innerHTML = playSVG;
-        if (this.gameOver.playerHasWon) {
-            this.showGameOverDisplay(true, 'game-won-img');
-        } else {
-            this.showGameOverDisplay(true, 'game-over-img');
-        }
+        this.isGameRunning = false;
+        const gameOverImgId = this.gameOver.playerHasWon ? 'game-won-img' : 'game-over-img';
+        this.showGameOverDisplay(true, gameOverImgId);
         if (this.firstGameOver) {
             this.handleGameOverSounds(this.gameOver.playerHasWon);
             this.firstGameOver = false;
@@ -190,29 +159,20 @@ export default class Game {
     showGameOverDisplay(show, elementId) {
         const gameOverDisplayElem = document.getElementById(elementId);
         const restartBtns = document.getElementById('restart-btns');
-        const homeBtnGameOver = document.getElementById('home-btn-game-over');
         show ? gameOverDisplayElem.classList.remove('dn') : gameOverDisplayElem.classList.add('dn');
         show ? restartBtns.classList.remove('dn') : restartBtns.classList.add('dn');
-        show ? homeBtnGameOver.focus() : null;
     }
 
     /**
      * Restarts the game by hiding the game over overlay, re-initializing the game, and starting the game loop.
      */
-    restart() {
+    async restart() {
         this.showGameOverDisplay(false, 'game-over-img');
         this.showGameOverDisplay(false, 'game-won-img');
         window.soundManager.stopSoundImmediatelyByKey('gameLost');
         window.soundManager.stopSoundImmediatelyByKey('gameWon');
-        window.initGame();
-        window.game.start();
-    }
-
-    /**
-     * Toggles sound on/off
-     */
-    toggleSoundOnOff() {
-        window.soundManager.isMuted ? this.turnSoundOn() : this.turnSoundOff();
+        await window.initGame();
+        window.game.start(1000);
     }
 
     /**
@@ -226,13 +186,15 @@ export default class Game {
     }
 
     /**
-     * Turn sound on an update UI button
+     * Turn sound on an update UI button.
+     * Plays background music if not already running.
      */
     turnSoundOn() {
         const soundBtn = document.getElementById('sound-btn');
         soundBtn.innerHTML = soundOffSVG;
         soundBtn.title = 'Musik aus (m)';
         window.soundManager.fadeUnmute();
+        if (!window.soundManager.currentSource) window.soundManager.playBackground();
     }
 
     /**
@@ -255,7 +217,7 @@ export default class Game {
     handleOnWindowBlur() {
         if (window.matchMedia("(hover: hover)").matches) {
             if (this.isGameRunning) {
-                this.wasRunningBeforeBlur = true;
+                this.wasGameRunning = true;
             }
             this.stop();
         }
@@ -267,27 +229,11 @@ export default class Game {
      */
     handleOnWindowFocus() {
         if (window.matchMedia("(hover: hover)").matches) {
-            if (this.wasRunningBeforeBlur) {
+            if (this.wasGameRunning && !window.gameOverlay.element) {
                 this.start();
-                this.wasRunningBeforeBlur = false;
+                this.wasGameRunning = false;
             }
         }
-    }
-
-    /**
-     * Set flag in localStorage if game was muted when e.g. going to menu
-     * @param {boolean} wasMuted 
-     */
-    setGameWasMuted(wasMuted) {
-        localStorage.setItem('gameWasMuted', wasMuted);
-    }
-
-    /**
-     * Get flag in localStorage if game was muted from e.g. going to menu
-     * @returns {boolean} - returns if game was muted.
-     */
-    gameWasMuted() {
-        return localStorage.getItem('gameWasMuted') === 'true';
     }
 
     /**
@@ -297,13 +243,14 @@ export default class Game {
      */
     checkOrientation() {
         if (window.matchMedia("(orientation: portrait)").matches) {
+            this.wasDeviceTurnedIntoPortraitMode = true;
             if (this.isGameRunning) {
-                this.wasPlaying = true;
+                this.wasGameRunning = true;
                 this.stop();
             }
-        } else if (!this.isGameRunning && !this.gameOver.isOver) {
-            if (this.wasPlaying) {
-                if (!this.gameWasMuted()) this.toggleSoundOnOff();
+        } else if (this.wasDeviceTurnedIntoPortraitMode) {
+            this.wasDeviceTurnedIntoPortraitMode = false;
+            if (!this.gameOver.isOver && !this.isGameRunning && this.wasGameRunning) {
                 this.start(1000);
             }
         }

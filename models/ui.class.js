@@ -27,8 +27,8 @@ export default class UI {
      */
     registerPlayPauseButton() {
         window.playPauseButton = document.getElementById('play-pause-button');
-        window.playPauseButton.onclick = (e) => {
-            window.game.handlePlayPauseButton(e);
+        window.playPauseButton.onclick = () => {
+            window.game.handlePlayPauseButton();
 
         };
     }
@@ -37,15 +37,16 @@ export default class UI {
      * Registers the sound on/off button to toggle background sound.
      */
     registerSoundOnOffButton() {
-        const soundBtn = document.getElementById('sound-btn');
-        let isMuted = localStorage.getItem('soundMuted') === 'true';
-        if (isMuted) {
-            soundBtn.innerHTML = soundOnSVG;
-            soundBtn.title = 'Musik an (m)';
+        document.getElementById('sound-btn').onclick = (e) => {
+            updateSoundUserChoiceInLocalStorage();
+            window.soundManager.hasUserMuted() ? window.game.turnSoundOff() : window.game.turnSoundOn();
+            window.world.canvas.canvasElement.focus();
         }
-        soundBtn.onclick = (e) => {
-            window.game.toggleSoundOnOff();
-            e.currentTarget.blur();
+
+        function updateSoundUserChoiceInLocalStorage() {
+            const currentChoice = window.soundManager.hasUserMuted();
+            const newChoice = !currentChoice;
+            window.soundManager.setHasUserMuted(newChoice);
         }
     }
 
@@ -53,9 +54,9 @@ export default class UI {
      * Registers the full screen button to toggle full screen mode and handles full screen change events.
      */
     registerFullScreenButton() {
-        this.fullScreenBtn.onclick = (e) => {
+        this.fullScreenBtn.onclick = () => {
             this.toggleFullScreen(document.getElementById('game-container'));
-            e.currentTarget.blur();
+            window.world.canvas.canvasElement.focus();
         };
         document.onfullscreenchange = () => {
             if (document.fullscreenElement) {
@@ -110,8 +111,8 @@ export default class UI {
         Object.entries(btnActions).forEach(([selector, action]) => {
             const btn = document.getElementById(selector);
             btn.onclick = () => {
+                window.game.wasGameRunning = window.game.isGameRunning;
                 window.game.stop();
-                btn.blur();
                 action();
             };
         })

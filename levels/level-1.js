@@ -18,9 +18,9 @@ function createLevelItems(level, canvas, repeatCount) {
     const backgrounds = createBackgrounds(level, canvas, repeatCount);
     const enemies = createEnemies(level);
     enemies.push(new Endboss(level.levelEndX, level.getYPositionForObject(600) + 50, 515, 600));
-    const coins = createInstances(Coin, 4, 0, level.getYPositionForObject(200), 200, 200);
+    const coins = createInstances(Coin, 4, level, 0, level.getYPositionForObject(200), 200, 200);
     coins.push(...createCoins(level));
-    const bottles = createInstances(StandingBottle, 2, 0, level.getYPositionForObject(110), 120, 120);
+    const bottles = createInstances(StandingBottle, 2, level, 0, level.getYPositionForObject(110), 120, 120);
     bottles.push(...createBottles(level));
     return [
         backgrounds,
@@ -43,9 +43,9 @@ function createBackgrounds(level, canvas, repeatCount) {
             ...Level.getBackgroundSecondPart(canvas, -canvas.width),
             ...Level.getFullBackground(canvas, repeatCount),
         ],
-        new Cloud('./img/5_background/layers/4_clouds/1.png', 0, 0, canvas.width * 0.7, canvas.height * 0.7),
+        new Cloud(level, './img/5_background/layers/4_clouds/1.png', 0, 0, canvas.width * 0.7, canvas.height * 0.7),
         ...level.repeatAcrossLevelSegments((offset) => {
-            return new Cloud('./img/5_background/layers/4_clouds/1.png', offset, 0, canvas.width * 0.7, canvas.height * 0.7);
+            return new Cloud(level, './img/5_background/layers/4_clouds/1.png', offset, 0, canvas.width * 0.7, canvas.height * 0.7);
         }),
     ];
 }
@@ -58,8 +58,8 @@ function createBackgrounds(level, canvas, repeatCount) {
 function createEnemies(level) {
     return level.repeatAcrossLevelSegments((offset) => {
         return [
-            ...createInstances(Chicken, 6, offset, level.getYPositionForObject(100), 100, 100),
-            ...createInstances(Chick, 6, offset, level.getYPositionForObject(70), 70, 70),
+            ...createInstances(Chicken, 6, level, offset, level.getYPositionForObject(100), 100, 100),
+            ...createInstances(Chick, 6, level, offset, level.getYPositionForObject(70), 70, 70),
         ];
     });
 }
@@ -71,7 +71,7 @@ function createEnemies(level) {
  */
 function createCoins(level) {
     return level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(Coin, 2, offset, level.getYPositionForObject(200), 200, 200);
+        return createInstances(Coin, 2, level, offset, level.getYPositionForObject(200), 200, 200);
     });
 }
 
@@ -82,6 +82,6 @@ function createCoins(level) {
  */
 function createBottles(level) {
     return level.repeatAcrossLevelSegments((offset) => {
-        return createInstances(StandingBottle, 1, offset, level.getYPositionForObject(110), 120, 120);
+        return createInstances(StandingBottle, 1, level, offset, level.getYPositionForObject(110), 120, 120);
     });
 }

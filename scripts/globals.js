@@ -1,6 +1,8 @@
 /**
  * Defines global constants and SVG icons used in the game.
  */
+const CANVAS_LOGICAL_WIDTH = 1920;
+const CANVAS_WIDTH_HEIGHT_RATIO = 16 / 9;
 const MIN_INTERVAL_IN_MILLISECONDS = 25;
 const STANDARD_INTERVAL_IN_MILLISECONDS = 100;
 const pauseSVG = `

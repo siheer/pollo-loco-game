@@ -44,7 +44,7 @@ export default class KeyboardEvents {
         } else if (event.key === 'm') {
             document.getElementById('sound-btn').click();
         } else if (event.key === 'Escape') {
-            document.activeElement.blur();
+            window.world.canvas.canvasElement.focus();
         }
     }
 

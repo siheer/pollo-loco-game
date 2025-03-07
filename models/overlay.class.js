@@ -11,11 +11,11 @@ export default class GameOverlay {
     constructor() {
         window.gameOverlay = this;
         this.container = document.getElementById('game-container');
+        this.resolutionHigh = parseFloat(localStorage.getItem('scale')) === 1;
+        this.currentReferrer = null;
         this.add();
         this.provideScreens();
         this.setContent(this.startScreen, null);
-        this.currentReferrer = null;
-        this.resolutionHigh = false;
     }
 
     /**
@@ -48,14 +48,20 @@ export default class GameOverlay {
      */
     setContent(templateString, focusNextQuerySelector, referrer = this.currentReferrer) {
         this.currentReferrer = referrer;
-        if (!this.element) {
-            this.add();
-        }
+        if (!this.element) this.add();
         this.element.innerHTML = templateString;
-        if (this.resolutionHigh) this.element.querySelector('.resolution-btn').textContent = OverlayTemplates.lowResolutionText;
+        if (this.resolutionHigh) this.handleHighResolution();
         this.showOverlay();
         this.registerButtonEvents();
         this.element.querySelector(focusNextQuerySelector)?.focus();
+    }
+
+    /**
+     * If resolution is high, the button text has to be updated, since its default is that of low resolution
+     */
+    handleHighResolution() {
+        const resolutionBtn = this.element.querySelector('.resolution-btn');
+        if (resolutionBtn) resolutionBtn.textContent = OverlayTemplates.lowResolutionText;
     }
 
     /**
@@ -121,6 +127,10 @@ export default class GameOverlay {
     resumeGame() {
         this.remove();
         document.getElementById('canvas-container').classList.remove('opacity-0');
-        window.game.start(1000);
+        if (window.game.wasGameRunning) {
+            window.game.start(1000);
+        } else if (!window.game.gameOver.isOver) {
+            window.playPauseButton.focus();
+        }
     }
 }

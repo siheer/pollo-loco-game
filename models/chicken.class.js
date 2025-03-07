@@ -7,13 +7,14 @@ import GameItem from "./game-item.class.js";
 export default class Chicken extends GameItem {
     /**
      * Creates a new Chicken enemy instance.
+     * @param {Level} level - The level instance in which the chicken exists.
      * @param {number} segmentIndex - The segment index used to determine the x-coordinate.
      * @param {number} y - The y-coordinate for the chicken.
      * @param {number} width - The width of the chicken.
      * @param {number} height - The height of the chicken.
      */
-    constructor(segmentIndex, y, width, height) {
-        const x = window.world.level.getRandomXInSegment(segmentIndex);
+    constructor(level, segmentIndex, y, width, height) {
+        const x = level.getRandomXInSegment(segmentIndex);
         super(x, y, width, height);
         this.speedX = 1.5 + Math.random() * 3;
         this.offset = { left: 10, top: 10, right: 10, bottom: 20 };

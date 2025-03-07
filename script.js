@@ -15,17 +15,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     new KeyboardEvents();
     new GameOverlay();
     new UI();
-    initGame();
+    await initGame();
 });
 
 /**
  * Initializes the game by setting up the canvas, level, world, game and sound manager.
-*/
-window.initGame = function initGame() {
-    const gameCanvas = new Canvas(document.getElementById('canvas'), .5);
+ */
+window.initGame = async () => {
+    const canvasElement = document.getElementById('canvas');
+    const gameCanvas = new Canvas(canvasElement, 0.5);
     const level = new Level(gameCanvas, '../levels/level-1.js', 4);
-    level.init();
+    await level.init();
     const world = new World(level);
     new Game(world);
     new SoundManager();
-}
+};

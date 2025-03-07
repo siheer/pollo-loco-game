@@ -1,4 +1,5 @@
 import GameItem from "./game-item.class.js";
+import ActionTimer from "./action-timer.class.js";
 
 /**
  * Represents a small chicken enemy (Chick) in the game.
@@ -7,14 +8,16 @@ import GameItem from "./game-item.class.js";
 export default class Chick extends GameItem {
     /**
      * Creates a new Chick enemy instance.
+     * @param {Level} level - The level instance in which the chick exists.
      * @param {number} segmentIndex - The segment index used to determine the x-coordinate.
      * @param {number} y - The y-coordinate for the chick.
      * @param {number} width - The width of the chick.
      * @param {number} height - The height of the chick.
      */
-    constructor(segmentIndex, y, width, height) {
-        const x = window.world.level.getRandomXInSegment(segmentIndex);
+    constructor(level, segmentIndex, y, width, height) {
+        const x = level.getRandomXInSegment(segmentIndex);
         super(x, y, width, height);
+        this.level = level;
         this.speedX = this.initialSpeedX = 1.5 + Math.random() * 3;
         this.offset = { left: 10, top: 10, right: 10, bottom: 10 };
         this.loadImage('./img/3_enemies_chicken/chicken_small/1_walk/2_w.png');
@@ -24,10 +27,15 @@ export default class Chick extends GameItem {
             './img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
             './img/3_enemies_chicken/chicken_small/1_walk/3_w.png',
         ]);
-        this.lastJumpingTime = 0;
         this.justJumped = false;
         this.initialSpeedY = -40;
         this.jumpingSpeedX = 10;
+        this.jumpAction = new ActionTimer(
+            () => !this.level.isAboveGround(this),
+            deltaTime => this.handleJump(deltaTime),
+            0,
+            1800 + Math.random() * 1500,
+        )
     }
 
     /**
@@ -36,25 +44,13 @@ export default class Chick extends GameItem {
      */
     update(deltaTime) {
         if (this.isDead) {
-            if (window.world.level.isAboveGround(this)) this.y += 20;
+            if (this.level.isAboveGround(this)) this.y += 20;
             return;
         }
-        else if (this.isJumpingDue()) this.handleJump(deltaTime);
-        else if (window.world.level.isAboveGround(this)) this.applyGravity(deltaTime);
+        else if (this.jumpAction.updateAndIsExecutable(deltaTime)) this.jumpAction.execute(deltaTime);
+        else if (this.level.isAboveGround(this)) this.applyGravity(deltaTime);
         else this.handleOnGround(deltaTime);
         this.moveLeft();
-    }
-
-    /**
-     * Determines whether the chick should initiate a jump based on time since the last jump.
-     * @returns {boolean} True if it is time to jump.
-     */
-    isJumpingDue() {
-        let isJumpingDue = performance.now() - this.lastJumpingTime > 1800 + Math.random() * 1500;
-        if (isJumpingDue) {
-            this.lastJumpingTime = performance.now();
-        }
-        return isJumpingDue;
     }
 
     /**
