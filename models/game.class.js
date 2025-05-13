@@ -108,7 +108,7 @@ export default class Game {
         this.lastTimestamp ??= timestamp;
         const deltaTime = timestamp - this.lastTimestamp;
         if (deltaTime > MIN_INTERVAL_IN_MILLISECONDS) {
-            this.handleisGameRunning(deltaTime);
+            this.handleGameIsRunning(deltaTime);
             this.lastTimestamp = timestamp;
         }
     }
@@ -117,7 +117,7 @@ export default class Game {
      * Processes game updates including keyboard events, world updates, collision checks, and drawing.
      * @param {number} deltaTime - Elapsed time in milliseconds.
      */
-    handleisGameRunning(deltaTime) {
+    handleGameIsRunning(deltaTime) {
         this.world.checkForInitializingKeyboardEvents(deltaTime);
         this.world.updateWorld(deltaTime);
         this.world.checkCollisions(deltaTime);

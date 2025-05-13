@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 /**
  * Initializes the game by setting up the canvas, level, world, game and sound manager.
  */
-window.initGame = async () => {
+window.initGame = async (pathToLevel = '../levels/level-1.js') => {
     const canvasElement = document.getElementById('canvas');
     const gameCanvas = new Canvas(canvasElement, 0.5);
-    const level = new Level(gameCanvas, '../levels/level-1.js', 4);
+    const level = new Level(gameCanvas, pathToLevel, 4);
     await level.init();
     const world = new World(level);
     new Game(world);

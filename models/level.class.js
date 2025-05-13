@@ -1,6 +1,11 @@
-import BackgroundObject from '../models/background-object.class.js';
-import Character from '../models/character.class.js';
-import { createEnemies, createCoins, createBottles } from "../levels/level-1.js";
+import BackgroundObject from './background-object.class.js';
+import Character from './character.class.js';
+import Cloud from './cloud.class.js';
+import Chick from './chick.class.js';
+import Chicken from './chicken.class.js';
+import Endboss from './endboss.class.js';
+import Coin from './coin.class.js';
+import StandingBottle from "./standing-bottle.class.js";
 
 /**
  * Represents a game level.
@@ -22,6 +27,7 @@ export default class Level {
         this.spawnOutsideLevel = false;
         this.groundLevel = 140;
         this.groundLevelY = this.canvas.height - this.groundLevel;
+        this.itemsDefaultRepeatCount = this.levelXLengthFactor - 1;
     }
 
     /**
@@ -30,13 +36,119 @@ export default class Level {
      */
     async init() {
         try {
-            this.character = new Character(100, this.getYPositionForObject(1000) /* + 18 */, 250, 500, this); // correct y position by ca. + 18 if character should not start in air
-            const level = await import(this.pathToLevelItems);
-            this.levelItems = level.createLevelItems(this, this.canvas, this.levelXLengthFactor);
-            this.levelItems.push(this.character);
+            const currentLevel = await import(this.pathToLevelItems);
+            if (!currentLevel.createLevelItems) throw Error('Level must provide a function "function createLevelItems(level, repeatCount)".')
+            this.levelItems = currentLevel.createLevelItems(this, this.levelXLengthFactor);
         } catch (error) {
             console.error('Error loading level items:', error);
         }
+    }
+
+    /**
+     * Creates background elements for the level.
+     * @param {number} [repeatCount=this.defaultRepeatCount] - Repetition count for full background.
+     * @returns {Array} Array of background objects.
+     */
+    createBackgrounds(repeatCount = this.levelXLengthFactor) {
+        return [
+            [
+                ...Level.getBackgroundSecondPart(this.canvas, -this.canvas.width),
+                ...Level.getFullBackground(this.canvas, repeatCount),
+            ],
+            new Cloud(this, './img/5_background/layers/4_clouds/1.png', 0, 0, this.canvas.width * 0.7, this.canvas.height * 0.7),
+            ...this.repeatAcrossLevelSegments((offset) => {
+                return new Cloud(this, './img/5_background/layers/4_clouds/1.png', offset, 0, this.canvas.width * 0.7, this.canvas.height * 0.7);
+            }),
+        ];
+    }
+
+    /**
+     * Creates and assigns the main character of the level.
+     * @param {number} [x=100] - The horizontal starting position of the character.
+     * @param {number} [yOffset=1000] - Base vertical offset for calculating Y position.
+     * @param {number} [yAdjust=0] - Additional vertical adjustment to fine-tune Y position (correct the y position by ca. 18 if character should not start in air).
+     * @param {number} [width=250] - Width of the character.
+     * @param {number} [height=500] - Height of the character.
+     * @returns {Character} The created Character object.
+     */
+    createCharacter(x = 100, yOffset = 1000, yAdjust = 0 /* 18 */, width = 250, height = 500) {
+        const y = this.getYPositionForObject(yOffset) + yAdjust;
+        this.character = new Character(x, y, width, height, this);
+        return this.character;
+    }
+
+    /**
+     * Creates the Endboss object
+     * @param {Level} level - The current level instance.
+     * @param {number} [x=level.levelEndX] - Horizontal spawn position for the Endboss.
+     * @param {number} [yOffset=600] - Vertical shift used by getYPositionForObject.
+     * @param {number} [yAdjust=50] - Additional pixels to adjust the Y position.
+     * @param {number} [width=515] - Width of the Endboss.
+     * @param {number} [height=600] - Height of the Endboss.
+     * @returns {Endboss} The created Endboss object.
+     */
+    createEndboss(x = this.levelEndX, yOffset = 600, yAdjust = 50, width = 515, height = 600) {
+        const y = this.getYPositionForObject(yOffset) + yAdjust;
+        return new Endboss(x, y, width, height);
+    }
+
+    /**
+     * Creates enemy objects for the level.
+     * @param {number} [repeatCount] - Number of segments to generate enemies for; defaults to all segments.
+     * @param {number} [chickenCount=6] - Number of Chicken instances per segment.
+     * @param {number} [chickCount=6] - Number of Chick instances per segment.
+     * @param {number} [chickenY=this.getYPositionForObject(100)] - Vertical position for chickens.
+     * @param {number} [chickenWidth=100] - Width of each Chicken.
+     * @param {number} [chickenHeight=100] - Height of each Chicken.
+     * @param {number} [chickY=this.getYPositionForObject(70)] - Vertical position for chicks.
+     * @param {number} [chickWidth=70] - Width of each Chick.
+     * @param {number} [chickHeight=70] - Height of each Chick.
+     * @returns {Array} Array of created enemy objects (Chickens and Chicks).
+     */
+    createEnemies(repeatCount = undefined, chickenCount = 6, chickCount = 6, chickenY = this.getYPositionForObject(100), chickenWidth = 100, chickenHeight = 100, chickY = this.getYPositionForObject(70), chickWidth = 70, chickHeight = 70) {
+        const creatorFunction = (offset) => {
+            const chickenArgs = [this, offset, chickenY, chickenWidth, chickenHeight];
+            const chickArgs = [this, offset, chickY, chickWidth, chickHeight];
+            return [
+                ...createInstances(Chicken, chickenCount, ...chickenArgs),
+                ...createInstances(Chick, chickCount, ...chickArgs),
+            ];
+        };
+        return this.spawnOutsideLevel ? this.spawnOutside(creatorFunction) : this.repeatAcrossLevelSegments(creatorFunction, repeatCount);
+    }
+
+    /**
+     * Creates coin objects for the level.
+     * @param {number} [repeatCount] - Number of segments to generate coins for; defaults to all segments.
+     * @param {number} [coinCount=2] - Number of Coin instances per segment.
+     * @param {number} [y=this.getYPositionForObject(200)] - Vertical position for the coins.
+     * @param {number} [width=200] - Width of each Coin.
+     * @param {number} [height=200] - Height of each Coin.
+     * @returns {Array<Coin>} Array of created coin objects.
+     */
+    createCoins(repeatCount = undefined, coinCount = 2, y = this.getYPositionForObject(200), width = 200, height = 200) {
+        const creatorFunction = (offset) => {
+            const args = [this, offset, y, width, height];
+            return createInstances(Coin, coinCount, ...args);
+        };
+        return this.spawnOutsideLevel ? this.spawnOutside(creatorFunction) : this.repeatAcrossLevelSegments(creatorFunction, repeatCount);
+    }
+
+    /**
+     * Creates bottle objects for the level.
+     * @param {number} [repeatCount] - Number of segments to generate bottles for; defaults to all segments.
+     * @param {number} [bottleCount=1] - Number of StandingBottle instances per segment.
+     * @param {number} [y=this.getYPositionForObject(110)] - Vertical position for the bottles.
+     * @param {number} [width=120] - Width of each StandingBottle.
+     * @param {number} [height=120] - Height of each StandingBottle.
+     * @returns {Array<StandingBottle>} Array of created bottle objects.
+     */
+    createBottles(repeatCount = undefined, bottleCount = 1, y = this.getYPositionForObject(110), width = 120, height = 120) {
+        const creatorFunction = (offset) => {
+            const args = [this, offset, y, width, height];
+            return createInstances(StandingBottle, bottleCount, ...args);
+        }
+        return this.spawnOutsideLevel ? this.spawnOutside(creatorFunction) : this.repeatAcrossLevelSegments(creatorFunction, repeatCount);
     }
 
     /**
@@ -44,9 +156,7 @@ export default class Level {
      */
     spawnEnemies() {
         this.spawnOutsideLevel = true;
-        this.levelItems[1].push([
-            createEnemies(this)
-        ]);
+        this.levelItems[1].push(this.createEnemies());
         this.moveCharacterReferenceToPaintLast();
         this.spawnOutsideLevel = false;
     }
@@ -55,11 +165,18 @@ export default class Level {
      * Spawns coin and bottle items into the level and updates the level items order.
      */
     spawnItems() {
-        this.levelItems.push([
-            createCoins(this),
-            createBottles(this),
-        ]);
+        this.levelItems.push(this.createCoins(), this.createBottles());
         this.moveCharacterReferenceToPaintLast();
+    }
+
+    /**
+     * @param {Function} callback - The function to execute.
+     * @param {number} offset - The offset, where the items are to be created and drawn.
+     * @returns {Array} Array of created objects
+     */
+    spawnOutside(callback, offset = this.levelXLengthFactor - 1) {
+        const result = callback(offset);
+        return Array.isArray(result) ? result : [result];
     }
 
     /**
@@ -131,11 +248,10 @@ export default class Level {
      * @param {number} [repeatCount=this.levelXLengthFactor - 1] - Number of segments to repeat.
      * @returns {Array} Array of results.
      */
-    repeatAcrossLevelSegments(callback, repeatCount = this.levelXLengthFactor - 1) {
-        if (this.spawnOutsideLevel) {
-            return callback(this.levelXLengthFactor - 1);
+    repeatAcrossLevelSegments(callback, repeatCount = this.itemsDefaultRepeatCount) {
+        if (repeatCount === 0) {
+            return [callback(0)] // draw items without offset at start of level
         }
-
         let result = [];
         for (let canvasOffset = 1; canvasOffset < repeatCount; canvasOffset++) {
             result.push(callback(canvasOffset));
