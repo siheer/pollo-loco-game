@@ -194,7 +194,7 @@ export default class Game {
         soundBtn.innerHTML = soundOffSVG;
         soundBtn.title = 'Musik aus (m)';
         window.soundManager.fadeUnmute();
-        if (!window.soundManager.currentSource) window.soundManager.playBackground();
+        if (!this.gameOver.isOver && !window.soundManager.currentSource) window.soundManager.playBackground();
     }
 
     /**
