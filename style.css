@@ -128,6 +128,12 @@ canvas:focus {
         margin: .5rem;
         display: block;
     }
+
+    .legal-screen-content>* {
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 .in-game-controls {

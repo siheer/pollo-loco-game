@@ -46,14 +46,16 @@ export default class GameOverlay {
      * @param {string|null} focusNextQuerySelector - The CSS selector to focus after setting content.
      * @param {string|null} [referrer=null] - The current referrer identifier.
      */
-    setContent(templateString, focusNextQuerySelector, referrer = this.currentReferrer) {
+    setContent(templateString, focusNextQuerySelector, referrer = this.currentReferrer, focus = true) {
         this.currentReferrer = referrer;
         if (!this.element) this.add();
         this.element.innerHTML = templateString;
         if (this.resolutionHigh) this.handleHighResolution();
         this.showOverlay();
         this.registerButtonEvents();
-        this.element.querySelector(focusNextQuerySelector)?.focus();
+        if (focus) {
+            this.element.querySelector(focusNextQuerySelector)?.focus();
+        }
     }
 
     /**
@@ -93,7 +95,7 @@ export default class GameOverlay {
         const btnActions = {
             '.start-btn': () => this.resumeGame(),
             '.controls-btn': () => this.setContent(this.controlsScreen, '.back-btn'),
-            '.legal-btn': () => this.setContent(this.legalScreen, '.back-btn'),
+            '.legal-btn': () => this.setContent(this.legalScreen, '.back-btn', null, false),
             '.back-btn': () => this.currentReferrer === 'game' ? this.resumeGame() : this.setContent(this.startScreen, '.start-btn'),
             '.resolution-btn': this.setResolution,
         };

@@ -1,19 +1,20 @@
 import KeyboardKeysSVGs from "./keyboard-keys-svg.class.js";
+import { impressumUndDatenschutz } from "../impressum.js";
 
 /**
  * Provides static HTML templates for game overlay screens.
  * Contains templates for start, control, and legal screens.
  */
 export default class OverlayTemplates {
-    constructor() {
-        throw new Error('Static class');
-    }
+  constructor() {
+    throw new Error('Static class');
+  }
 
-    static lowResolutionText = 'Niedrige Auflösung';
+  static lowResolutionText = 'Niedrige Auflösung';
 
-    static highResolutionText = 'Hohe Auflösung';
+  static highResolutionText = 'Hohe Auflösung';
 
-    static startScreen = `
+  static startScreen = `
         <div class="fc jcac">
             <h1>El Pollo Loco</h1>
             <div class="fc jcac gap1">
@@ -25,7 +26,7 @@ export default class OverlayTemplates {
         </div>
     `;
 
-    static controlScreen = `
+  static controlScreen = `
         <div class="fc jcac gap1 controls-container">
                 <h2>Steuerung</h2>
                 <div class="key-explanation fr jcac sb">
@@ -61,15 +62,11 @@ export default class OverlayTemplates {
         </div>
     `;
 
-    static legalScreen = `
+  static legalScreen = `
         <div class="legal-screen-container fc jcac">
             <div class="legal-screen-content">
-                <h2>Impressum</h2>
-                <p>
-                    Verantwortlich:  [Name]<br></p>
-                    <h3>Kontakt</h3>
-                    <p>E-Mail: <a href="mailto:[email]">[email]</a></p>
-                </p>
+                ${impressumUndDatenschutz}
+                <h2>Nachweise</h2>
                 <p>
                     Bildnachweis: 
                     <a href="https://www.freepik.com/free-vector/desert-forest-landscape-sunset-time-scene-with-many-cactuses_16445168.htm#fromView=image_search_similar&page=2&position=30&uuid=222b09f2-4eec-47b6-afc1-825755a85c87&query=desert" target="_blank">
@@ -81,7 +78,7 @@ export default class OverlayTemplates {
                      <br>
                      Sound Effects from Pixabay.
                </p>
-                <button class="btn back-btn">Zurück</button>
+              <button class="btn back-btn">Zurück</button>
             </div>
         </div>
     `;
