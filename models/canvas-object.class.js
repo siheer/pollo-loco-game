@@ -1,3 +1,5 @@
+import WorldImagePreloader from "./world-image-preloader.class.js";
+
 /**
  * Represents an object to be drawn on a canvas.
  */
@@ -24,6 +26,7 @@ export default class CanvasObject {
     loadImage(src) {
         this.img = new Image();
         this.img.src = src;
+        WorldImagePreloader.add(this.img.decode());
     }
 
     /**
@@ -34,6 +37,7 @@ export default class CanvasObject {
     createImage(src) {
         const img = new Image();
         img.src = src;
+        WorldImagePreloader.add(img.decode());
         return img;
     }
 }

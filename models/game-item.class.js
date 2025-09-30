@@ -1,4 +1,5 @@
 import CanvasObject from "./canvas-object.class.js";
+import WorldImagePreloader from "./world-image-preloader.class.js";
 
 /**
  * Represents a game item with movement, collision, and animation capabilities.
@@ -48,6 +49,7 @@ export default class GameItem extends CanvasObject {
         return paths.map(path => {
             const img = new Image();
             img.src = path;
+            WorldImagePreloader.add(img.decode());
             return img;
         });
     }

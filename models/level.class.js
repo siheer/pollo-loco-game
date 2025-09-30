@@ -6,6 +6,7 @@ import Chicken from './chicken.class.js';
 import Endboss from './endboss.class.js';
 import Coin from './coin.class.js';
 import StandingBottle from "./standing-bottle.class.js";
+import WorldImagePreloader from './world-image-preloader.class.js';
 
 /**
  * Represents a game level.
@@ -39,6 +40,7 @@ export default class Level {
             const currentLevel = await import(this.pathToLevelItems);
             if (!currentLevel.createLevelItems) throw Error('Level must provide a function "function createLevelItems(level, repeatCount)".')
             this.levelItems = currentLevel.createLevelItems(this, this.levelXLengthFactor);
+            await WorldImagePreloader.preload();
         } catch (error) {
             console.error('Error loading level items:', error);
         }

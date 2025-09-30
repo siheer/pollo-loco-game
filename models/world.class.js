@@ -1,11 +1,11 @@
-import CanvasObject from './canvas-object.class.js';
+import CanvasObject from "./canvas-object.class.js";
 import GameItem from "./game-item.class.js";
 import Bottle from "./bottle.class.js";
 import Chicken from "./chicken.class.js";
 import Chick from "./chick.class.js";
 import Endboss from "./endboss.class.js";
 import Coin from "./coin.class.js";
-import ActionTimer from './action-timer.class.js';
+import ActionTimer from "./action-timer.class.js";
 
 /**
  * Represents the game world, handling updates, drawing, and collision checks.
@@ -31,13 +31,13 @@ export default class World {
      */
     initializeActionTimer() {
         this.bottleThrowAction = new ActionTimer(
-            () => keyboardEvents.keys['a'] && this.level.character.bottleSupply > 0,
+            () => keyboardEvents.keys["a"] && this.level.character.bottleSupply > 0,
             () => this.level.character.throwBottle(),
             0,
             500
         );
         this.bottleBuyAction = new ActionTimer(
-            () => keyboardEvents.keys['Enter'] && this.level.character.canBuyBottle(),
+            () => keyboardEvents.keys["Enter"] && this.level.character.canBuyBottle(),
             () => this.level.character.buyBottle(),
             0,
             100
@@ -48,12 +48,15 @@ export default class World {
             0,
             20000
         );
-        this.spawnItemsActionTimer = new ActionTimer(
-            () => true,
-            () => this.level.spawnItems(),
-            0,
-            20000
-        );
+        setTimeout(() => {
+            // setTimeout to not execute at same frame as spawnEnemies
+            this.spawnItemsActionTimer = new ActionTimer(
+                () => true,
+                () => this.level.spawnItems(),
+                0,
+                20000
+            );
+        });
     }
 
     /**
@@ -77,7 +80,7 @@ export default class World {
      */
     updateWorldItems(reference, deltaTime) {
         if (Array.isArray(reference)) {
-            reference.forEach(item => this.updateWorldItems(item, deltaTime));
+            reference.forEach((item) => this.updateWorldItems(item, deltaTime));
         } else {
             reference.update?.(deltaTime);
         }
@@ -101,9 +104,9 @@ export default class World {
     drawWorldItems(items) {
         if (items) {
             if (Array.isArray(items)) {
-                items.forEach(object => this.drawWorldItems(object));
+                items.forEach((object) => this.drawWorldItems(object));
             } else if (items.constructor === Object) {
-                Object.values(items).forEach(object => this.drawWorldItems(object));
+                Object.values(items).forEach((object) => this.drawWorldItems(object));
             } else {
                 this.drawWorldItem(items);
             }
@@ -112,19 +115,36 @@ export default class World {
 
     /**
      * Draws a single world item, handling horizontal flipping if necessary.
-     * @param {*} item - The world item to draw.
+     * @param {CanvasObject} item - The world item to draw.
      */
     drawWorldItem(item) {
-        if (item instanceof CanvasObject) {
-            if (item.isFacingOtherDirection) {
-                this.ctx.save();
-                this.ctx.scale(-1, 1);
-                this.ctx.drawImage(item.img, -item.x - item.width, item.y, item.width, item.height);
-                this.ctx.restore();
-            } else {
-                this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
-            }
+        if (!this.isVisible(item)) return;
+        if (item.isFacingOtherDirection) {
+            this.ctx.save();
+            this.ctx.scale(-1, 1);
+            this.ctx.drawImage(
+                item.img,
+                -item.x - item.width,
+                item.y,
+                item.width,
+                item.height
+            );
+            this.ctx.restore();
+        } else {
+            this.ctx.drawImage(item.img, item.x, item.y, item.width, item.height);
         }
+    }
+
+
+    /**
+     * Checks whether a given game object is within or near the visible area of the canvas.
+     * @param {Object} item - The game object to test for visibility.
+     * @param {number} [padding=80] - Extra margin (in pixels) added to both sides of the canvas to prevent objects from "popping" in/out at the edges.
+     * @returns {boolean} True if the object is within the extended visible area, otherwise false.
+     */
+    isVisible(item, padding = 80) {
+        const screenX = item.x + this.cameraX;
+        return screenX <= (this.canvas.width + padding) && (screenX + item.width) >= -padding;
     }
 
     /**
@@ -158,7 +178,7 @@ export default class World {
             const innerWidth = width - item.offset.left - item.offset.right;
             const innerHeight = height - item.offset.top - item.offset.bottom;
             this.ctx.save();
-            this.ctx.strokeStyle = 'red';
+            this.ctx.strokeStyle = "red";
             this.ctx.beginPath();
             this.ctx.rect(innerX, innerY, innerWidth, innerHeight);
             this.ctx.stroke();
@@ -200,7 +220,7 @@ export default class World {
      */
     handleEnemyInteractions(deltaTime) {
         const enemies = flattenToArray(this.level.levelItems[1]);
-        enemies.forEach(enemy => {
+        enemies.forEach((enemy) => {
             if (!enemy.isDead && this.level.character.isCollidingWith(enemy)) {
                 this.handleCharacterCollisionWithEnemy(deltaTime, enemy);
             }
@@ -219,11 +239,17 @@ export default class World {
     handleCharacterCollisionWithEnemy(deltaTime, enemy) {
         if (this.level.character.isStomping(enemy)) {
             enemy.kill();
-            if (!this.level.isAboveGround(enemy)) this.level.character.giveRecoilOnStomp(20);
+            if (!this.level.isAboveGround(enemy))
+                this.level.character.giveRecoilOnStomp(20);
             this.level.character.dispatchCharacterEnergyEvent();
         } else {
-            const damageAmount = enemy instanceof Endboss ? 10 : this.level.character.takesDamageAmount;
-            this.level.character.takeDamage(deltaTime, STANDARD_INTERVAL_IN_MILLISECONDS, damageAmount);
+            const damageAmount =
+                enemy instanceof Endboss ? 10 : this.level.character.takesDamageAmount;
+            this.level.character.takeDamage(
+                deltaTime,
+                STANDARD_INTERVAL_IN_MILLISECONDS,
+                damageAmount
+            );
         }
     }
 
@@ -235,13 +261,17 @@ export default class World {
      */
     handleBottlesCollisionWithEnemy(deltaTime, enemy) {
         const bottles = flattenToArray(this.level.levelItems, Bottle);
-        bottles.forEach(bottle => {
-            if (bottle.canDealDamage && !bottle.isBroken && bottle.isCollidingWith(enemy)) {
+        bottles.forEach((bottle) => {
+            if (
+                bottle.canDealDamage &&
+                !bottle.isBroken &&
+                bottle.isCollidingWith(enemy)
+            ) {
                 bottle.breakBottle();
                 if (enemy instanceof Chicken || enemy instanceof Chick) {
                     enemy.kill();
                 } else if (enemy instanceof Endboss) {
-                    window.soundManager.playNonOverlapping('endbossHurt');
+                    window.soundManager.playNonOverlapping("endbossHurt");
                     enemy.takeDamage(deltaTime);
                 }
             }
@@ -253,16 +283,36 @@ export default class World {
      */
     handleBottleAndCoinCollections() {
         const bottles = flattenToArray(this.level.levelItems, Bottle);
-        bottles.forEach(bottle => {
-            if (!bottle.canDealDamage && bottle.isCollidingWith(this.level.character)) {
+        bottles.forEach((bottle) => {
+            if (
+                !bottle.canDealDamage &&
+                bottle.isCollidingWith(this.level.character)
+            ) {
                 this.level.character.collectBottle(bottle);
             }
         });
         const coins = flattenToArray(this.level.levelItems, Coin);
-        coins.forEach(coin => {
+        coins.forEach((coin) => {
             if (coin.isCollidingWith(this.level.character)) {
                 this.level.character.collectCoin(coin);
             }
         });
+    }
+
+    /**
+     * Attempt to prevent stutter, as soon as the camera is moved (resulting in a translation of the canvas context on horizontal axis)
+     */
+    async warmupCanvasTranslate() {
+        this.drawWorld();
+        await new Promise(requestAnimationFrame);
+        this.cameraX = -1;
+        this.drawWorld();
+        await new Promise(requestAnimationFrame);
+        this.cameraX = 1;
+        this.drawWorld();
+        await new Promise(requestAnimationFrame);
+        this.cameraX = 0;
+        this.drawWorld();
+        await new Promise(requestAnimationFrame);
     }
 }

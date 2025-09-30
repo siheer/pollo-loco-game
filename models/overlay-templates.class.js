@@ -6,27 +6,27 @@ import { impressumUndDatenschutz } from "../impressum.js";
  * Contains templates for start, control, and legal screens.
  */
 export default class OverlayTemplates {
-  constructor() {
-    throw new Error('Static class');
-  }
+    constructor() {
+        throw new Error('Static class');
+    }
 
-  static lowResolutionText = 'Niedrige Auflösung';
+    static lowResolutionText = 'Niedrige Auflösung';
 
-  static highResolutionText = 'Hohe Auflösung';
+    static highResolutionText = 'Hohe Auflösung';
 
-  static startScreen = `
+    static startScreen = `
         <div class="fc jcac">
             <h1>El Pollo Loco</h1>
             <div class="fc jcac gap1">
                 <button class="btn start-btn">Spielen</button>
                 <button class="btn controls-btn">Steuerung</button>
                 <button class="btn resolution-btn">Hohe Auflösung</button>
-                <button class="btn legal-btn">Impressum</button>
+                <button class="btn legal-btn">Impressum & Datenschutz</button>
             </div>
         </div>
     `;
 
-  static controlScreen = `
+    static controlScreen = `
         <div class="fc jcac gap1 controls-container">
                 <h2>Steuerung</h2>
                 <div class="key-explanation fr jcac sb">
@@ -62,7 +62,7 @@ export default class OverlayTemplates {
         </div>
     `;
 
-  static legalScreen = `
+    static legalScreen = `
         <div class="legal-screen-container fc jcac">
             <div class="legal-screen-content">
                 ${impressumUndDatenschutz}
